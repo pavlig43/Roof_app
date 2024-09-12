@@ -40,6 +40,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.pavlig43.roof_app.model.Dot
+import com.pavlig43.roof_app.model.DotName4Side
 import com.pavlig43.roof_app.ui.MinusIcon
 import com.pavlig43.roof_app.ui.theme.Roof_appTheme
 
@@ -79,19 +81,19 @@ fun QuadroChoice(
                         when {
                             (leftTopCenter - offset).getDistance() <= 45f -> {
                                 showDotDialog = true
-                                quadrilateralViewModel.changeCurrentDotName(DotName.LEFTTOP)
+                                quadrilateralViewModel.changeCurrentDotName(DotName4Side.LEFTTOP)
                             }
 
                             (rightTopCenter - offset).getDistance() <= 45f
 
                             -> {
                                 showDotDialog = true
-                                quadrilateralViewModel.changeCurrentDotName(DotName.RIGHTTOP)
+                                quadrilateralViewModel.changeCurrentDotName(DotName4Side.RIGHTTOP)
                             }
 
                             (rightBottomCenter - offset).getDistance() <= 45f -> {
                                 showDotDialog = true
-                                quadrilateralViewModel.changeCurrentDotName(DotName.RIGHTBOTTOM)
+                                quadrilateralViewModel.changeCurrentDotName(DotName4Side.RIGHTBOTTOM)
                             }
                         }
 
@@ -174,7 +176,8 @@ fun DrawScope.drawDot(
     downOffset: Boolean,
     offsetY: Float = 35f,
     startDot: Boolean = false,
-    center: Offset, dot: Dot,
+    center: Offset,
+    dot: Dot,
     textPaint: Paint = Paint().apply {
         textSize = 20f //
         color = Color.Black.toArgb()
@@ -184,7 +187,7 @@ fun DrawScope.drawDot(
     drawCircle(if (startDot) Color.Green else Color.Black, center = center, radius = 15f)
     drawContext.canvas.nativeCanvas.apply {
         drawText(
-            "(${dot.distanceX}cm, ${dot.distanceY}cm)",
+            "(${dot.distanceX.toInt()}cm, ${dot.distanceY.toInt()}cm)",
             center.x,
             center.y + if (!downOffset) offsetY else -offsetY,
             textPaint
@@ -238,8 +241,8 @@ fun ChangeParamsDots(
 
 @Composable
 fun ParamsDotRow(
-    value: Int,
-    onValueChange: (Int) -> Unit,
+    value: Float,
+    onValueChange: (Float) -> Unit,
     axis: String = "Y",
     canChangePlus: Boolean = false,
     plus:Boolean,
@@ -266,10 +269,10 @@ fun ParamsDotRow(
             Spacer(modifier = Modifier.weight(0.2f))
         }
         TextField(
-            value = if (value==0)"" else value.toString(),
+            value = if (value==0f)"" else value.toInt().toString(),
             onValueChange = { it: String ->
                 val newValue =  it.toIntOrNull()?:0
-                onValueChange(if (plus) newValue else - newValue) },
+                onValueChange(if (plus) newValue.toFloat() else - newValue.toFloat()) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.weight(0.35f)
             )
@@ -298,7 +301,7 @@ fun ButtonRow(
 private fun ParamsDotRowPreview() {
     Roof_appTheme {
         ChangeParamsDots(
-            dot = Dot(DotName.LEFTTOP,canMinusY = true),
+            dot = Dot(DotName4Side.LEFTTOP,canMinusY = true),
             onDismissRequest = {},
             changeDot = {_->Unit}
 

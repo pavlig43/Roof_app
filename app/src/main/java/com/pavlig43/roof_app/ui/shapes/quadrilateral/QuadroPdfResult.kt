@@ -10,9 +10,11 @@ import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import com.pavlig43.roof_app.A4HEIGHT
 import com.pavlig43.roof_app.A4WIDTH
+import com.pavlig43.roof_app.model.Dot
 import com.pavlig43.roof_app.model.Sheet
 import com.pavlig43.roof_app.model.SheetDots
 import com.pavlig43.roof_app.model.convertSheetDotToPx
+import com.pavlig43.roof_app.model.withOStartOffset
 import com.pavlig43.roof_app.utils.replaceX
 import java.io.File
 import kotlin.math.abs
@@ -49,37 +51,47 @@ class QuadroPDF(
     geometry4SideShape: Geometry4SideShape,
     val sheet: Sheet
 ) {
+
     private val widthPage = A4WIDTH.toFloat()
     private val heightPage = A4HEIGHT.toFloat()
     private val paddingWidth = (widthPage * 0.05).toFloat()
     private val paddingHeight = (heightPage * 0.05).toFloat()
+
+    /**
+     * из 4 точек 4хугольника вычисляю минимальные значения точек , которые будут мспользованны
+     * для поиска начала координат
+     */
     private val startOffset: Offset =
         Offset(
             x = abs(
                 minOf(
                     geometry4SideShape.leftBottom.distanceX,
                     geometry4SideShape.rightBottom.distanceX
-                ).toFloat()
+                )
             ),
             y = abs(
                 minOf(
                     geometry4SideShape.leftBottom.distanceY,
                     geometry4SideShape.leftTop.distanceY
-                ).toFloat()
+                )
             )
         )
 
-    private fun Dot.withOStartOffset() = this.copy(
-        distanceX = (this.distanceX + startOffset.x).toInt(),
-        distanceY = (this.distanceY + startOffset.y).toInt()
-    )
 
-    private val a = geometry4SideShape.leftBottom.withOStartOffset()
-    private val b = geometry4SideShape.leftTop.withOStartOffset()
-    private val c = geometry4SideShape.rightTop.withOStartOffset()
-    private val d = geometry4SideShape.rightBottom.withOStartOffset()
 
+    private val a = geometry4SideShape.leftBottom.withOStartOffset(startOffset)
+    private val b = geometry4SideShape.leftTop.withOStartOffset(startOffset)
+    private val c = geometry4SideShape.rightTop.withOStartOffset(startOffset)
+    private val d = geometry4SideShape.rightBottom.withOStartOffset(startOffset)
+
+    /**
+     * самая большая величина координаты высоты фигуры
+     */
     private val peakXMax = listOf(a, b, c, d).maxOf { it.distanceX }
+
+    /**
+     * самая маленькая величина координаты высоты фигуры(низшая точка)
+     */
     private val peakXMin = listOf(a, b, c, d).minOf { it.distanceX }
 
     private fun getSide(first: Dot, second: Dot): Int {
@@ -94,10 +106,23 @@ class QuadroPDF(
     private val bottomSide = getSide(a, d)
     private val topSide = getSide(b, c)
     private val rightSide = getSide(c, d)
+
+    /**
+     * ширина фигуры - самая дольняя точка от нового начала координат в см
+     */
     private val maxWidthShape = maxOf(c.distanceY, d.distanceY)
+
+    /**
+     * число листов , которое будет положено по ширине фигуре, пока листы не закроют ее полностью
+     */
     private val countOfSheet: Int =
         ceil((maxWidthShape.toDouble() / 100) / sheet.visible + sheet.overlap).toInt()
+
+    /**
+     * Высота фигуры - самая дольняя точка от нового начала координат в см
+     */
     private val maxHeightShape = maxOf(b.distanceX, c.distanceX)
+
     private val oneMeterInHeightYtPx: Float =
         (heightPage * 0.9 / ceil(maxWidthShape.toDouble() / 100)).toFloat()
     private val oneMeterInWidthXPx: Float =
@@ -168,8 +193,8 @@ class QuadroPDF(
     }
 
     private fun Dot.toPX() = this.copy(
-        distanceX = (this.distanceX.toFloat() / 100 * oneMeterInWidthXPx).toInt(),
-        distanceY = (this.distanceY.toDouble() / 100 * oneMeterInHeightYtPx).toInt()
+        distanceX = this.distanceX / 100 * oneMeterInWidthXPx,
+        distanceY = this.distanceY / 100 * oneMeterInHeightYtPx
     )
 
     fun drawQuadro(
@@ -187,14 +212,14 @@ class QuadroPDF(
         val cPX = c.toPX()
         val dPX = d.toPX()
         val path = android.graphics.Path().apply {
-            moveTo(aPX.distanceX.toFloat() + paddingWidth, aPX.distanceY.toFloat() + paddingHeight)
-            lineTo(bPX.distanceX.toFloat() + paddingWidth, bPX.distanceY.toFloat() + paddingHeight)
-            moveTo(bPX.distanceX.toFloat() + paddingWidth, bPX.distanceY.toFloat() + paddingHeight)
-            lineTo(cPX.distanceX.toFloat() + paddingWidth, cPX.distanceY.toFloat() + paddingHeight)
-            moveTo(cPX.distanceX.toFloat() + paddingWidth, cPX.distanceY.toFloat() + paddingHeight)
-            lineTo(dPX.distanceX.toFloat() + paddingWidth, dPX.distanceY.toFloat() + paddingHeight)
-            moveTo(dPX.distanceX.toFloat() + paddingWidth, dPX.distanceY.toFloat() + paddingHeight)
-            lineTo(aPX.distanceX.toFloat() + paddingWidth, aPX.distanceY.toFloat() + paddingHeight)
+            moveTo(aPX.distanceX + paddingWidth, aPX.distanceY + paddingHeight)
+            lineTo(bPX.distanceX + paddingWidth, bPX.distanceY + paddingHeight)
+            moveTo(bPX.distanceX + paddingWidth, bPX.distanceY + paddingHeight)
+            lineTo(cPX.distanceX + paddingWidth, cPX.distanceY + paddingHeight)
+            moveTo(cPX.distanceX + paddingWidth, cPX.distanceY + paddingHeight)
+            lineTo(dPX.distanceX + paddingWidth, dPX.distanceY + paddingHeight)
+            moveTo(dPX.distanceX + paddingWidth, dPX.distanceY + paddingHeight)
+            lineTo(aPX.distanceX + paddingWidth, aPX.distanceY + paddingHeight)
             close()
         }
         canvas.drawPath(path, paint)
@@ -271,8 +296,8 @@ class QuadroPDF(
     ): Result<Pair<Offset, Offset>> {
         val intersectAB = searchInterpolation(a, b, y, a.distanceX / 100.toFloat())
         val intersectBC = searchInterpolation(b, c, y, b.distanceX / 100.toFloat())
-        val intersectDC = searchInterpolation(d, c, y, d.distanceX.toFloat())
-        val intersectAD = searchInterpolation(a, d, y, a.distanceX.toFloat())
+        val intersectDC = searchInterpolation(d, c, y, d.distanceX)
+        val intersectAD = searchInterpolation(a, d, y, a.distanceX)
         val lst = setOfNotNull(
             intersectAB,
             intersectBC,
@@ -345,7 +370,7 @@ class QuadroPDF(
     /**
      * ищем у при котором х максимальный
      */
-    fun findYPeakX(maxPeak: Int): ClosedFloatingPointRange<Float> {
+    private fun findYPeakX(maxPeak: Float): ClosedFloatingPointRange<Float> {
 
 
         val peakDots =
@@ -353,8 +378,8 @@ class QuadroPDF(
                 .sortedBy { it.distanceY }.take(2).map { it.distanceY }
                 .toList()
         return when (peakDots.size) {
-            1 -> peakDots[0].toFloat()..peakDots[0].toFloat()
-            2 -> peakDots[0].toFloat()..peakDots[1].toFloat()
+            1 -> peakDots[0]..peakDots[0]
+            2 -> peakDots[0]..peakDots[1]
             else -> 0f..0f
         }
 
@@ -398,12 +423,9 @@ class QuadroPDF(
 }
 
 
-
-
-
 fun SheetDots.replaceX(
-    peakXMax: Int,
-    peakXMin: Int,
+    peakXMax: Float,
+    peakXMin: Float,
     intervalYForXMax: ClosedFloatingPointRange<Float>,
     intervalYForXMin: ClosedFloatingPointRange<Float>,
 
@@ -424,7 +446,6 @@ fun SheetDots.replaceX(
     }
     return result
 }
-
 
 
 fun main() {

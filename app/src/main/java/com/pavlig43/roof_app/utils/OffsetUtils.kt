@@ -9,9 +9,9 @@ import com.pavlig43.roof_app.A4WIDTH
  * меняю координату Х , использую для координат листа железа, если через линейную интерполяцию нижняя или верхняя точка фигуры в пределах ширины этого листа
  */
 fun Offset.replaceX(
-    newPeakX: Int,
+    newPeakX: Float,
 ): Offset {
-    return Offset(newPeakX.toFloat(), this.y)
+    return Offset(newPeakX, this.y)
 }
 
 

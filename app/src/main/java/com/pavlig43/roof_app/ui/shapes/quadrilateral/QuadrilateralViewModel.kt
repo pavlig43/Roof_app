@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pavlig43.roof_app.model.Dot
+import com.pavlig43.roof_app.model.DotName4Side
 import com.pavlig43.roof_app.ui.calculation_tile_4scat.SaveNameFile
 import com.pavlig43.roof_app.utils.checkSaveName
 import com.pavlig43.roof_app.utils.renderPDF
@@ -78,9 +80,9 @@ class QuadrilateralViewModel @Inject constructor() : ViewModel() {
 
 
     private fun shapeIsValid(geometry4SideShape: Geometry4SideShape): Boolean {
-        return geometry4SideShape.leftTop.distanceX>0 &&
-        geometry4SideShape.rightTop.distanceX>0 &&
-        geometry4SideShape.rightBottom.distanceY!=0
+        return geometry4SideShape.leftTop.distanceX>0f &&
+        geometry4SideShape.rightTop.distanceX>0f &&
+        geometry4SideShape.rightBottom.distanceY!=0f
 
     }
 
@@ -88,8 +90,8 @@ class QuadrilateralViewModel @Inject constructor() : ViewModel() {
         _screenState.value = QuadroScreenState.ChoiceState
     }
 
-    fun changeCurrentDotName(dotName: DotName){
-        _currentDotName.value = dotName
+    fun changeCurrentDotName(dotName4Side: DotName4Side){
+        _currentDotName.value = dotName4Side
     }
 
     private fun changeCurrentDot(): Dot {
@@ -105,10 +107,10 @@ class QuadrilateralViewModel @Inject constructor() : ViewModel() {
     fun changeParamsDot(dot: Dot) {
 
         when (dot.name) {
-            DotName.LEFTTOP -> _geometry4SideShape.update { it.copy(leftTop = dot) }
-            DotName.LEFTBOTTOM -> _geometry4SideShape.update { it.copy(leftBottom = dot) }
-            DotName.RIGHTBOTTOM -> _geometry4SideShape.update { it.copy(rightBottom = dot) }
-            DotName.RIGHTTOP -> _geometry4SideShape.update { it.copy(rightTop = dot) }
+            DotName4Side.LEFTTOP -> _geometry4SideShape.update { it.copy(leftTop = dot) }
+            DotName4Side.LEFTBOTTOM -> _geometry4SideShape.update { it.copy(leftBottom = dot) }
+            DotName4Side.RIGHTBOTTOM -> _geometry4SideShape.update { it.copy(rightBottom = dot) }
+            DotName4Side.RIGHTTOP -> _geometry4SideShape.update { it.copy(rightTop = dot) }
         }
     }
 
@@ -136,28 +138,20 @@ class QuadrilateralViewModel @Inject constructor() : ViewModel() {
     }
 }
 
-enum class DotName {
-    LEFTBOTTOM, LEFTTOP, RIGHTBOTTOM, RIGHTTOP
-}
 
-data class Dot(
-    val name: DotName,
-    val distanceX: Int = 0,
-    val distanceY: Int = 0,
-    val canMinusX: Boolean = false,
-    val canMinusY: Boolean = false
-)
+
+
 
 data class Geometry4SideShape(
-    val leftBottom: Dot = Dot(name = DotName.LEFTBOTTOM, ),
-    val leftTop: Dot = Dot(name = DotName.LEFTTOP, canMinusY = true, distanceX = 500, distanceY = 80),
-    val rightTop: Dot = Dot(name = DotName.RIGHTTOP, canMinusY = true, distanceX = 700, distanceY = 220),
-    val rightBottom: Dot = Dot(name = DotName.RIGHTBOTTOM, canMinusX = true, distanceX = -100, distanceY = 350),
+    val leftBottom: Dot = Dot(name = DotName4Side.LEFTBOTTOM, ),
+    val leftTop: Dot = Dot(name = DotName4Side.LEFTTOP, canMinusY = true, distanceX = 500f, distanceY = 80f),
+    val rightTop: Dot = Dot(name = DotName4Side.RIGHTTOP, canMinusY = true, distanceX = 700f, distanceY = 220f),
+    val rightBottom: Dot = Dot(name = DotName4Side.RIGHTBOTTOM, canMinusX = true, distanceX = -100f, distanceY = 350f),
 
 
 
 
-)
+    )
 
 sealed class QuadroScreenState{
     data object ChoiceState:QuadroScreenState()
