@@ -12,7 +12,7 @@ import com.pavlig43.roof_app.ui.shapes.triangle.triangleResult
 import com.pavlig43.roof_app.utils.calculateCmInM
 import com.pavlig43.roof_app.utils.checkSaveName
 import com.pavlig43.roof_app.utils.renderPDF
-import com.pavlig43.roof_app.utils.saveFileUtils
+import com.pavlig43.roof_app.utils.saveFilePDF
 import com.pavlig43.roof_app.utils.sharePDFFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +77,7 @@ class ShapesViewModel @Inject constructor() : ViewModel() {
         _saveNameFile.update { it.copy(name = newName,isValid=isValid) }
     }
     fun saveFile(context: Context){
-        saveFileUtils(context, _pdfFile.value, saveNameFile = _saveNameFile.value.name)
+        saveFilePDF(context, _pdfFile.value, saveNameFile = _saveNameFile.value.name)
     }
     fun shareFile(context: Context){
         if (_pdfFile.value !=null){

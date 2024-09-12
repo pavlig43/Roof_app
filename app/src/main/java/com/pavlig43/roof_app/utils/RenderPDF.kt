@@ -7,6 +7,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 
+/**
+ * Функция из файла ПДФ рендерит список bitmap, который потом используется для отображения на экране
+ * в composable Image в  LazyColumn
+ */
 fun renderPDF(
     file: File,
     coroutineScope: CoroutineScope,
@@ -21,6 +25,7 @@ fun renderPDF(
         for (pageNumber in 0 until pdfRender.pageCount) {
 
             val page = pdfRender.openPage(pageNumber)
+            // ширина и высота делится на 2, так как по умолчанию у рендеренной картинки низкое качество изображения
             val bitmap =
                 Bitmap.createBitmap(page.width * 2, page.height * 2, Bitmap.Config.ARGB_8888)
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)

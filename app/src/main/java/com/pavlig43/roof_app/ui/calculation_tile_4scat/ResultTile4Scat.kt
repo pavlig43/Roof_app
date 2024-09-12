@@ -44,94 +44,10 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.math.tan
 
-@Composable
-fun ResultTile4ScatPDF(
-    listBitmap: List<Bitmap>,
-    returnToCalculateScreen: () -> Unit,
-    shareFile: () -> Unit,
-    nameFile: SaveNameFile,
-    saveFile: () -> Unit,
-    checkSaveName: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-
-    var openDialog by remember {
-        mutableStateOf(false)
-    }
-    BackHandler {
-        returnToCalculateScreen
-    }
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        if (openDialog) {
-            SaveDialog(
-                saveNameFile = nameFile.name,
-                saveFile = saveFile,
-                checkSaveName = checkSaveName,
-                onDismiss = { openDialog = false },
-                isValid = nameFile.isValid
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            IconButton(onClick = shareFile) {
-                Icon(imageVector = Icons.Default.Share, contentDescription = null)
-            }
-            IconButton(onClick = {
-                openDialog = !openDialog
-                run { checkSaveName(nameFile.name) }
-            }) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = null)
-            }
-        }
-        LoadDocumentImages(listBitmap = listBitmap)
-    }
-
-
-}
 
 
 
-@Composable
-fun SaveDialog(
-    saveNameFile: String,
-    saveFile: () -> Unit,
-    checkSaveName: (String) -> Unit,
-    onDismiss: () -> Unit,
-    isValid: Boolean,
-    modifier: Modifier = Modifier
-) {
 
-
-    AlertDialog(
-        title = { Text(text = "Сохранить с именем") },
-        text = {
-            Column {
-                OutlinedTextField(value = saveNameFile, onValueChange = checkSaveName)
-                if (!isValid) Text(text = "Уже такое есть")
-            }
-        },
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            Button(
-                onClick = {
-                    saveFile()
-                    onDismiss()
-                },
-                enabled = isValid
-            ) {
-                Text(text = "Сохранить")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text(text = "Отмена")
-            }
-        }
-    )
-}
 
 
 fun roofResult4Scat(

@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.model.RoofParamsClassic4ScatState
+import com.pavlig43.roof_app.ui.ResultImagesFromPDF
 import com.pavlig43.roof_app.ui.theme.Roof_appTheme
-import kotlin.math.ceil
 
 @Composable
 fun CalculationTile4ScatMainScreen(
@@ -65,7 +65,7 @@ fun CalculationTile4ScatMainScreen(
 
         )
 
-        is StateCalculationTile4Scat.GetDraw -> ResultTile4ScatPDF(
+        is StateCalculationTile4Scat.GetDraw -> ResultImagesFromPDF(
             listBitmap = listBitmap,
             returnToCalculateScreen = { calculationTile4ScatViewModel.returnToCalculateScreen() },
             shareFile = { calculationTile4ScatViewModel.shareFile(context) },

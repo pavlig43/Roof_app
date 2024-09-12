@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.pavlig43.roof_app.model.ShapeSide
 
+
 @Composable
 fun ChoiceCalculateItem(
     shapeSide: ShapeSide,

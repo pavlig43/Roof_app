@@ -13,6 +13,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
+/**
+ * Отображает список картинок(bitmap - страниц файла ПДФ)
+ */
 @Composable
 fun LoadDocumentImages(
     listBitmap: List<Bitmap>,

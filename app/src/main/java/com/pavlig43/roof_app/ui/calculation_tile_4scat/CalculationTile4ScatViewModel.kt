@@ -12,7 +12,7 @@ import com.pavlig43.roof_app.model.calculateFromHypotenuse
 import com.pavlig43.roof_app.utils.calculateCmInM
 import com.pavlig43.roof_app.utils.checkSaveName
 import com.pavlig43.roof_app.utils.renderPDF
-import com.pavlig43.roof_app.utils.saveFileUtils
+import com.pavlig43.roof_app.utils.saveFilePDF
 import com.pavlig43.roof_app.utils.sharePDFFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.io.File
 import javax.inject.Inject
-import kotlin.math.ceil
 
 @HiltViewModel
 class CalculationTile4ScatViewModel @Inject constructor() : ViewModel() {
@@ -131,7 +130,7 @@ class CalculationTile4ScatViewModel @Inject constructor() : ViewModel() {
 
     }
     fun saveFile(context: Context){
-        saveFileUtils(context, _pdfFile.value, saveNameFile = _saveNameFile.value.name)
+        saveFilePDF(context, _pdfFile.value, saveNameFile = _saveNameFile.value.name)
         Log.d("save",_saveNameFile.value.name)
 
 

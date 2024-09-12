@@ -11,19 +11,22 @@ import androidx.compose.ui.geometry.Offset
 import com.pavlig43.roof_app.A4HEIGHT
 import com.pavlig43.roof_app.A4WIDTH
 import com.pavlig43.roof_app.model.Sheet
+import com.pavlig43.roof_app.model.SheetDots
+import com.pavlig43.roof_app.model.convertSheetDotToPx
+import com.pavlig43.roof_app.utils.replaceX
 import java.io.File
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.sqrt
 
 
-fun quadroPdfResult(
+fun pdfResult4Side(
     context: Context,
-    geometryShape: GeometryShape,
+    geometry4SideShape: Geometry4SideShape,
     sheet: Sheet = Sheet()
 ): File {
 
-    val quadroPDF = QuadroPDF(geometryShape, sheet)
+    val quadroPDF = QuadroPDF(geometry4SideShape, sheet)
     val pdfDocument = PdfDocument()
     val pageInfo1 = PdfDocument.PageInfo.Builder(A4WIDTH, A4HEIGHT, 1).create()
     val page1 = pdfDocument.startPage(pageInfo1)
@@ -43,7 +46,7 @@ fun quadroPdfResult(
 }
 
 class QuadroPDF(
-    geometryShape: GeometryShape,
+    geometry4SideShape: Geometry4SideShape,
     val sheet: Sheet
 ) {
     private val widthPage = A4WIDTH.toFloat()
@@ -54,14 +57,14 @@ class QuadroPDF(
         Offset(
             x = abs(
                 minOf(
-                    geometryShape.leftBottom.distanceX,
-                    geometryShape.rightBottom.distanceX
+                    geometry4SideShape.leftBottom.distanceX,
+                    geometry4SideShape.rightBottom.distanceX
                 ).toFloat()
             ),
             y = abs(
                 minOf(
-                    geometryShape.leftBottom.distanceY,
-                    geometryShape.leftTop.distanceY
+                    geometry4SideShape.leftBottom.distanceY,
+                    geometry4SideShape.leftTop.distanceY
                 ).toFloat()
             )
         )
@@ -71,10 +74,10 @@ class QuadroPDF(
         distanceY = (this.distanceY + startOffset.y).toInt()
     )
 
-    private val a = geometryShape.leftBottom.withOStartOffset()
-    private val b = geometryShape.leftTop.withOStartOffset()
-    private val c = geometryShape.rightTop.withOStartOffset()
-    private val d = geometryShape.rightBottom.withOStartOffset()
+    private val a = geometry4SideShape.leftBottom.withOStartOffset()
+    private val b = geometry4SideShape.leftTop.withOStartOffset()
+    private val c = geometry4SideShape.rightTop.withOStartOffset()
+    private val d = geometry4SideShape.rightBottom.withOStartOffset()
 
     private val peakXMax = listOf(a, b, c, d).maxOf { it.distanceX }
     private val peakXMin = listOf(a, b, c, d).minOf { it.distanceX }
@@ -200,14 +203,14 @@ class QuadroPDF(
 
     private fun drawSheet(
         canvas: Canvas,
-        sheetDot: SheetDot,
+        sheetDots: SheetDots,
         lenOfSheet: Int
 
     ) {
-        val leftBottom: Offset = sheetDot.leftBottom
-        val leftTop: Offset = sheetDot.leftTop
-        val rightTop: Offset = sheetDot.rightTop
-        val rightBottom: Offset = sheetDot.rightBottom
+        val leftBottom: Offset = sheetDots.leftBottom
+        val leftTop: Offset = sheetDots.leftTop
+        val rightTop: Offset = sheetDots.rightTop
+        val rightBottom: Offset = sheetDots.rightBottom
 
 
         val paintOverlap: Paint = Paint().apply {
@@ -293,7 +296,7 @@ class QuadroPDF(
 
     }
 
-    private fun searchDotsSheet(y: Float): SheetDot? {
+    private fun searchDotsSheet(y: Float): SheetDots? {
         val resultLeft = searchLineOfSheet(y)
         val resultRight = searchLineOfSheet(
             y = (y + sheet.widthGeneral * 100).toFloat(),
@@ -323,14 +326,14 @@ class QuadroPDF(
                 maxOf(firstLeft.y, secondLeft.y, secondRight.y, secondRight.y)
             )
 
-            val sheetDot = SheetDot(
+            val sheetDots = SheetDots(
                 leftBottom = leftBottom,
                 leftTop = leftTop,
                 rightTop = rightTop,
                 rightBottom = rightBottom,
             )
-            Log.d("dotSheet", sheetDot.toString())
-            return sheetDot
+            Log.d("dotSheet", sheetDots.toString())
+            return sheetDots
 
         } else {
             Log.d("resultRight", resultRight.exceptionOrNull().toString())
@@ -373,7 +376,7 @@ class QuadroPDF(
                     (ceil(lenOfSheetInCM / sheetMultiplicityCM) * sheetMultiplicityCM).toInt()
                 drawSheet(
                     canvas = canvas,
-                    sheetDot = dotsOfSheet.replaceX(
+                    sheetDots = dotsOfSheet.replaceX(
                         peakXMin = peakXMin,
                         peakXMax = peakXMax,
                         intervalYForXMin = intervalYForXMin,
@@ -394,45 +397,17 @@ class QuadroPDF(
 
 }
 
-data class SheetDot(
-    val leftBottom: Offset,
-    val leftTop: Offset,
-    val rightTop: Offset,
-    val rightBottom: Offset
-)
-
-fun SheetDot.convertSheetDotToPx(
-    oneMeterInHeightYtPx: Float,
-    oneMeterInWidthXPx: Float,
-    paddingWidth: Float = (A4WIDTH * 0.05).toFloat(),
-    paddingHeight: Float = (A4HEIGHT * 0.05).toFloat(),
 
 
-    ): SheetDot {
 
-    fun Offset.transform(): Offset = this
-        .changeCMToPx(
-            oneMeterInHeightYtPx,
-            oneMeterInWidthXPx,
-            paddingWidth,
-            paddingHeight
-        )
 
-    return this.copy(
-        leftBottom = this.leftBottom.transform(),
-        leftTop = this.leftTop.transform(),
-        rightTop = this.rightTop.transform(),
-        rightBottom = this.rightBottom.transform()
-    )
-}
-
-fun SheetDot.replaceX(
+fun SheetDots.replaceX(
     peakXMax: Int,
     peakXMin: Int,
     intervalYForXMax: ClosedFloatingPointRange<Float>,
     intervalYForXMin: ClosedFloatingPointRange<Float>,
 
-    ): SheetDot {
+    ): SheetDots {
     val sheetIntervalY = this.leftTop.y..this.rightTop.y
     var result = this
     if (sheetIntervalY.start <= intervalYForXMax.endInclusive && intervalYForXMax.start <= sheetIntervalY.endInclusive) {
@@ -450,24 +425,7 @@ fun SheetDot.replaceX(
     return result
 }
 
-fun Offset.replaceX(
-    newPeakX: Int,
-): Offset {
-    return Offset(newPeakX.toFloat(), this.y)
-}
 
-fun Offset.changeCMToPx(
-    oneMeterInHeightYtPx: Float,
-    oneMeterInWidthXPx: Float,
-    paddingWidth: Float = (A4WIDTH * 0.05).toFloat(),
-    paddingHeight: Float = (A4HEIGHT * 0.05).toFloat()
-): Offset {
-    return Offset(
-        (this.x.toDouble() / 100 * oneMeterInWidthXPx + paddingWidth).toFloat(),
-        (this.y.toDouble() / 100 * oneMeterInHeightYtPx + paddingHeight).toFloat()
-    )
-
-}
 
 fun main() {
     val first = Offset(0f, 0f)

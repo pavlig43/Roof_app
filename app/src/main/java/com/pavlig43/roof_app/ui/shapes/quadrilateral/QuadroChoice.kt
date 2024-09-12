@@ -40,7 +40,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.ui.MinusIcon
 import com.pavlig43.roof_app.ui.theme.Roof_appTheme
 
@@ -80,19 +79,19 @@ fun QuadroChoice(
                         when {
                             (leftTopCenter - offset).getDistance() <= 45f -> {
                                 showDotDialog = true
-                                quadrilateralViewModel.changeCurrentDot(DotName.LEFTTOP)
+                                quadrilateralViewModel.changeCurrentDotName(DotName.LEFTTOP)
                             }
 
                             (rightTopCenter - offset).getDistance() <= 45f
 
                             -> {
                                 showDotDialog = true
-                                quadrilateralViewModel.changeCurrentDot(DotName.RIGHTTOP)
+                                quadrilateralViewModel.changeCurrentDotName(DotName.RIGHTTOP)
                             }
 
                             (rightBottomCenter - offset).getDistance() <= 45f -> {
                                 showDotDialog = true
-                                quadrilateralViewModel.changeCurrentDot(DotName.RIGHTBOTTOM)
+                                quadrilateralViewModel.changeCurrentDotName(DotName.RIGHTBOTTOM)
                             }
                         }
 

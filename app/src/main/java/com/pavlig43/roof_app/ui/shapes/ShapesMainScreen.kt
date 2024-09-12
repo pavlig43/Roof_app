@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
-import com.pavlig43.roof_app.ui.calculation_tile_4scat.ResultTile4ScatPDF
 import com.pavlig43.roof_app.ui.shapes.quadrilateral.QuadrilateralUi
+import com.pavlig43.roof_app.ui.ResultImagesFromPDF
 import com.pavlig43.roof_app.ui.shapes.triangle.CalculateTriangle
 import com.pavlig43.roof_app.ui.theme.Roof_appTheme
 
@@ -53,7 +53,7 @@ fun ShapesMainUi(
                 getResult = {shapesViewModel.openDocument(context)}
             )
 
-            ShapesScreenState.LoadDocumentImage -> ResultTile4ScatPDF(
+            ShapesScreenState.LoadDocumentImage -> ResultImagesFromPDF(
                 listBitmap = listBitmap,
                 returnToCalculateScreen = shapesViewModel::returnCalculateTriangleScreen,
                 shareFile = {shapesViewModel.shareFile(context)},

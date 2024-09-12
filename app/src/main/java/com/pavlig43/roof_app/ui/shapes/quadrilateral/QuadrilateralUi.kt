@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.pavlig43.roof_app.ui.calculation_tile_4scat.ResultTile4ScatPDF
+import com.pavlig43.roof_app.ui.ResultImagesFromPDF
 
 @Composable
 fun QuadrilateralUi(
@@ -23,7 +23,7 @@ fun QuadrilateralUi(
             modifier = modifier
         )
 
-        QuadroScreenState.PdfResult -> ResultTile4ScatPDF(
+        QuadroScreenState.PdfResult -> ResultImagesFromPDF(
             listBitmap = listBitmap,
             returnToCalculateScreen = { quadrilateralViewModel.returnCalculateScreen() },
             shareFile = { quadrilateralViewModel.shareFile(context) },
