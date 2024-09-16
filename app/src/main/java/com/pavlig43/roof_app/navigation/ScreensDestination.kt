@@ -25,7 +25,6 @@ object TileLayout : ScreensDestination {
 
 object SaveDocuments : ScreensDestination {
     override val title: String = "Сохраненные документы"
-
     override val route: String = "save_documents"
 }
 
@@ -42,7 +41,7 @@ fun NavigationGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Shapes.route
+        startDestination = TileLayout.route
     ) {
         composable(route = TileLayout.route) {
             CalculationTile4ScatMainScreen(modifier = modifier)

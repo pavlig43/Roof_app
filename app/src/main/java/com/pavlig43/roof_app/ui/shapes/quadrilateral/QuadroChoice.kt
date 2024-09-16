@@ -1,6 +1,7 @@
 package com.pavlig43.roof_app.ui.shapes.quadrilateral
 
-import android.graphics.Paint
+import android.content.Context
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,18 +10,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,29 +29,46 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.pavlig43.roof_app.R
 import com.pavlig43.roof_app.model.Dot
 import com.pavlig43.roof_app.model.DotName4Side
-import com.pavlig43.roof_app.ui.MinusIcon
+import com.pavlig43.roof_app.model.Sheet
+import com.pavlig43.roof_app.ui.ButtonResultRow
+import com.pavlig43.roof_app.ui.CalculateSheetParams
+import com.pavlig43.roof_app.ui.ManualDialog
+import com.pavlig43.roof_app.ui.params_dot_shape.ChangeParamsDots
 import com.pavlig43.roof_app.ui.theme.Roof_appTheme
+import com.pavlig43.roof_app.utils.drawDot
+import com.pavlig43.roof_app.utils.drawRuler
+import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuadroChoice(
-    quadrilateralViewModel: QuadrilateralViewModel,
-    modifier: Modifier = Modifier
+    quadrilateralViewModel: QuadrilateralViewModel = hiltViewModel(),
+    openDocument: (File)->Unit,
+    sheet: Sheet,
+    updateWidthGeneral:(Float)->Unit,
+    updateOverlap:(Float)->Unit,
+    updateMultiplicity:(Float)->Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
+
+    val geometryShape by quadrilateralViewModel.geometryShape.collectAsState()
+    val currentDot by quadrilateralViewModel.currentDot.collectAsState()
+    val isValid by quadrilateralViewModel.isValid.collectAsState()
+    var openManual by remember { mutableStateOf(false) }
+
 
 
     // Получаем ширину экрана в пикселях
@@ -64,12 +81,12 @@ fun QuadroChoice(
     val rightBottomCenter = Offset((screenWidth * 0.2).toFloat(), (screenHeight * 0.5).toFloat())
     val rightTopCenter = Offset((screenWidth * 0.7).toFloat(), (screenHeight * 0.5).toFloat())
 
-    val geometricShape by quadrilateralViewModel.geometryShape.collectAsState()
+
 
     var showDotDialog by remember { mutableStateOf(false) }
+    var openSheetParams by remember{ mutableStateOf(false) }
 
-    val currentDot by quadrilateralViewModel.currentDot.collectAsState()
-    val isValid by quadrilateralViewModel.isValid.collectAsState()
+
 
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -102,31 +119,23 @@ fun QuadroChoice(
 
                 }
         ) {
-            drawLine(
-                Color.Black,
-                Offset((screenWidth * 0.05).toFloat(), (screenHeight * 0.05).toFloat()),
-                Offset((screenWidth * 0.05).toFloat(), (screenHeight * 0.8).toFloat()),
-                strokeWidth = 10f
-            )
-            drawLine(
-                Color.Black,
-                Offset((screenWidth * 0.05).toFloat(), (screenHeight * 0.05).toFloat()),
-                Offset((screenWidth * 0.8).toFloat(), (screenHeight * 0.05).toFloat()),
-                strokeWidth = 10f
+            drawRuler(
+                screenWidth = screenWidth,
+                screenHeight = screenHeight
             )
             drawDot(
                 center = leftBottomCenter,
-                dot = geometricShape.leftBottom,
+                dot = geometryShape.leftBottom,
                 downOffset = true,
                 startDot = true
             )
-            drawDot(center = leftTopCenter, dot = geometricShape.leftTop, downOffset = true)
+            drawDot(center = leftTopCenter, dot = geometryShape.leftTop, downOffset = true)
             drawDot(
                 center = rightBottomCenter,
-                dot = geometricShape.rightBottom,
+                dot = geometryShape.rightBottom,
                 downOffset = false
             )
-            drawDot(center = rightTopCenter, dot = geometricShape.rightTop, downOffset = false)
+            drawDot(center = rightTopCenter, dot = geometryShape.rightTop, downOffset = false)
 
 
 
@@ -154,6 +163,11 @@ fun QuadroChoice(
                 rightTopCenter,
                 strokeWidth = 5f
             )
+        }
+        FloatingActionButton(
+            { openManual = !openManual },
+            modifier = Modifier.align(Alignment.TopEnd).size(24.dp)) {
+            Icon(Icons.Default.Info, contentDescription = null)
         }
 
         if (showDotDialog){
@@ -162,139 +176,40 @@ fun QuadroChoice(
                 changeDot = quadrilateralViewModel::changeParamsDot ,
                 onDismissRequest = { showDotDialog=false })
         }
-        if (isValid)
-        ButtonRow(
+        if (isValid){
+        ButtonResultRow(
             modifier = Modifier.align(Alignment.BottomCenter),
-            getResult = {quadrilateralViewModel.openDocument(context)}
-            )
-    }
-
-
-}
-
-fun DrawScope.drawDot(
-    downOffset: Boolean,
-    offsetY: Float = 35f,
-    startDot: Boolean = false,
-    center: Offset,
-    dot: Dot,
-    textPaint: Paint = Paint().apply {
-        textSize = 20f //
-        color = Color.Black.toArgb()
-        textAlign = Paint.Align.CENTER
-    }
-) {
-    drawCircle(if (startDot) Color.Green else Color.Black, center = center, radius = 15f)
-    drawContext.canvas.nativeCanvas.apply {
-        drawText(
-            "(${dot.distanceX.toInt()}cm, ${dot.distanceY.toInt()}cm)",
-            center.x,
-            center.y + if (!downOffset) offsetY else -offsetY,
-            textPaint
-        )
-    }
-}
-
-@Composable
-fun ChangeParamsDots(
-    dot: Dot,
-    changeDot: (Dot) -> Unit,
-    onDismissRequest: () -> Unit,
-
-    modifier: Modifier = Modifier
-) {
-
-
-    Dialog(onDismissRequest = onDismissRequest) {
-        Column(modifier = modifier.background(Color.White), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Отклонение от левой нижней точки")
-            ParamsDotRow(
-                value = dot.distanceX,
-                onValueChange = { newValue -> changeDot(dot.copy(distanceX = newValue)) },
-                axis = "X",
-                canChangePlus = dot.canMinusX,
-                plus = dot.distanceX>=0,
-                changePlus = {
-                    changeDot(dot.copy(distanceX = -dot.distanceX))
-                }
-            )
-            ParamsDotRow(
-                value = dot.distanceY,
-                onValueChange = { newValue -> changeDot(dot.copy(distanceY = newValue)) },
-                canChangePlus = dot.canMinusY,
-                plus = dot.distanceY>=0,
-                changePlus = {
-                    changeDot(dot.copy(distanceY = -dot.distanceY))
-                }
-            )
-            Button(
-                onClick = onDismissRequest,
-
-                ) {
-                Text(text = "OK")
-            }
-        }
-
-    }
-
-}
-
-@Composable
-fun ParamsDotRow(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    axis: String = "Y",
-    canChangePlus: Boolean = false,
-    plus:Boolean,
-    changePlus:()->Unit,
-
-    modifier: Modifier = Modifier
-) {
-
-
-
-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "Отклонение по $axis (см)", modifier = Modifier
-            .padding(end = 4.dp)
-            .weight(0.55f))
-        if (canChangePlus) {
-            Button(onClick = changePlus, modifier = Modifier.weight(0.2f)) {
-                Icon(
-                    imageVector = if (plus) Icons.Default.Add else MinusIcon,
-                    contentDescription = null
+            getResult = {openDocument(quadrilateralViewModel.createPDFFile(context, sheet))},
+            openSheetParams = {openSheetParams != openSheetParams}
+            )}
+        if (openSheetParams){
+            Dialog(onDismissRequest = {openSheetParams=false}){
+                CalculateSheetParams(
+                    sheet = sheet,
+                    updateWidthGeneral = updateWidthGeneral,
+                    updateMultiplicity = updateMultiplicity,
+                    updateOverlap = updateOverlap,
+                    isDialog = true,
+                    closeDialog = {openSheetParams=false},
+                    modifier = Modifier.background(Color.White)
                 )
             }
         }
-        else{
-            Spacer(modifier = Modifier.weight(0.2f))
-        }
-        TextField(
-            value = if (value==0f)"" else value.toInt().toString(),
-            onValueChange = { it: String ->
-                val newValue =  it.toIntOrNull()?:0
-                onValueChange(if (plus) newValue.toFloat() else - newValue.toFloat()) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.weight(0.35f)
-            )
-
-
-    }
-}
-
-@Composable
-fun ButtonRow(
-    getResult:()->Unit,
-    modifier: Modifier = Modifier) {
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "Параметры листа")
-        }
-        Button(onClick = getResult) {
-            Text(text = "Получить результат")
+        if (openManual) {
+            ManualDialog(text = R.string.manual_quadro, closeManualDialog = { openManual = false })
         }
     }
-    
+
+
 }
+
+
+
+
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable

@@ -96,7 +96,6 @@ fun ListSaveDocuments(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentItemCard(
     document: Document,

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.model.RoofParamsClassic4ScatState
+import com.pavlig43.roof_app.ui.CalculateSheetParams
 import com.pavlig43.roof_app.ui.ResultImagesFromPDF
 import com.pavlig43.roof_app.ui.theme.Roof_appTheme
 
@@ -43,7 +44,7 @@ fun CalculationTile4ScatMainScreen(
 ) {
     val stateNavigation by calculationTile4ScatViewModel.stateNavigation.collectAsState()
 
-    val paramsState by calculationTile4ScatViewModel.paramsState.collectAsState()
+    val paramsState by calculationTile4ScatViewModel.roofState.collectAsState()
     val listBitmap by calculationTile4ScatViewModel.listBitmap.collectAsState()
     val nameFile by calculationTile4ScatViewModel.saveNameFile.collectAsState()
     val context = LocalContext.current
@@ -60,6 +61,7 @@ fun CalculationTile4ScatMainScreen(
             updateFromHypotenuse = calculationTile4ScatViewModel::updateFromHypotenuse,
             changeOverlapOfSheet = calculationTile4ScatViewModel::changeOverlap,
             changeWidthOfSheet = calculationTile4ScatViewModel::changeWidthOfSheet,
+            changeMultiplicity = calculationTile4ScatViewModel::changeMultiplicity,
             getResult = { calculationTile4ScatViewModel.getResult(context) },
             isValid = isValid
 
@@ -85,16 +87,20 @@ fun CalculationTile4ScatMainScreen(
 
 }
 
+/**
+ * Экран для выбора параметров 4хскатной крыши
+ */
 @Composable
 fun CalculationTile4Scat(
     paramsState: RoofParamsClassic4ScatState,
-    changeWidth: (String) -> Unit,
-    changeLen: (String) -> Unit,
-    updateFromHeight: (String) -> Unit,
-    updateFromAngle: (String) -> Unit,
-    updateFromHypotenuse: (String) -> Unit,
-    changeWidthOfSheet: (String) -> Unit,
-    changeOverlapOfSheet: (String) -> Unit,
+    changeWidth: (Float) -> Unit,
+    changeLen: (Float) -> Unit,
+    updateFromHeight: (Float) -> Unit,
+    updateFromAngle: (Float) -> Unit,
+    updateFromHypotenuse: (Float) -> Unit,
+    changeWidthOfSheet: (Float) -> Unit,
+    changeOverlapOfSheet: (Float) -> Unit,
+    changeMultiplicity: (Float) -> Unit,
     getResult: () -> Unit,
     isValid: Boolean,
     modifier: Modifier = Modifier
@@ -134,15 +140,13 @@ fun CalculationTile4Scat(
         Log.d("widthGeneral,", paramsState.sheet.widthGeneral.toString())
         Log.d("widthGeneralM,", (paramsState.sheet.widthGeneral * 100 ).toInt().toString())
         CalculateSheetParams(
-            nameField = "Ширина листа",
-            value = (paramsState.sheet.widthGeneral * 100 ).toInt().toString(),
-            onValueChange = changeWidthOfSheet
+            sheet = paramsState.sheet,
+            updateOverlap = changeOverlapOfSheet,
+            updateMultiplicity = changeMultiplicity,
+            updateWidthGeneral = changeWidthOfSheet
+
         )
-        CalculateSheetParams(
-            nameField = "Нахлёст",
-            value = (paramsState.sheet.overlap * 100 ).toInt().toString(),
-            onValueChange = changeOverlapOfSheet
-        )
+
 
         Button(
             onClick = getResult,
@@ -154,50 +158,38 @@ fun CalculationTile4Scat(
 
 }
 
+/**
+ * Row для установления значений крыши
+ */
 @Composable
 fun CalculateItemTextField(
     nameField: String,
-    value: String,
-    onValueChange: (String) -> Unit,
+    value: Float,
+    onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 
     ) {
 
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "$nameField(м)", modifier.fillMaxWidth(0.4f))
-        TextField(
-            value = if (value == "0.0") "" else value,
-            onValueChange = { onValueChange(it.replace(",", ".")) },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-        )
-    }
-}
-
-@Composable
-fun CalculateSheetParams(
-    nameField: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text = "$nameField(cм)", modifier.fillMaxWidth(0.4f))
         TextField(
-            value = value,
-            onValueChange = { onValueChange(it.replace(Regex("[^0-9]"), "")) },
+            value = if (value == 0f) "" else value.toInt().toString(),
+            onValueChange = { onValueChange(it.toFloatOrNull()?:0f) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
     }
-
 }
 
 
+/**
+ * Выпадающее меню в котором можно выбрать покат,угол наклона и высоту крыши дял установки значения
+ */
 @Composable
 fun CalculateItemDropMenu(
     paramsState: RoofParamsClassic4ScatState,
-    updateFromHypotenuse: (String) -> Unit,
-    updateFromHeight: (String) -> Unit,
-    updateFromAngle: (String) -> Unit,
+    updateFromHypotenuse: (Float) -> Unit,
+    updateFromHeight: (Float) -> Unit,
+    updateFromAngle: (Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -208,7 +200,7 @@ fun CalculateItemDropMenu(
             modifier = Modifier.fillMaxWidth(0.4f),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val unit = if (selectedOption == "Угол наклона") "градус" else "м"
+            val unit = if (selectedOption == "Угол наклона") "градус" else "cm"
             Text(text = "$selectedOption\n($unit)")
             IconButton(
                 onClick = {
@@ -247,26 +239,14 @@ fun CalculateItemDropMenu(
                 })
         }
         when (selectedOption) {
-            "Покат" -> {
-                TextField(
-                    value = paramsState.hypotenuse,
-                    onValueChange = updateFromHypotenuse,
+            "Покат" -> DropItemRoofParam(paramsState.hypotenuse,updateFromHypotenuse)
 
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                )
-            }
 
-            "Высота крыши" -> TextField(
-                value = paramsState.height,
-                onValueChange = updateFromHeight,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
 
-            "Угол наклона" -> TextField(
-                value = paramsState.angle,
-                onValueChange = updateFromAngle,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
+            "Высота крыши" -> DropItemRoofParam(paramsState.height,updateFromHeight)
+
+            "Угол наклона" -> DropItemRoofParam(paramsState.angle,updateFromAngle)
+
         }
 
 
@@ -274,29 +254,50 @@ fun CalculateItemDropMenu(
 
 }
 
+/**
+ * Поле для установки значения на выбор
+ */
+@Composable
+fun DropItemRoofParam(
+    value: Float,
+    updateRoof:(Float)->Unit,
+    modifier: Modifier = Modifier) {
+    TextField(
+        value = if (value==0f)"" else value.toInt().toString(),
+        onValueChange = {updateRoof(it.toFloatOrNull()?:0f)},
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+        modifier = modifier
+    )
+
+}
+
+/**
+ * Колонка с дополнительными расчетными параметрами для информации
+ */
 @Composable
 fun OtherParamsColumn(
     paramsState: RoofParamsClassic4ScatState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        OtherParamsRow(title = "Яндова", value = paramsState.yandova.toString())
+        OtherParamsRow(title = "Яндова", value = paramsState.yandova)
         OtherParamsRow(title = "Покат", value = paramsState.hypotenuse)
         OtherParamsRow(title = "Угол наклона", value = paramsState.angle)
         OtherParamsRow(title = "Высота", value = paramsState.height)
     }
 }
 
+
 @Composable
 fun OtherParamsRow(
     title: String,
-    value: String,
+    value: Float,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier.fillMaxWidth()) {
         Text(text = title)
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = if (value == "0.0") "" else value)
+        Text(text = if (value == 0f) "" else value.toInt().toString())
     }
 }
 
@@ -315,6 +316,7 @@ private fun CalculationTile4ScatScreenPreview() {
             updateFromHypotenuse = { _ -> Unit },
             changeOverlapOfSheet = { _ -> Unit },
             changeWidthOfSheet = { _ -> Unit },
+            changeMultiplicity = { _ -> Unit },
             getResult = {},
 
             isValid = true

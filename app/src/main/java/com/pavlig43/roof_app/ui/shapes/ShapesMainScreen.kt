@@ -23,9 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
-import com.pavlig43.roof_app.ui.shapes.quadrilateral.QuadrilateralUi
 import com.pavlig43.roof_app.ui.ResultImagesFromPDF
-import com.pavlig43.roof_app.ui.shapes.triangle.CalculateTriangle
+import com.pavlig43.roof_app.ui.shapes.quadrilateral.QuadroChoice
+import com.pavlig43.roof_app.ui.shapes.triangle.TriangleChoice
 import com.pavlig43.roof_app.ui.theme.Roof_appTheme
 
 @Composable
@@ -35,7 +35,6 @@ fun ShapesMainUi(
 ) {
     val context = LocalContext.current
     val shapesScreenState by shapesViewModel.shapesScreenState.collectAsState()
-    val triangle by shapesViewModel.triangle.collectAsState()
     val sheet by shapesViewModel.sheet.collectAsState()
     val listBitmap by shapesViewModel.listBitmap.collectAsState()
     val nameFile by shapesViewModel.saveNameFile.collectAsState()
@@ -43,17 +42,23 @@ fun ShapesMainUi(
     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         when (shapesScreenState) {
             is ShapesScreenState.ShapesMain -> ChoiceShape(moveToShape = shapesViewModel::moveToShape)
-            ShapesScreenState.Triangle -> CalculateTriangle(
-                triangle = triangle,
-                changeTriangle = shapesViewModel::changeTriangle,
+            is ShapesScreenState.Triangle -> TriangleChoice (
+                openDocument = shapesViewModel::openDocument,
                 sheet = sheet,
-                changeWidthOfSheet = shapesViewModel::changeWidthOfSheet,
-                changeOverlap = shapesViewModel::changeOverlap,
-                isValidate = triangle.isValid(),
-                getResult = {shapesViewModel.openDocument(context)}
-            )
+                updateMultiplicity = shapesViewModel::changeMultiplicity,
+                updateOverlap = shapesViewModel::changeOverlap,
+                updateWidthGeneral = shapesViewModel::changeWidthOfSheet
 
-            ShapesScreenState.LoadDocumentImage -> ResultImagesFromPDF(
+            )
+            is ShapesScreenState.Quadrilateral -> QuadroChoice(
+                openDocument = shapesViewModel::openDocument,
+                sheet = sheet,
+                updateMultiplicity = shapesViewModel::changeMultiplicity,
+                updateOverlap = shapesViewModel::changeOverlap,
+                updateWidthGeneral = shapesViewModel::changeWidthOfSheet
+                )
+
+            is ShapesScreenState.LoadDocumentImage -> ResultImagesFromPDF(
                 listBitmap = listBitmap,
                 returnToCalculateScreen = shapesViewModel::returnCalculateTriangleScreen,
                 shareFile = {shapesViewModel.shareFile(context)},
@@ -62,7 +67,7 @@ fun ShapesMainUi(
                 checkSaveName = {newName->shapesViewModel.checkName(newName, context)}
             )
 
-            ShapesScreenState.Quadrilateral -> QuadrilateralUi()
+
         }
     }
 

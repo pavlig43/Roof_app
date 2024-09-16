@@ -1,8 +1,10 @@
 package com.pavlig43.roof_app.utils
 
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import com.pavlig43.roof_app.A4HEIGHT
 import com.pavlig43.roof_app.A4WIDTH
+import com.pavlig43.roof_app.R
 
 
 /**
@@ -16,14 +18,17 @@ fun Offset.replaceX(
 
 
 fun Offset.changeCMToPx(
-    oneMeterInHeightYtPx: Float,
-    oneMeterInWidthXPx: Float,
+    oneCMInHeightYtPx: Float,
+    oneCMInWidthXPx: Float,
     paddingWidth: Float = (A4WIDTH * 0.05).toFloat(),
     paddingHeight: Float = (A4HEIGHT * 0.05).toFloat()
 ): Offset {
-    return Offset(
-        (this.x.toDouble() / 100 * oneMeterInWidthXPx + paddingWidth).toFloat(),
-        (this.y.toDouble() / 100 * oneMeterInHeightYtPx + paddingHeight).toFloat()
+    val offset =  Offset(
+        (this.x * oneCMInWidthXPx + paddingWidth),
+        (this.y * oneCMInHeightYtPx + paddingHeight)
     )
+    Log.d("OffsetThis",this.toString())
+    Log.d("Offset",offset.toString())
+    return offset
 
 }

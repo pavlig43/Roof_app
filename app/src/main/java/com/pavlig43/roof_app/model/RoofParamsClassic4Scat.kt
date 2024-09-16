@@ -10,63 +10,54 @@ import kotlin.math.round
 import kotlin.math.sqrt
 import kotlin.math.tan
 
+/**
+ * класс для орределения 4хскатной крыши
+ */
 data class RoofParamsClassic4ScatState(
-    val width: String = "",
-    val len: String = "",
-    val angle: String = "",
-    val height: String = "",
-    val hypotenuse: String = "",
+    val width: Float = 0f,
+    val len: Float = 0f,
+    val angle: Float = 0f,// угол наклона листа
+    val height: Float = 0f,
+    val hypotenuse: Float = 0f, //Покат
     val sheet: Sheet = Sheet()
     )
 {
-    val yandova:Double by lazy {
+    val yandova:Float by lazy {
         try {
-            val foot = width.toDouble()/2
-            sqrt(hypotenuse.toDouble()*hypotenuse.toDouble() + foot*foot ).toRound2Scale()
+            val foot = width /2
+            sqrt(hypotenuse * hypotenuse + foot*foot )
         }
         catch (e:Exception){
-            0.0
+            0f
         }
 
     }
 
-    val smallFoot:Double by lazy {
+    /**
+     * Длина конька - верхнего основания трапеции
+     */
+    val smallFoot:Float by lazy {
         try {
-        round((len.toDouble() - 2* sqrt(yandova*yandova - hypotenuse.toDouble()*hypotenuse.toDouble()))*100)/100
+        round((len - 2* sqrt(yandova*yandova - hypotenuse * hypotenuse))*100)/100
         }
         catch (e:Exception){
-            0.0
+            0f
         }
     }
 
-    val countSheetOnLen:Int by lazy {
-        try {
-            ceil((len.toDouble() - sheet.overlap)/(sheet.visible)).toInt()
-        }
-        catch (e:Exception){
-            0
-        }
-
-    }
-
-    val countSheetOnWidth:Int by lazy {
-        try {
-            ceil((width.toDouble() - sheet.overlap)/(sheet.visible)).toInt()
-        }
-        catch (e:Exception){
-            0
-        }
-
-    }
 }
-fun RoofParamsClassic4ScatState.calculateFromAngle(angle: String): RoofParamsClassic4ScatState {
+
+/**
+ * Пересчитывается высота,покат исходя из угла наклона
+ */
+fun RoofParamsClassic4ScatState.calculateFromAngle(angle: Float?): RoofParamsClassic4ScatState {
     return when{
-        angle.isBlank()->this.copy(height = "", angle = "", hypotenuse = "")
-        angle.toDoubleOrNull() !=null ->{
+        angle == 0f->this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
+        angle !=null ->{
             val adjacent = width.toDouble() / 2 // длина прилежащего катета
             val angleInRadians = toRadians(angle.toDouble())
-            val height = (adjacent * tan(angleInRadians)).toRound2Scale().toString()
-            val hypotenuse = (adjacent / cos(angleInRadians)).toRound2Scale().toString()
+            val height = (adjacent * tan(angleInRadians)).toFloat()
+            val hypotenuse = (adjacent / cos(angleInRadians)).toFloat()
             this.copy(angle = angle, height = height, hypotenuse = hypotenuse)
         }
         else-> this
@@ -75,18 +66,21 @@ fun RoofParamsClassic4ScatState.calculateFromAngle(angle: String): RoofParamsCla
 
 }
 
-fun RoofParamsClassic4ScatState.calculateFromHeight(newHeight: String): RoofParamsClassic4ScatState {
+/**
+ * Пересчитывается угол и покат исходя из высоты крыши
+ */
+fun RoofParamsClassic4ScatState.calculateFromHeight(newHeight: Float?): RoofParamsClassic4ScatState {
     return when {
-        newHeight.isBlank() -> this.copy(height = "", angle = "", hypotenuse = "")
-        newHeight.toDoubleOrNull() != null -> {
+        newHeight == 0f -> this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
+        newHeight != null -> {
             val adjacent = width.toDouble() / 2
             val hypotenuse =
-                (sqrt(adjacent * adjacent + height.toDouble() * height.toDouble())).toRound2Scale()
-                    .toString()
+                (sqrt(adjacent * adjacent + height * height)).toFloat()
 
-            val angleInRadians = atan(height.toDouble() / adjacent)
 
-            val angle = Math.toDegrees(angleInRadians).toRound2Scale().toString()
+            val angleInRadians = atan(height/ adjacent)
+
+            val angle = Math.toDegrees(angleInRadians).toFloat()
             this.copy(height = height, angle = angle, hypotenuse = hypotenuse)
         }
 
@@ -95,17 +89,20 @@ fun RoofParamsClassic4ScatState.calculateFromHeight(newHeight: String): RoofPara
 
 }
 
-fun RoofParamsClassic4ScatState.calculateFromHypotenuse(hypotenuse: String): RoofParamsClassic4ScatState {
+/**
+ * Пересчитывает угол наклона и высоту исходя из поката
+ */
+fun RoofParamsClassic4ScatState.calculateFromHypotenuse(hypotenuse: Float): RoofParamsClassic4ScatState {
 
     return  when{
-        hypotenuse.isBlank()->this.copy(height = "", angle = "", hypotenuse = "")
-        hypotenuse.toDoubleOrNull() != null->{
+        hypotenuse == 0f->this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
+        hypotenuse!= null->{
             val adjacent = width.toDouble() / 2 // прилежащий катет
-            val angleInRadians = acos(adjacent / hypotenuse.toDouble())
-            val angle = Math.toDegrees(angleInRadians).toRound2Scale().toString()
+            val angleInRadians = acos(adjacent / hypotenuse)
+            val angle = Math.toDegrees(angleInRadians).toFloat()
             val height =
-                (sqrt(hypotenuse.toDouble() * hypotenuse.toDouble() - adjacent * adjacent)).toRound2Scale()
-                    .toString()
+                (sqrt(hypotenuse * hypotenuse - adjacent * adjacent)).toFloat()
+
             this.copy(angle = angle, height = height, hypotenuse = hypotenuse)
         }
         else->this
@@ -115,13 +112,8 @@ fun RoofParamsClassic4ScatState.calculateFromHypotenuse(hypotenuse: String): Roo
 }
 
 
-fun Double.toRound2Scale(): Double {
-    return try {
-        String.format("%.2f", this).replace(',', '.').toDouble()
-    } catch (e: Exception) {
-        this
-    }
-}
+
+
 fun main() {
     println(ceil(3.25))
 }

@@ -45,8 +45,9 @@ fun DrawerNavigation(
                             coroutineScope.launch { drawerState.close() }
                         }
                     )
+
                     DrawerItem(
-                        screenDestination = SaveDocuments,
+                        screenDestination = Shapes,
                         selectedScreen = selectedScreen,
                         toNavigate = { route ->
                             navController.navigate(route)
@@ -54,7 +55,7 @@ fun DrawerNavigation(
                         }
                     )
                     DrawerItem(
-                        screenDestination = Shapes,
+                        screenDestination = SaveDocuments,
                         selectedScreen = selectedScreen,
                         toNavigate = { route ->
                             navController.navigate(route)

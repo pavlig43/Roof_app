@@ -4,12 +4,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pavlig43.roof_app.model.ShapeSide
 import com.pavlig43.roof_app.model.Sheet
-import com.pavlig43.roof_app.model.Triangle
+import com.pavlig43.roof_app.model.updateMultiplicity
+import com.pavlig43.roof_app.model.updateOverlap
+import com.pavlig43.roof_app.model.updateWidthGeneral
 import com.pavlig43.roof_app.ui.calculation_tile_4scat.SaveNameFile
-import com.pavlig43.roof_app.ui.shapes.triangle.triangleResult
-import com.pavlig43.roof_app.utils.calculateCmInM
 import com.pavlig43.roof_app.utils.checkSaveName
 import com.pavlig43.roof_app.utils.renderPDF
 import com.pavlig43.roof_app.utils.saveFilePDF
@@ -28,19 +27,31 @@ class ShapesViewModel @Inject constructor() : ViewModel() {
         MutableStateFlow(ShapesScreenState.ShapesMain)
     val shapesScreenState = _shapesScreenState.asStateFlow()
 
+
+    /**
+     * Список страниц ПДФ файла для отображения на экране
+     */
     private val _listBitmap:MutableStateFlow<List<Bitmap>> = MutableStateFlow(listOf())
     val listBitmap = _listBitmap.asStateFlow()
 
+    /**
+     * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится , а потом только показывается на экране
+     */
     private val _pdfFile:MutableStateFlow<File?> = MutableStateFlow(null)
 
+    /**
+     * Имя файла, с которым можно сохранить документ ПДФ,
+     * в [checkName] проверяет есть ли уже такое в хранилище
+     */
     private val  _saveNameFile:MutableStateFlow<SaveNameFile> = MutableStateFlow(SaveNameFile())
     val saveNameFile = _saveNameFile.asStateFlow()
 
     private val _sheet:MutableStateFlow<Sheet> = MutableStateFlow(Sheet())
     val sheet = _sheet.asStateFlow()
 
-    private val _triangle:MutableStateFlow<Triangle> = MutableStateFlow(Triangle())
-    val triangle = _triangle.asStateFlow()
+
+
+
 
     fun moveToShape(shapeName:String){
         when(shapeName){
@@ -52,23 +63,20 @@ class ShapesViewModel @Inject constructor() : ViewModel() {
     fun returnCalculateTriangleScreen(){
         _shapesScreenState.value = ShapesScreenState.Triangle
     }
-    fun changeWidthOfSheet(newWidth: String){
-        _sheet.update { it.copy(widthGeneral = calculateCmInM(newWidth)) }
+
+    fun changeWidthOfSheet(newWidth: Float){
+        _sheet.value = _sheet.value.updateWidthGeneral(newWidth)
     }
-    fun changeOverlap(newOverlap:String){
-        _sheet.update { it.copy(overlap = calculateCmInM(newOverlap)) }
+    fun changeOverlap(newOverlap:Float){
+        _sheet.value = _sheet.value.updateOverlap(newOverlap)
     }
 
-    fun changeTriangle(shapeSide: ShapeSide){
-        when(shapeSide.name){
-            "a"-> _triangle.update { it.copy(a=shapeSide) }
-            "b"-> _triangle.update { it.copy(b=shapeSide) }
-            "c"-> _triangle.update { it.copy(c=shapeSide) }
-
-        }
+    fun changeMultiplicity(newMultiplicity:Float){
+       _sheet.update { it.updateMultiplicity(newMultiplicity) }
     }
-    fun openDocument(context: Context){
-        _pdfFile.value = triangleResult(context,_triangle.value,_sheet.value)
+
+    fun openDocument(file: File){
+        _pdfFile.value = file
         _listBitmap.value = renderPDF(_pdfFile.value!!,viewModelScope)
         _shapesScreenState.value = ShapesScreenState.LoadDocumentImage
     }

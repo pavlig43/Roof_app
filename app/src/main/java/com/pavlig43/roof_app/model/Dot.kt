@@ -12,11 +12,16 @@ data class Dot(
     val distanceX: Float = 0f,
     val distanceY: Float = 0f,
     val canMinusX: Boolean = false,
-    val canMinusY: Boolean = false
+    val canMinusY: Boolean = false,
+    val canChangeX:Boolean = true,
+    val canChangeY:Boolean = true,
 )
 
 enum class DotName4Side {
     LEFTBOTTOM, LEFTTOP, RIGHTBOTTOM, RIGHTTOP;
+}
+enum class DotNameTriangle3Side{
+    LEFTBOTTOM, TOP, RIGHTBOTTOM,
 }
 
 /**
@@ -29,5 +34,13 @@ enum class DotName4Side {
 fun Dot.withOStartOffset(startOffset: Offset) = this.copy(
     distanceX = this.distanceX + startOffset.x,
     distanceY = this.distanceY + startOffset.y
+)
+
+/**
+ * в точке координаты указаны в сантиметрах, переводит в пиксели для канваса
+ */
+ fun Dot.toPX(oneCMInWidthXPx:Float,oneCMInHeightYtPx:Float) = this.copy(
+    distanceX = this.distanceX  * oneCMInWidthXPx,
+    distanceY = this.distanceY  * oneCMInHeightYtPx
 )
 

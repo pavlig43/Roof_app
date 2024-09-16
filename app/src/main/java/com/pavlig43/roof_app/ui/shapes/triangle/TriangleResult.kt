@@ -9,290 +9,228 @@ import android.graphics.Path
 import android.graphics.pdf.PdfDocument
 import android.text.TextPaint
 import android.util.Log
+import androidx.compose.ui.geometry.Offset
 import com.pavlig43.roof_app.A4HEIGHT
 import com.pavlig43.roof_app.A4WIDTH
+import com.pavlig43.roof_app.model.Dot
 import com.pavlig43.roof_app.model.Sheet
-import com.pavlig43.roof_app.model.Triangle
-import com.pavlig43.roof_app.model.toRound2Scale
+import com.pavlig43.roof_app.model.convertSheetDotToPx
+import com.pavlig43.roof_app.model.replaceX
+import com.pavlig43.roof_app.model.toPX
+import com.pavlig43.roof_app.model.withOStartOffset
+import com.pavlig43.roof_app.ui.shapes.quadrilateral.Geometry4SideShape
 import com.pavlig43.roof_app.utils.AddVerticalPaddingForLineText
+import com.pavlig43.roof_app.utils.drawSheet
+import com.pavlig43.roof_app.utils.getSide
+import com.pavlig43.roof_app.utils.rulerOnCanvasPDF
+import com.pavlig43.roof_app.utils.searchDotsSheet
+import com.pavlig43.roof_app.utils.searchInterpolation
 import java.io.File
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan
 import kotlin.math.ceil
 import kotlin.math.sqrt
 import kotlin.math.tan
 
-fun triangleResult(
-    context: Context,
-    triangle: Triangle,
-    sheet: Sheet
-): File {
-    val a = triangle.a.value.toFloat()
-    val b = triangle.b.value.toFloat()
-    val c = triangle.c.value.toFloat()
-    val triangleShape = TriangleShape(a, b, c,sheet)
-    val pdfDocument = PdfDocument()
-
-    val pageInfo1 = PdfDocument.PageInfo.Builder(A4WIDTH, A4HEIGHT, 1).create()
-    val page1 = pdfDocument.startPage(pageInfo1)
-    val canvas1 = page1.canvas
-    triangleShape.ruler(canvas1, horizontal = false)
-    triangleShape.ruler(canvas1, zero = false)
-    triangleShape.drawTriangle(canvas1)
-    triangleShape.sheetOnTriangle(canvas1)
-    pdfDocument.finishPage(page1)
-    val pageInfo2 = PdfDocument.PageInfo.Builder(A4WIDTH, A4HEIGHT, 2).create()
-    val page2 = pdfDocument.startPage(pageInfo2)
-    val canvas2 = page2.canvas
-    triangleShape.infoPage(canvas2)
-    pdfDocument.finishPage(page2)
-
-    val file = File(context.getExternalFilesDir(null), "roof.pdf")
 
 
-    file.outputStream().use { pdfDocument.writeTo(it) }
-    pdfDocument.close()
-    return file
-}
-
-class TriangleShape(
-    private val a: Float,
-    private val b: Float,
-    private val c: Float,
-    private val sheet: Sheet = Sheet()
+class TrianglePDF(
+    geometryTriangle3SideShape: GeometryTriangle3SideShape,
+    val sheet: Sheet
 ) {
-    private val widthPage = A4WIDTH.toFloat()
-    private val heightPage = A4HEIGHT.toFloat()
+
+    private val widthPage = A4WIDTH
+    private val heightPage = A4HEIGHT
     private val paddingWidth = (widthPage * 0.05).toFloat()
     private val paddingHeight = (heightPage * 0.05).toFloat()
-    private val cosGamma = (a * a + b * b - c * c) / (2 * a * b)
-    private val cosB = (a * a + c * c - b * b) / (2 * a * c)
-    private val sinGamma = sqrt(1 - cosGamma * cosGamma)
-    private val oneMeterInPxA = (heightPage - 2 * paddingHeight) / (ceil(a / 100).toInt())
-    private val heightTriangle = b * sinGamma
-    private val oneMeterInPxHeightTriangle =
-        (widthPage - 2 * paddingWidth) / (ceil(heightTriangle / 100).toInt())
-    private val dotOfHeightY = b * cosGamma * oneMeterInPxA
 
-    val listOfSheets:MutableList<Double> = mutableListOf()
+    private val listOfSheets:MutableList<Sheet> = mutableListOf()
+
+    private val a = geometryTriangle3SideShape.leftBottom
+    private val b = geometryTriangle3SideShape.top
+    private val c = geometryTriangle3SideShape.rightBottom
+
+    /**
+     * самая большая величина координаты высоты фигуры
+     */
+    private val peakXMax = b.distanceX
+
+    /**
+     * самая маленькая величина координаты высоты фигуры(низшая точка)
+     */
+    private val peakXMin = a.distanceX
+
+
+
+    private val leftSide = getSide(a, b)
+    private val bottomSide = getSide(a, c)
+    private val rightSide = getSide(b, c)
+
+    /**
+     * ширина фигуры - самая дольняя точка от нового начала координат в см
+     */
+    private val maxWidthShape = c.distanceY
+
+    private val countCeilMetersWidth = ceil(maxWidthShape / 100).toInt()
+
+    /**
+     * число листов , которое будет положено по ширине фигуре, пока листы не закроют ее полностью
+     */
+    private val countOfSheet: Int =
+        ceil((maxWidthShape - sheet.overlap) / sheet.visible).toInt()
+
+
+    /**
+     * Высота фигуры - самая дольняя точка от нового начала координат в см
+     */
+    private val maxHeightShape = b.distanceX
+
+    private val countCeilMetersHeight = ceil(maxHeightShape / 100).toInt()
+
+    private val oneCMInHeightYtPx: Float =
+        (heightPage * 0.9 / (countCeilMetersWidth * 100)).toFloat()
+
+
+    private val oneCMInWidthXPx: Float =
+        (widthPage * 0.9 / (countCeilMetersHeight * 100)).toFloat()
+
     fun ruler(
         canvas: Canvas,
         zero: Boolean = true,
-        paint: Paint = Paint().apply {
-            color = Color.BLACK
-            strokeWidth = 4f  // Толщина линии
-            style = Paint.Style.STROKE
-        },
         horizontal: Boolean = true,
-
-        ) {
-
-
-        if (!horizontal) {
-            val x = paddingWidth
-
-            canvas.drawLine(
-                x,
-                paddingHeight,
-                x,
-                heightPage - paddingHeight,
-                paint
-            )
-            val countMetres = ceil(a / 100).toInt()
-            for (i in 0..countMetres) {
-                val y =
-                    i.toFloat() * oneMeterInPxA + paddingHeight
-                canvas.drawLine(x - 10, y, x + 10, y, Paint().apply { strokeWidth = 3f })
-                canvas.rotate(90f, x - 25, y - 10)
-                when {
-                    i == 0 && !zero -> continue
-                    else -> canvas.drawText(
-                        "$i м",
-                        x - 25,
-                        y - 10,
-                        Paint().apply { textSize = 20f })
-                }
-
-                canvas.rotate(-90f, x - 25, y - 10)
-            }
-        } else {
-            val y = paddingHeight
-
-            canvas.drawLine(
-                paddingWidth,
-                y,
-                widthPage - paddingWidth,
-                y,
-                paint
-            )
-            val countMetres = ceil(heightTriangle / 100).toInt()
-            for (i in 0..countMetres) {
-                val x = i.toFloat() * oneMeterInPxHeightTriangle + paddingWidth
-                canvas.drawLine(x, y - 10, x, y + 10, Paint().apply { strokeWidth = 3f })
-                when {
-                    i == 0 && !zero -> continue
-                    else -> canvas.drawText(
-                        "$i м",
-                        x - 10,
-                        y - 25,
-                        Paint().apply { textSize = 20f })
-                }
-
-            }
-        }
+    ) {
+        rulerOnCanvasPDF(
+            canvas,
+            maxWidthShape = maxWidthShape,
+            maxHeightShape = maxHeightShape,
+            oneCMInWidthXPx = oneCMInWidthXPx,
+            oneCMInHeightYtPx = oneCMInHeightYtPx,
+            horizontal = horizontal,
+            zero = zero,
+        )
 
     }
 
+
     fun drawTriangle(
-        canvas: Canvas
-    ) {
-        val paint: Paint = Paint().apply {
+        canvas: Canvas,
+        paint: Paint = Paint().apply {
             color = Color.BLACK
             strokeWidth = 4f
             alpha = 162// Толщина линии
             style = Paint.Style.STROKE
         }
-        val paintText = Paint().apply {
-            textSize = 20f
-        }
-        val path = android.graphics.Path().apply {
-            moveTo(paddingWidth, paddingHeight)
-            lineTo(
-                heightTriangle / 100 * oneMeterInPxHeightTriangle + paddingWidth,
-                (b / 100) * cosGamma * oneMeterInPxA + paddingHeight
-            )
-            lineTo(paddingWidth, (a / 100) * oneMeterInPxA + paddingHeight)
-            close()
-        }
-
-        canvas.drawPath(
-            path, paint
-        )
-        canvas.rotate(90f, paddingWidth + 20, (a / 2 / 100) * oneMeterInPxA + paddingWidth)
-        canvas.drawText(
-            "${a.toInt()} cm",
-            paddingWidth + 20,
-            (a / 2 / 100) * oneMeterInPxA + paddingWidth,
-            paintText
-        )
-        canvas.rotate(-90f, paddingWidth + 20, (a / 2 / 100) * oneMeterInPxA + paddingWidth)
-
-        val xLeft = (heightTriangle / 100 * oneMeterInPxHeightTriangle) / 2 + paddingWidth + 5f
-        val yLeft = (b * cosGamma) / 200 * oneMeterInPxA + paddingHeight + 0f
-        val dotOfHeightX = heightTriangle * oneMeterInPxHeightTriangle
-
-        val angleC = 90 - Math.toDegrees(atan(dotOfHeightX / dotOfHeightY).toDouble())
-        canvas.rotate(angleC.toFloat(), xLeft, yLeft)
-        canvas.drawText("${b.toInt()} cm", xLeft, yLeft, paintText)
-        canvas.rotate(-angleC.toFloat(), xLeft, yLeft)
-
-
-        val xRight = heightTriangle / 100 * oneMeterInPxHeightTriangle / 2 + paddingWidth + 10
-        val yRight = (b * cosGamma + (c * cosB) / 2) * oneMeterInPxA / 100 + paddingHeight
-        val angleB =
-            90 + Math.toDegrees(atan(dotOfHeightX / (a * oneMeterInPxA - dotOfHeightY)).toDouble())
-        canvas.rotate(angleB.toFloat(), xRight, yRight)
-        canvas.drawText("${c.toInt()} cm", xRight, yRight, paintText)
-        canvas.rotate(-angleB.toFloat(), xRight, yRight)
-    }
-
-    private fun drawSheet(
-        canvas: Canvas,
-        bottomX: Float,
-        topX: Float,
-        bottomY: Float,
-        topY: Float,
-        lenOfSheet:Int,
-        paintSheet: Paint = Paint().apply {
-            color = Color.RED
-            strokeWidth = 0.5f  // Толщина линии
-            style = Paint.Style.STROKE
-        }
     ) {
 
-        val paintOverlap: Paint = Paint().apply {
-            color = Color.RED
-            strokeWidth = 0.3f  // Толщина линии
-            style = Paint.Style.STROKE
-            pathEffect = DashPathEffect(
-                floatArrayOf(10f, 20f), 0f
-            )
-        }
-        val path = Path().apply {
-            moveTo(bottomX, bottomY)
-            lineTo(topX, bottomY)
-            moveTo(topX, bottomY)
-            lineTo(topX, topY)
-            Log.d("color", paintSheet.color.toString())
+        val aPX = a.toPX(oneCMInHeightYtPx = oneCMInHeightYtPx, oneCMInWidthXPx = oneCMInWidthXPx)
+        val bPX = b.toPX(oneCMInHeightYtPx = oneCMInHeightYtPx, oneCMInWidthXPx = oneCMInWidthXPx)
+        val cPX = c.toPX(oneCMInHeightYtPx = oneCMInHeightYtPx, oneCMInWidthXPx = oneCMInWidthXPx)
+
+        val path = android.graphics.Path().apply {
+            moveTo(aPX.distanceX + paddingWidth, aPX.distanceY + paddingHeight)
+            lineTo(bPX.distanceX + paddingWidth, bPX.distanceY + paddingHeight)
+            moveTo(bPX.distanceX + paddingWidth, bPX.distanceY + paddingHeight)
+            lineTo(cPX.distanceX + paddingWidth, cPX.distanceY + paddingHeight)
+            moveTo(cPX.distanceX + paddingWidth, cPX.distanceY + paddingHeight)
+            lineTo(aPX.distanceX + paddingWidth, aPX.distanceY + paddingHeight)
             close()
         }
-        canvas.drawPath(path, paintSheet)
-        canvas.drawLine(topX, topY, bottomX, topY, paintOverlap)
-        val x = (topX- bottomX) / 2 + bottomX / 2
-        val y = (topY - bottomY) / 2 + bottomY
-        canvas.rotate(90f, x, y)
-        canvas.drawText("$lenOfSheet cm", x, y, paintSheet)
-        canvas.rotate(-90f, x, y)
+        canvas.drawPath(path, paint)
+
+    }
+
+    /**
+     * Выдает точки пересечения вертикальной стороны листа железа с каждой из сторон 3х-угольника
+     * Если 3х-угольник правильный , то каждая вертикальная сторона листа имеет МАКСИМУМ  пересечений с 2 сторонами 3х-угольника
+     * Если пересечение попадает на угол фигуры, то обе точки пересечения с фигурой одинаковые
+     * Если пересечение отсутствует(в случае , когда правая сторона  последнего листа выходит за пределы фигуры)
+     * то "Х" берется от левой стороны этого же листа [lastNotNullBottomX] и [lastNotNullTopX]
+     */
+    private fun searchLineOfSheet(
+        y: Float,
+        lastNotNullBottomX: Float = 0f,
+        lastNotNullTopX: Float = 0f
+
+    ): Result<Pair<Offset, Offset>> {
+        val intersectAB = searchInterpolation(a, b, y, a.distanceX )
+        val intersectBC = searchInterpolation(b, c, y, b.distanceX )
+        val intersectAC = searchInterpolation(a, c, y, a.distanceX)
+
+        val lst = setOfNotNull(
+            intersectAB,
+            intersectBC,
+            intersectAC,
+        ).toList()
+        return when (lst.size) {
+            2 -> Result.success(Pair(lst[0], lst[1]))
+            1 -> Result.success(Pair(lst[0], lst[0]))
+            0 -> Result.success(
+                Pair(
+                    Offset(lastNotNullBottomX, y),
+                    Offset(lastNotNullTopX, y)
+                )
+            )
+
+            else -> Result.failure(IllegalStateException("Невозможно найти 2 пересечения"))
+        }
+
     }
 
     fun sheetOnTriangle(
-        canvas: Canvas,
-
-        ) {
-        val countOfSheet = ceil((a / sheet.visible + sheet.overlap * 100) / 100).toInt()
-        var bottomY = paddingHeight
-        val hT = heightTriangle / 100 * oneMeterInPxHeightTriangle + paddingWidth
-        for (numberOfSheet in 1..countOfSheet) {
-
-            val topY = bottomY + (sheet.widthGeneral * oneMeterInPxA).toFloat()
-            val lenOfSheet =  if (bottomY > dotOfHeightY/100 + paddingHeight) {
-                val adjacent = a / 100 - (numberOfSheet-1) * sheet.visible
-                tan(acos(cosB)) * adjacent
-            }
-            else{
-                val adjacent = numberOfSheet * sheet.visible + sheet.overlap
-                 tan(acos(cosGamma)) * adjacent
-            }
-            listOfSheets.add(ceil(lenOfSheet/sheet.multiplicity)*sheet.multiplicity)
-
-            val topX =(lenOfSheet * oneMeterInPxHeightTriangle + paddingWidth).toFloat()
-
-
-
-            drawSheet(
-                canvas = canvas,
-                bottomX = paddingWidth,
-                bottomY = bottomY,
-                topY = topY,
-                topX = minOf(topX, hT),
-                lenOfSheet = ((ceil(lenOfSheet/sheet.multiplicity)*sheet.multiplicity)*100 ).toInt()
-            )
-
-
-            bottomY = ((numberOfSheet * sheet.visible) * oneMeterInPxA).toFloat() + paddingHeight
-        }
-    }
-    fun infoPage(
-        canvas: Canvas,
-
+        canvas: Canvas
     ) {
+        val intervalYForXMax = b.distanceY..b.distanceY
+        val intervalYForXMin = a.distanceY..a.distanceY
+        for (s in 1..countOfSheet) {
 
-        val x = paddingWidth
-        val startY = paddingHeight
-        val textTrasfer = AddVerticalPaddingForLineText(startY)
-        val paintText = TextPaint().apply {
-            textSize = 20f
-            flags = flags or Paint.UNDERLINE_TEXT_FLAG
-        }
-        val orderSheet = listOfSheets.groupingBy { it }.eachCount().toSortedMap()
-        orderSheet.forEach { (k, v) ->
-            canvas.drawText(
-                "${k.toRound2Scale()}m = $v",
-                x,
-                textTrasfer.addTransferText(),
-                paintText
+            Log.d("rrrr", oneCMInHeightYtPx.toString())
+            val y = (s - 1) * sheet.visible
+            val resultLeft = searchLineOfSheet(y)
+            val resultRight = searchLineOfSheet(
+                y = y + sheet.widthGeneral ,
+                lastNotNullBottomX = resultLeft.getOrThrow().first.x,
+                lastNotNullTopX = resultLeft.getOrThrow().second.x,
             )
+            val dotsOfSheet = searchDotsSheet(resultLeft,resultRight)
+                ?.replaceX( peakXMin = peakXMin,
+                    peakXMax = peakXMax,
+                    intervalYForXMin = intervalYForXMin,
+                    intervalYForXMax = intervalYForXMax)
+            if (dotsOfSheet != null) {
+                val sheetMultiplicityCM = sheet.multiplicity
+                val lenOfSheetInCM = dotsOfSheet.leftTop.x - dotsOfSheet.leftBottom.x
+                val lenOfSheet =
+                    (ceil(lenOfSheetInCM / sheetMultiplicityCM) * sheetMultiplicityCM).toInt()
+
+                drawSheet(
+                    canvas = canvas,
+                    sheetDots = dotsOfSheet
+                        .convertSheetDotToPx(
+                            oneMeterInHeightYtPx = oneCMInHeightYtPx,
+                            oneMeterInWidthXPx = oneCMInWidthXPx,
+                        ),
+                    lenOfSheet = lenOfSheet
+                )
+                listOfSheets.add(sheet.copy(len = lenOfSheet))
+            }
+
         }
 
     }
+
+    fun getLstOfSheet() = listOfSheets
+
+    fun getOtherParams(): List<Pair<String, String>> {
+        return listOf(
+            Pair("Сторона AB","$leftSide cm"),
+            Pair("Сторона BC","$rightSide cm"),
+            Pair("Сторона AC","$bottomSide cm"),
+            Pair("Высота треугольника","${maxHeightShape.toInt()} cm"),
+            Pair("Ширина треугольника","${maxWidthShape.toInt()} cm"),
+
+        )
+    }
+
+
 }
