@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.androidx.material3)
 
 
-    implementation("androidx.work:work-runtime-ktx:2.7.0")
+
 
     ksp("com.google.dagger:hilt-android-compiler:2.51.1")
     ksp("com.google.dagger:hilt-compiler:2.51.1")
@@ -74,14 +74,12 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+
 
 
 
