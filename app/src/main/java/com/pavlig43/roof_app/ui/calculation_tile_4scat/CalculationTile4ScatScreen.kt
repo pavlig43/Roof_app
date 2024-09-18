@@ -39,7 +39,7 @@ import com.pavlig43.roof_app.ui.theme.Roof_appTheme
 
 @Composable
 fun CalculationTile4ScatMainScreen(
-    calculationTile4ScatViewModel: CalculationTile4ScatViewModel = hiltViewModel(),
+    calculationTile4ScatViewModel: CalculationTile4ScatViewModel = CalculationTile4ScatViewModel(),
     modifier: Modifier = Modifier
 ) {
     val stateNavigation by calculationTile4ScatViewModel.stateNavigation.collectAsState()

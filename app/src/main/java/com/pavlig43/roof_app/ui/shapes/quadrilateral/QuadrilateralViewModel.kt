@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.update
 import java.io.File
 import javax.inject.Inject
 
-@HiltViewModel
-class QuadrilateralViewModel @Inject constructor() : ViewModel() {
+
+class QuadrilateralViewModel  : ViewModel() {
 
 
     private val _geometry4SideShape: MutableStateFlow<Geometry4SideShape> =

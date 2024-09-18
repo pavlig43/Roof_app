@@ -29,8 +29,8 @@ import kotlinx.coroutines.flow.update
 import java.io.File
 import javax.inject.Inject
 
-@HiltViewModel
-class TriangleViewModel @Inject constructor() : ViewModel() {
+
+class TriangleViewModel  : ViewModel() {
 
 
     private val _geometryTriangle3SideShape: MutableStateFlow<GeometryTriangle3SideShape> =

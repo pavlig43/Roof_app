@@ -53,7 +53,7 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuadroChoice(
-    quadrilateralViewModel: QuadrilateralViewModel = hiltViewModel(),
+    quadrilateralViewModel: QuadrilateralViewModel = QuadrilateralViewModel(),
     openDocument: (File)->Unit,
     sheet: Sheet,
     updateWidthGeneral:(Float)->Unit,

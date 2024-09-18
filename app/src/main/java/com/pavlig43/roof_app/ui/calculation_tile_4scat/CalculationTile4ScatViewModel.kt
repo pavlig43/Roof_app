@@ -30,8 +30,8 @@ import kotlinx.coroutines.flow.update
 import java.io.File
 import javax.inject.Inject
 
-@HiltViewModel
-class CalculationTile4ScatViewModel @Inject constructor() : ViewModel() {
+
+class CalculationTile4ScatViewModel : ViewModel() {
 
     private val _stateNavigation: MutableStateFlow<StateCalculationTile4Scat> =
         MutableStateFlow(StateCalculationTile4Scat.ChangeCalculation)

@@ -44,7 +44,7 @@ import java.io.File
 
 @Composable
 fun TriangleChoice(
-    triangleViewModel: TriangleViewModel = hiltViewModel(),
+    triangleViewModel: TriangleViewModel = TriangleViewModel(),
     openDocument: (File) -> Unit,
     sheet: Sheet,
     updateWidthGeneral: (Float) -> Unit,
