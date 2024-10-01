@@ -1,0 +1,1403 @@
+Subject: [PATCH] Changes after Kirill code review
+---
+Index: app/src/main/java/com/pavlig43/roof_app/ui/ButtonResultRow.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/ButtonResultRow.kt b/app/src/main/java/com/pavlig43/roof_app/ui/ButtonResultRow.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/ButtonResultRow.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/ButtonResultRow.kt	(date 1726828760438)
+@@ -15,11 +15,14 @@
+  */
+ @Composable
+ fun ButtonResultRow(
+-    getResult:()->Unit,
+-    openSheetParams:()->Unit,
++    getResult: () -> Unit,
++    openSheetParams: () -> Unit,
+     modifier: Modifier = Modifier
+ ) {
+-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
++    Row(
++        horizontalArrangement = Arrangement.SpaceBetween,
++        modifier = modifier.fillMaxWidth()
++    ) {
+         Button(onClick = openSheetParams) {
+             Text(text = "Параметры листа")
+         }
+Index: app/src/main/java/com/pavlig43/roof_app/model/RoofParamsClassic4Scat.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/model/RoofParamsClassic4Scat.kt b/app/src/main/java/com/pavlig43/roof_app/model/RoofParamsClassic4Scat.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/model/RoofParamsClassic4Scat.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/model/RoofParamsClassic4Scat.kt	(date 1726829822194)
+@@ -2,6 +2,7 @@
+ 
+ 
+ import java.lang.Math.toRadians
++import kotlin.math.absoluteValue
+ import kotlin.math.acos
+ import kotlin.math.atan
+ import kotlin.math.ceil
+@@ -20,14 +21,12 @@
+     val height: Float = 0f,
+     val hypotenuse: Float = 0f, //Покат
+     val sheet: Sheet = Sheet()
+-    )
+-{
+-    val yandova:Float by lazy {
++) {
++    val yandova: Float by lazy {
+         try {
+-            val foot = width /2
+-            sqrt(hypotenuse * hypotenuse + foot*foot )
+-        }
+-        catch (e:Exception){
++            val foot = width / 2
++            sqrt(hypotenuse * hypotenuse + foot * foot)
++        } catch (e: Exception) {
+             0f
+         }
+ 
+@@ -36,11 +35,10 @@
+     /**
+      * Длина конька - верхнего основания трапеции
+      */
+-    val smallFoot:Float by lazy {
++    val smallFoot: Float by lazy {
+         try {
+-        round((len - 2* sqrt(yandova*yandova - hypotenuse * hypotenuse))*100)/100
+-        }
+-        catch (e:Exception){
++            round((len - 2 * sqrt(yandova * yandova - hypotenuse * hypotenuse)) * 100) / 100
++        } catch (e: ArithmeticException) {
+             0f
+         }
+     }
+@@ -51,16 +49,17 @@
+  * Пересчитывается высота,покат исходя из угла наклона
+  */
+ fun RoofParamsClassic4ScatState.calculateFromAngle(angle: Float?): RoofParamsClassic4ScatState {
+-    return when{
+-        angle == 0f->this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
+-        angle !=null ->{
++    return when {
++        angle == 0f -> this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
++        angle != null -> {
+             val adjacent = width.toDouble() / 2 // длина прилежащего катета
+             val angleInRadians = toRadians(angle.toDouble())
+             val height = (adjacent * tan(angleInRadians)).toFloat()
+             val hypotenuse = (adjacent / cos(angleInRadians)).toFloat()
+             this.copy(angle = angle, height = height, hypotenuse = hypotenuse)
+         }
+-        else-> this
++
++        else -> this
+     }
+ 
+ 
+@@ -69,22 +68,20 @@
+ /**
+  * Пересчитывается угол и покат исходя из высоты крыши
+  */
+-fun RoofParamsClassic4ScatState.calculateFromHeight(newHeight: Float?): RoofParamsClassic4ScatState {
++fun RoofParamsClassic4ScatState.calculateFromHeight(newHeight: Float): RoofParamsClassic4ScatState {
+     return when {
+-        newHeight == 0f -> this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
+-        newHeight != null -> {
++        newHeight.absoluteValue <= 10e-4F -> this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
++        else -> {
+             val adjacent = width.toDouble() / 2
+             val hypotenuse =
+                 (sqrt(adjacent * adjacent + height * height)).toFloat()
+ 
+ 
+-            val angleInRadians = atan(height/ adjacent)
++            val angleInRadians = atan(height / adjacent)
+ 
+             val angle = Math.toDegrees(angleInRadians).toFloat()
+             this.copy(height = height, angle = angle, hypotenuse = hypotenuse)
+         }
+-
+-        else -> this
+     }
+ 
+ }
+@@ -94,9 +91,9 @@
+  */
+ fun RoofParamsClassic4ScatState.calculateFromHypotenuse(hypotenuse: Float): RoofParamsClassic4ScatState {
+ 
+-    return  when{
+-        hypotenuse == 0f->this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
+-        hypotenuse!= null->{
++    return when {
++        hypotenuse == 0f -> this.copy(height = 0f, angle = 0f, hypotenuse = 0f)
++        hypotenuse != null -> {
+             val adjacent = width.toDouble() / 2 // прилежащий катет
+             val angleInRadians = acos(adjacent / hypotenuse)
+             val angle = Math.toDegrees(angleInRadians).toFloat()
+@@ -105,15 +102,14 @@
+ 
+             this.copy(angle = angle, height = height, hypotenuse = hypotenuse)
+         }
+-        else->this
++
++        else -> this
+     }
+ 
+ 
+ }
+ 
+ 
+-
+-
+ fun main() {
+     println(ceil(3.25))
+ }
+Index: app/src/main/java/com/pavlig43/roof_app/navigation/DrawerNavigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/navigation/DrawerNavigation.kt b/app/src/main/java/com/pavlig43/roof_app/navigation/DrawerNavigation.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/navigation/DrawerNavigation.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/navigation/DrawerNavigation.kt	(date 1726826711557)
+@@ -24,7 +24,6 @@
+     navController: NavController,
+     coroutineScope: CoroutineScope,
+     scrollState: ScrollState,
+-
+     content: @Composable () -> Unit,
+     modifier: Modifier = Modifier
+ ) {
+@@ -79,15 +78,10 @@
+     modifier: Modifier = Modifier,
+ ) {
+     NavigationDrawerItem(
+-        label =
+-        { Text(text = screenDestination.title) },
++        label = { Text(text = screenDestination.title) },
+         selected = screenDestination.route == selectedScreen,
+-        icon = {
+-
+-        },
+-        onClick = {
+-            toNavigate(screenDestination.route)
+-        },
++        icon = { },
++        onClick = { toNavigate(screenDestination.route) },
+ //        colors = NavigationDrawerItemDefaults.colors(selectedContainerColor = MaterialTheme.colorScheme.onSurface)
+     )
+ }
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/AndroidManifest.xml	(date 1726826652873)
+@@ -27,7 +27,6 @@
+         <activity
+             android:name=".MainActivity"
+             android:exported="true"
+-            android:label="@string/app_name"
+             android:theme="@style/Theme.Roof_app">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+Index: app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ScreensSaveDocuments.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ScreensSaveDocuments.kt b/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ScreensSaveDocuments.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ScreensSaveDocuments.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ScreensSaveDocuments.kt	(date 1726828760420)
+@@ -18,11 +18,9 @@
+ import androidx.compose.material3.AlertDialog
+ import androidx.compose.material3.Button
+ import androidx.compose.material3.Card
+-import androidx.compose.material3.ExperimentalMaterial3Api
+ import androidx.compose.material3.Icon
+ import androidx.compose.material3.IconButton
+ import androidx.compose.material3.Text
+-import androidx.compose.material3.rememberSwipeToDismissBoxState
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.collectAsState
+ import androidx.compose.runtime.getValue
+@@ -41,24 +39,32 @@
+ import com.pavlig43.roof_app.R
+ import com.pavlig43.roof_app.ui.LoadDocumentImages
+ 
++
+ @Composable
+ fun ScreensSaveDocuments(
+-    listSaveDocumentsViewModel: ListSaveDocumentsViewModel = hiltViewModel(),
++    modifier: Modifier = Modifier,
++) {
++    ScreensSaveDocuments(hiltViewModel(), modifier)
++}
++
++@Composable
++private fun ScreensSaveDocuments(
++    viewModel: ListSaveDocumentsViewModel,
+     modifier: Modifier = Modifier
+ ) {
+     BackHandler {
+-        listSaveDocumentsViewModel.returnScreenListDocument()
++        viewModel.returnScreenListDocument()
+     }
+     val context = LocalContext.current
+-    val screensSaveDocumentsState by listSaveDocumentsViewModel.screensSaveDocumentsState.collectAsState()
+-    val listOfDocument by listSaveDocumentsViewModel.listSaveDocument.collectAsState()
+-    val listBitmap by listSaveDocumentsViewModel.listBitmap.collectAsState()
++    val screensSaveDocumentsState by viewModel.screensSaveDocumentsState.collectAsState()
++    val listOfDocument by viewModel.listSaveDocument.collectAsState()
++    val listBitmap by viewModel.listBitmap.collectAsState()
+     when (screensSaveDocumentsState) {
+         is ScreensSaveDocumentsState.ListSaveDocumentsState -> ListSaveDocuments(
+             listOfDocument = listOfDocument,
+-            openDocument = { document -> listSaveDocumentsViewModel.openDocument(document) },
+-            shareFile = { document -> listSaveDocumentsViewModel.shareFile(context, document) },
+-            deleteFile = { document -> listSaveDocumentsViewModel.deleteFile(context,document) }
++            openDocument = { document -> viewModel.openDocument(document) },
++            shareFile = { document -> viewModel.shareFile(context, document) },
++            deleteFile = { document -> viewModel.deleteFile(context,document) }
+         )
+ 
+         is ScreensSaveDocumentsState.DrawDocumentState -> {
+@@ -70,11 +76,11 @@
+ }
+ 
+ @Composable
+-fun ListSaveDocuments(
++private fun ListSaveDocuments(
+     listOfDocument: List<Document>,
+-    openDocument: (Document) -> Unit,
+-    shareFile: (Document) -> Unit,
+-    deleteFile: (Document) -> Unit,
++    openDocument: (Document) -> Unit = {},
++    shareFile: (Document) -> Unit = {},
++    deleteFile: (Document) -> Unit = {},
+     modifier: Modifier = Modifier
+ ) {
+ 
+@@ -90,7 +96,6 @@
+                 openDocument = openDocument,
+                 shareFile = shareFile,
+                 deleteFile = deleteFile
+-
+             )
+         }
+     }
+@@ -104,26 +109,13 @@
+     deleteFile: (Document) -> Unit,
+     modifier: Modifier = Modifier
+ ) {
+-    var isShowDeleteDialog by remember {
+-        mutableStateOf(false)
+-    }
++    var isShowDeleteDialog by remember { mutableStateOf(false) }
+     if (isShowDeleteDialog) {
+-        AlertDialog(
+-            title = { Text(text = "Удалить этот документ???") },
+-            onDismissRequest = { isShowDeleteDialog = false },
+-            confirmButton = {
+-                Button(onClick = {
+-                    deleteFile(document)
+-                    isShowDeleteDialog = false
+-                }) {
+-                    Text(text = "Удалить")
+-                }
+-            },
+-            dismissButton = {
+-                Button(onClick = { isShowDeleteDialog = false }) {
+-                    Text(text = "Отмена")
+-                }
+-            })
++        ConfirmDeleteDocDialog(
++            deleteFile,
++            onDialogDismissed = { isShowDeleteDialog = false},
++            document
++        )
+     }
+ 
+     Box(modifier = modifier.pointerInput(Unit) {
+@@ -161,4 +153,28 @@
+         }
+ 
+     }
++}
++
++@Composable
++private fun ConfirmDeleteDocDialog(
++    deleteFile: (Document) -> Unit,
++    onDialogDismissed: () -> Unit,
++    document: Document
++) {
++    AlertDialog(
++        title = { Text(text = "Удалить этот документ???") },
++        onDismissRequest = { onDialogDismissed() },
++        confirmButton = {
++            Button(onClick = {
++                deleteFile(document)
++                onDialogDismissed()
++            }) {
++                Text(text = "Удалить")
++            }
++        },
++        dismissButton = {
++            Button(onClick = { onDialogDismissed() }) {
++                Text(text = "Отмена")
++            }
++        })
+ }
+\ No newline at end of file
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/build.gradle.kts	(date 1726826652881)
+@@ -64,9 +64,6 @@
+     implementation(libs.androidx.ui.tooling.preview)
+     implementation(libs.androidx.material3)
+ 
+-
+-
+-
+     ksp("com.google.dagger:hilt-android-compiler:2.51.1")
+     ksp("com.google.dagger:hilt-compiler:2.51.1")
+     implementation("com.google.dagger:hilt-android:2.51.1")
+@@ -75,19 +72,9 @@
+     implementation("androidx.navigation:navigation-compose:2.7.7")
+ 
+ 
+-
+     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+ 
+-
+-
+-
+-
+-    testImplementation(libs.junit)
+-    androidTestImplementation(libs.androidx.junit)
+-    androidTestImplementation(libs.androidx.espresso.core)
+-    androidTestImplementation(platform(libs.androidx.compose.bom))
+-    androidTestImplementation(libs.androidx.ui.test.junit4)
+     debugImplementation(libs.androidx.ui.tooling)
+     debugImplementation(libs.androidx.ui.test.manifest)
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ListSaveDocumentsViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ListSaveDocumentsViewModel.kt b/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ListSaveDocumentsViewModel.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ListSaveDocumentsViewModel.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/save_documents/ListSaveDocumentsViewModel.kt	(date 1726829119745)
+@@ -9,81 +9,91 @@
+ import com.pavlig43.roof_app.utils.sharePDFFile
+ import dagger.hilt.android.lifecycle.HiltViewModel
+ import dagger.hilt.android.qualifiers.ApplicationContext
++import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.flow.MutableStateFlow
+ import kotlinx.coroutines.flow.asStateFlow
+ import kotlinx.coroutines.flow.update
++import kotlinx.coroutines.launch
+ import java.io.File
+ import javax.inject.Inject
+ 
+ @HiltViewModel
+ class ListSaveDocumentsViewModel @Inject constructor(
+-    @ApplicationContext val context : Context
+-):ViewModel() {
++    @ApplicationContext val context: Context
++) : ViewModel() {
+ 
+-    private val _screensSaveDocumentsState:MutableStateFlow<ScreensSaveDocumentsState> = MutableStateFlow(ScreensSaveDocumentsState.ListSaveDocumentsState)
++    private val _screensSaveDocumentsState: MutableStateFlow<ScreensSaveDocumentsState> =
++        MutableStateFlow(ScreensSaveDocumentsState.ListSaveDocumentsState)
+     val screensSaveDocumentsState = _screensSaveDocumentsState.asStateFlow()
+ 
+-    private val _listSaveDocument:MutableStateFlow<List<Document>> = MutableStateFlow(listOf())
++    private val _listSaveDocument: MutableStateFlow<List<Document>> = MutableStateFlow(listOf())
+     val listSaveDocument = _listSaveDocument.asStateFlow()
+ 
+-    private val _listBitmap:MutableStateFlow<List<Bitmap>> = MutableStateFlow(listOf())
++    private val _listBitmap: MutableStateFlow<List<Bitmap>> = MutableStateFlow(listOf())
+     val listBitmap = _listBitmap.asStateFlow()
++
+     init {
+         getListSaveDocument()
+     }
+ 
+-    fun returnScreenListDocument(){
++    fun returnScreenListDocument() {
+         _screensSaveDocumentsState.value = ScreensSaveDocumentsState.ListSaveDocumentsState
+     }
+ 
+-     private fun getListSaveDocument(){
+-        val directory = context.getExternalFilesDir(null)
+-        val groupListSaveDocument:List<Document> = directory?.listFiles()?.toList()?.groupBy { it.nameWithoutExtension }?.map {(name,values)->
+-            val pdf = values.find { it.extension == "pdf"}
+-
+-            if (pdf!=null && name != "roof"){
+-                Document(name,pdf, )
++    private fun getListSaveDocument() {
++        viewModelScope.launch(Dispatchers.IO) {
++            val files = context.getExternalFilesDir(null)?.listFiles() ?: run {
++                _listSaveDocument.value = emptyList()
++                return@launch
+             }
+-            else{null}
+-        }?.filterNotNull()?: listOf()
+ 
+-        _listSaveDocument.value = groupListSaveDocument
++            _listSaveDocument.value =
++                files
++                    .groupBy { it.nameWithoutExtension }
++                    .mapNotNull { (name, values) ->
++                        val pdf = values.find { it.extension == "pdf" } ?: return@mapNotNull null
++                        if (name != "roof") Document(name, pdf) else null
++                    }
++        }
+     }
+-    fun openDocument(document: Document){
++
++    fun openDocument(document: Document) {
+ 
+-        if (document.pdf !=null){
+-            _listBitmap.value = renderPDF(document.pdf,viewModelScope)
+-           _screensSaveDocumentsState.value = ScreensSaveDocumentsState.DrawDocumentState
++        if (document.pdf != null) {
++            _listBitmap.value = renderPDF(document.pdf, viewModelScope)
++            _screensSaveDocumentsState.value = ScreensSaveDocumentsState.DrawDocumentState
+         }
+     }
+-    fun shareFile(context: Context,document: Document){
+-        sharePDFFile(context,document.pdf)
++
++    fun shareFile(context: Context, document: Document) {
++        sharePDFFile(context, document.pdf)
+     }
+ 
+     fun deleteFile(
+         context: Context,
+-        document: Document){
++        document: Document
++    ) {
+         _listSaveDocument.update { list -> list.filterNot { it.name == document.name } }
+         try {
+             val directory = context.getExternalFilesDir(null)
+-            val file =File(directory,document.pdf.name)
+-            if(file.exists()){
++            val file = File(directory, document.pdf.name)
++            if (file.exists()) {
+                 file.delete()
+             }
+-        }
+-        catch (e:Exception){
+-            Log.d("deleteLog","$e")
++        } catch (e: Exception) {
++            Log.d("deleteLog", "$e")
+         }
+ 
+     }
+ }
+ 
+-sealed class ScreensSaveDocumentsState{
+-    data object ListSaveDocumentsState:ScreensSaveDocumentsState()
+-    data object DrawDocumentState:ScreensSaveDocumentsState()
++sealed class ScreensSaveDocumentsState {
++    data object ListSaveDocumentsState : ScreensSaveDocumentsState()
++    data object DrawDocumentState : ScreensSaveDocumentsState()
+ }
++
+ data class Document(
+-    val name:String,
+-    val pdf:File,
++    val name: String,
++    val pdf: File,
+ 
+-)
+\ No newline at end of file
++    )
+\ No newline at end of file
+Index: app/src/main/java/com/pavlig43/roof_app/ui/SheetParams.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/SheetParams.kt b/app/src/main/java/com/pavlig43/roof_app/ui/SheetParams.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/SheetParams.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/SheetParams.kt	(date 1726828760428)
+@@ -12,6 +12,7 @@
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.text.input.KeyboardType
+ import com.pavlig43.roof_app.model.Sheet
++import kotlin.math.absoluteValue
+ 
+ 
+ @Composable
+@@ -19,9 +20,9 @@
+     sheet: Sheet,
+     updateWidthGeneral: (Float) -> Unit,
+     updateOverlap: (Float) -> Unit,
+-    updateMultiplicity:(Float) ->Unit,
+-    isDialog:Boolean = false,
+-    closeDialog:()->Unit ={},
++    updateMultiplicity: (Float) -> Unit,
++    isDialog: Boolean = false,
++    closeDialog: () -> Unit = {},
+     modifier: Modifier = Modifier
+ ) {
+     Column(modifier = modifier) {
+@@ -40,9 +41,11 @@
+             sheet.multiplicity,
+             onValueChange = updateMultiplicity
+         )
+-        Text("*Кратность - округление расчетной длины листа в большую сторону. " +
+-                "Например при длине листа 243 см и кратности 5 см результат будет 245 см")
+-        if (isDialog){
++        Text(
++            "*Кратность - округление расчетной длины листа в большую сторону. " +
++                    "Например при длине листа 243 см и кратности 5 см результат будет 245 см"
++        )
++        if (isDialog) {
+             Button(onClick = closeDialog) {
+                 Text("OK")
+             }
+@@ -58,10 +61,14 @@
+     onValueChange: (Float) -> Unit,
+     modifier: Modifier = Modifier
+ ) {
+-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+-        Text(text = "$nameField", modifier.fillMaxWidth(0.4f))
++    Row(
++        modifier = modifier.fillMaxWidth(),
++        verticalAlignment = Alignment.CenterVertically
++    ) {
++        Text(text = nameField, modifier.fillMaxWidth(0.4f))
+         TextField(
+-            value = if (value == 0f) "" else value.toInt().toString(),
++            // value.takeIf { value != 0F }?.toInt()?.toString() ?: ""
++            value = if (value.absoluteValue < 10e-4f) "" else value.toInt().toString(),
+             onValueChange = { onValueChange(it.toFloatOrNull() ?: 0f) },
+             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+         )
+Index: app/src/main/java/com/pavlig43/roof_app/ui/params_dot_shape/ParamsDotRow.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/params_dot_shape/ParamsDotRow.kt b/app/src/main/java/com/pavlig43/roof_app/ui/params_dot_shape/ParamsDotRow.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/params_dot_shape/ParamsDotRow.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/params_dot_shape/ParamsDotRow.kt	(date 1726829119760)
+@@ -31,19 +31,20 @@
+     onValueChange: (Float) -> Unit,
+     axis: String = "Y",
+     canChangePlus: Boolean = false,
+-    plus:Boolean,
+-    canChangeAxis:Boolean,
+-    changePlus:()->Unit,
++    plus: Boolean,
++    canChangeAxis: Boolean,
++    changePlus: () -> Unit,
+ 
+     modifier: Modifier = Modifier
+ ) {
+ 
+ 
+-
+     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+-        Text(text = "Отклонение по $axis (см)", modifier = Modifier
+-            .padding(end = 4.dp)
+-            .weight(0.55f))
++        Text(
++            text = "Отклонение по $axis (см)", modifier = Modifier
++                .padding(end = 4.dp)
++                .weight(0.55f)
++        )
+         if (canChangePlus) {
+             Button(onClick = changePlus, modifier = Modifier.weight(0.2f)) {
+                 Icon(
+@@ -51,16 +52,16 @@
+                     contentDescription = null
+                 )
+             }
+-        }
+-        else{
++        } else {
+             Spacer(modifier = Modifier.weight(0.2f))
+         }
+         TextField(
+-            value = if (value==0f)"" else value.toInt().toString(),
++            value = if (value == 0f) "" else value.toInt().toString(),
+             readOnly = !canChangeAxis,
+             onValueChange = { it: String ->
+-                val newValue =  it.toIntOrNull()?:0
+-                onValueChange(if (plus) newValue.toFloat() else - newValue.toFloat()) },
++                val newValue = it.toIntOrNull() ?: 0
++                onValueChange(if (plus) newValue.toFloat() else -newValue.toFloat())
++            },
+             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+             modifier = Modifier.weight(0.35f)
+         )
+Index: app/src/main/java/com/pavlig43/roof_app/ui/calculation_tile_4scat/CalculationTile4ScatViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/calculation_tile_4scat/CalculationTile4ScatViewModel.kt b/app/src/main/java/com/pavlig43/roof_app/ui/calculation_tile_4scat/CalculationTile4ScatViewModel.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/calculation_tile_4scat/CalculationTile4ScatViewModel.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/calculation_tile_4scat/CalculationTile4ScatViewModel.kt	(date 1726829822197)
+@@ -14,12 +14,9 @@
+ import com.pavlig43.roof_app.model.updateOverlap
+ import com.pavlig43.roof_app.model.updateWidthGeneral
+ import com.pavlig43.roof_app.utils.checkSaveName
+-import com.pavlig43.roof_app.utils.createFile
+-import com.pavlig43.roof_app.utils.pdfResult4Side
+ import com.pavlig43.roof_app.utils.renderPDF
+ import com.pavlig43.roof_app.utils.saveFilePDF
+ import com.pavlig43.roof_app.utils.sharePDFFile
+-import dagger.hilt.android.lifecycle.HiltViewModel
+ import kotlinx.coroutines.flow.MutableStateFlow
+ import kotlinx.coroutines.flow.SharingStarted
+ import kotlinx.coroutines.flow.StateFlow
+@@ -28,7 +25,6 @@
+ import kotlinx.coroutines.flow.stateIn
+ import kotlinx.coroutines.flow.update
+ import java.io.File
+-import javax.inject.Inject
+ 
+ 
+ class CalculationTile4ScatViewModel : ViewModel() {
+@@ -145,13 +141,13 @@
+ 
+     }
+     fun saveFile(context: Context){
+-        saveFilePDF(context, _pdfFile.value, saveNameFile = _saveNameFile.value.name)
++        context.saveFilePDF(_pdfFile.value, saveNameFile = _saveNameFile.value.name)
+         Log.d("save",_saveNameFile.value.name)
+ 
+ 
+     }
+     fun checkName(newName:String, context: Context,){
+-        val isValid = checkSaveName(newName, context)
++        val isValid = context.checkSaveName(newName)
+ 
+         _saveNameFile.update { it.copy(name = newName, isValid = isValid)}
+ 
+Index: app/src/main/java/com/pavlig43/roof_app/ui/LoadDocumentImages.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/LoadDocumentImages.kt b/app/src/main/java/com/pavlig43/roof_app/ui/LoadDocumentImages.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/LoadDocumentImages.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/LoadDocumentImages.kt	(date 1726828760436)
+@@ -23,7 +23,6 @@
+ ) {
+     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+     LazyColumn {
+-
+         items(listBitmap) {
+             Image(
+                 bitmap = it.asImageBitmap(),
+Index: app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesMainScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesMainScreen.kt b/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesMainScreen.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesMainScreen.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesMainScreen.kt	(date 1726828760424)
+@@ -22,7 +22,6 @@
+ import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
+ import androidx.hilt.navigation.compose.hiltViewModel
+-import com.pavlig43.roof_app.R
+ import com.pavlig43.roof_app.ui.ResultImagesFromPDF
+ import com.pavlig43.roof_app.ui.shapes.quadrilateral.QuadroChoice
+ import com.pavlig43.roof_app.ui.shapes.triangle.TriangleChoice
+@@ -42,29 +41,29 @@
+     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+         when (shapesScreenState) {
+             is ShapesScreenState.ShapesMain -> ChoiceShape(moveToShape = shapesViewModel::moveToShape)
+-            is ShapesScreenState.Triangle -> TriangleChoice (
++            is ShapesScreenState.Triangle -> TriangleChoice(
+                 openDocument = shapesViewModel::openDocument,
+                 sheet = sheet,
+                 updateMultiplicity = shapesViewModel::changeMultiplicity,
+                 updateOverlap = shapesViewModel::changeOverlap,
+                 updateWidthGeneral = shapesViewModel::changeWidthOfSheet
+-
+             )
++
+             is ShapesScreenState.Quadrilateral -> QuadroChoice(
+                 openDocument = shapesViewModel::openDocument,
+                 sheet = sheet,
+                 updateMultiplicity = shapesViewModel::changeMultiplicity,
+                 updateOverlap = shapesViewModel::changeOverlap,
+                 updateWidthGeneral = shapesViewModel::changeWidthOfSheet
+-                )
++            )
+ 
+             is ShapesScreenState.LoadDocumentImage -> ResultImagesFromPDF(
+                 listBitmap = listBitmap,
+                 returnToCalculateScreen = shapesViewModel::returnCalculateTriangleScreen,
+-                shareFile = {shapesViewModel.shareFile(context)},
++                shareFile = { shapesViewModel.shareFile() },
+                 nameFile = nameFile,
+-                saveFile = {shapesViewModel.saveFile(context)},
+-                checkSaveName = {newName->shapesViewModel.checkName(newName, context)}
++                saveFile = { shapesViewModel.saveFile(context) },
++                checkSaveName = { newName -> shapesViewModel.checkName(newName, context) }
+             )
+ 
+ 
+@@ -76,26 +75,23 @@
+ @Composable
+ fun ChoiceShape(
+     modifier: Modifier = Modifier,
+-    moveToShape: (String) -> Unit,
++    moveToShape: (Shapes) -> Unit,
+ 
+ 
+     ) {
++    val scrollState = rememberScrollState()
+     Column(
+         modifier = modifier
+-
+             .fillMaxWidth()
+-            .verticalScroll(rememberScrollState())
++            .verticalScroll(scrollState)
+     ) {
+-        CardShape(
+-            imageShape = R.drawable.triangle,
+-            shapeName = "Треугольник",
+-            moveToShape = moveToShape
+-        )
+-        CardShape(
+-            imageShape = R.drawable.quadro,
+-            shapeName = "4-угольник",
+-            moveToShape = moveToShape
+-        )
++        Shapes.entries.forEach { shape ->
++            CardShape(
++                imageShape = shape.imageRes,
++                shapeName = shape.readableName,
++                moveToShape = moveToShape
++            )
++        }
+     }
+ }
+ 
+@@ -103,15 +99,14 @@
+ fun CardShape(
+     imageShape: Int,
+     shapeName: String,
+-    moveToShape: (String) -> Unit,
++    moveToShape: (Shapes) -> Unit,
+     modifier: Modifier = Modifier
+ ) {
+ 
+     Card(modifier = modifier
+         .fillMaxWidth()
+         .padding(bottom = 8.dp)
+-        .clickable { moveToShape(shapeName)
+-            }) {
++        .clickable { moveToShape(shapeName) }) {
+         Row(
+             modifier = Modifier.fillMaxWidth(),
+             verticalAlignment = Alignment.CenterVertically
+Index: app/src/main/java/com/pavlig43/roof_app/RoofApp.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/RoofApp.kt b/app/src/main/java/com/pavlig43/roof_app/RoofApp.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/RoofApp.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/RoofApp.kt	(date 1726826652870)
+@@ -4,5 +4,5 @@
+ import dagger.hilt.android.HiltAndroidApp
+ 
+ @HiltAndroidApp
+-class RoofApp:Application() {
++class RoofApp : Application() {
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/pavlig43/roof_app/utils/FIleUtils.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/utils/FIleUtils.kt b/app/src/main/java/com/pavlig43/roof_app/utils/FIleUtils.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/utils/FIleUtils.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/utils/FIleUtils.kt	(date 1726829822192)
+@@ -2,10 +2,11 @@
+ 
+ import android.content.Context
+ import android.content.Intent
+-import android.graphics.Color
+ import android.graphics.Paint
+ import android.graphics.pdf.PdfDocument
++import android.os.Environment
+ import android.text.TextPaint
++import androidx.annotation.RequiresPermission
+ import androidx.core.content.FileProvider
+ import com.pavlig43.roof_app.A4HEIGHT
+ import com.pavlig43.roof_app.A4WIDTH
+@@ -21,14 +22,15 @@
+ /**
+  * Запускает окно, чтобы поделиться файлом в приложении на выбор
+  */
+-fun sharePDFFile(context: Context, pdfFile: File){
+-    val uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider",
++fun sharePDFFile(context: Context, pdfFile: File) {
++    val uri = FileProvider.getUriForFile(
++        context, BuildConfig.APPLICATION_ID + ".provider",
+         pdfFile
+     )
+     val sharedIntent = Intent().apply {
+         action = Intent.ACTION_SEND
+         type = "application/pdf"
+-        putExtra(Intent.EXTRA_STREAM,uri)
++        putExtra(Intent.EXTRA_STREAM, uri)
+     }
+     context.startActivity(Intent.createChooser(sharedIntent, "Отправить"))
+ 
+@@ -37,27 +39,29 @@
+ /**
+  * Сохраняет файл с переданным именем в хранилище, файл можно посмотреть только из приложения, доступа к нему из других приложений нет
+  */
+-fun saveFilePDF(context: Context, pdfFile: File?, saveNameFile: String){
+-    if (pdfFile !=null){
+-        val fileDPF = File(context.getExternalFilesDir(null),"$saveNameFile.pdf")
+-        FileOutputStream(fileDPF).use { outputStream->
+-            pdfFile!!.inputStream().use { inputStream->
+-                inputStream.copyTo(outputStream)
+-            }
++@RequiresPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
++fun Context.saveFilePDF(pdfFile: File, saveNameFile: String) {
++    val fileDPF = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "$saveNameFile.pdf")
++    FileOutputStream(fileDPF).use { outputStream ->
++        pdfFile.inputStream().use { inputStream ->
++            inputStream.copyTo(outputStream)
+         }
+-
+-
+     }
+-
+ }
+ 
+ /**
+  * Проверяет , есть ли документ с переданным именем в списке документов в хранилище данного приложения для ПДФ
+  */
+-fun checkSaveName(newName:String, context: Context,): Boolean {
+-    val directory = context.getExternalFilesDir(null)
+-    val listOfFiles =  directory?.listFiles()?.toList()?.map { it.name.split("/").last().replace(".pdf","") } ?: emptyList()
+-    return newName.isNotEmpty() && newName !in listOfFiles
++fun Context.checkSaveName(newName: String): Boolean {
++    require(newName.isNotEmpty()) {"newName must not be empty string"}
++    val directory = getExternalFilesDir(null)
++    val listFiles = directory?.listFiles() ?: return false
++    val listOfFiles =
++        listFiles.toList()
++            .map { it.name.split("/")
++                .last()
++                .replace(".pdf", "") }
++    return newName !in listOfFiles
+ 
+ }
+ 
+@@ -75,11 +79,11 @@
+  */
+ fun PdfDocument.pdfResult4Side(
+     geometry4SideShape: Geometry4SideShape,
+-    pageNumber:Int,
++    pageNumber: Int,
+     single: Boolean = false,
+     sheet: Sheet,
+ 
+-): MutableList<Sheet> {
++    ): MutableList<Sheet> {
+ 
+     val quadroPDF = QuadroPDF(geometry4SideShape, sheet)
+ 
+@@ -93,13 +97,19 @@
+     quadroPDF.sheetOnQuadro(canvas)
+     this.finishPage(page)
+     val listOfSheet = quadroPDF.getLstOfSheet()
+-    if (single){
++    if (single) {
+         val otherParams = quadroPDF.getOtherParams()
+-        this.addInfo(listOfSheet, fullRoof = false, pageNumber = pageNumber+1, otherParams = otherParams)
++        this.addInfo(
++            listOfSheet,
++            fullRoof = false,
++            pageNumber = pageNumber + 1,
++            otherParams = otherParams
++        )
+     }
+     return listOfSheet
+ 
+ }
++
+ /**
+  * В ПДФ документ вставляет рисунок 3х-угольника уже заполненный листами металла
+  * и возвращает длины всех листов
+@@ -107,8 +117,8 @@
+  */
+ fun PdfDocument.pdfResult3SideTriangle(
+     geometryTriangle3SideShape: GeometryTriangle3SideShape,
+-    pageNumber:Int,
+-    single:Boolean = false,
++    pageNumber: Int,
++    single: Boolean = false,
+     sheet: Sheet,
+ 
+     ): MutableList<Sheet> {
+@@ -124,9 +134,14 @@
+     trianglePDF.sheetOnTriangle(canvas)
+     this.finishPage(page)
+     val listOfSheet = trianglePDF.getLstOfSheet()
+-    if (single){
++    if (single) {
+         val otherParams = trianglePDF.getOtherParams()
+-        this.addInfo(listOfSheet, fullRoof = false, pageNumber = pageNumber+1, otherParams = otherParams)
++        this.addInfo(
++            listOfSheet,
++            fullRoof = false,
++            pageNumber = pageNumber + 1,
++            otherParams = otherParams
++        )
+     }
+     return listOfSheet
+ }
+@@ -138,40 +153,54 @@
+  */
+ fun PdfDocument.addInfo(
+     listOfSheet: List<Sheet>,
+-    fullRoof:Boolean = false,
+-    otherParams:List<Pair<String,String>> = listOf(),
+-     paintText: TextPaint = TextPaint().apply {
++    fullRoof: Boolean = false,
++    otherParams: List<Pair<String, String>> = listOf(),
++    paintText: TextPaint = TextPaint().apply {
+         textSize = 20f
+         flags = flags or Paint.UNDERLINE_TEXT_FLAG
+     },
+-    pageNumber:Int,
+-    ){
++    pageNumber: Int,
++) {
+     val pageInfo = PdfDocument.PageInfo.Builder(A4WIDTH, A4HEIGHT, pageNumber).create()
+     val page = this.startPage(pageInfo)
+     val canvas = page.canvas
+     val x = A4WIDTH * 0.05f
+-    val startY = A4HEIGHT *0.05f
++    val startY = A4HEIGHT * 0.05f
+     val textTrasfer = AddVerticalPaddingForLineText(startY)
+ 
+-    canvas.drawText("Все листы",x,textTrasfer.addTransferText(),paintText)
++    canvas.drawText("Все листы", x, textTrasfer.addTransferText(), paintText)
+     val orderSheet = listOfSheet.groupingBy { it.ceilLen }.eachCount().toSortedMap()
+     orderSheet.forEach { (k, v) ->
+         canvas.drawText(
+-            "$k cm = ${if (fullRoof) v*2 else v}",
++            "$k cm = ${if (fullRoof) v * 2 else v}",
+             x,
+             textTrasfer.addTransferText(),
+             paintText
+         )
+     }
+-    repeat(2){ textTrasfer.addTransferText()}
+-    canvas.drawText("Общая ширина листа -  ${listOfSheet.first().widthGeneral.toInt()} cm",x,textTrasfer.addTransferText(),paintText)
+-    canvas.drawText("Рабочая ширина листа -  ${listOfSheet.first().visible.toInt()} cm",x,textTrasfer.addTransferText(),paintText)
+-    canvas.drawText("Перехлест -  ${listOfSheet.first().overlap.toInt()} cm",x,textTrasfer.addTransferText(),paintText)
++    repeat(2) { textTrasfer.addTransferText() }
++    canvas.drawText(
++        "Общая ширина листа -  ${listOfSheet.first().widthGeneral.toInt()} cm",
++        x,
++        textTrasfer.addTransferText(),
++        paintText
++    )
++    canvas.drawText(
++        "Рабочая ширина листа -  ${listOfSheet.first().visible.toInt()} cm",
++        x,
++        textTrasfer.addTransferText(),
++        paintText
++    )
++    canvas.drawText(
++        "Перехлест -  ${listOfSheet.first().overlap.toInt()} cm",
++        x,
++        textTrasfer.addTransferText(),
++        paintText
++    )
+ 
+-    repeat(2){ textTrasfer.addTransferText()}
++    repeat(2) { textTrasfer.addTransferText() }
+ 
+-    otherParams.forEach {
+-            (k, v) ->
++    otherParams.forEach { (k, v) ->
+         canvas.drawText(
+             "$k = $v",
+             x,
+Index: app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesViewModel.kt b/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesViewModel.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesViewModel.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/shapes/ShapesViewModel.kt	(date 1726829822189)
+@@ -1,8 +1,9 @@
+ package com.pavlig43.roof_app.ui.shapes
+ 
++import android.app.Application
+ import android.content.Context
+ import android.graphics.Bitmap
+-import androidx.lifecycle.ViewModel
++import androidx.lifecycle.AndroidViewModel
+ import androidx.lifecycle.viewModelScope
+ import com.pavlig43.roof_app.model.Sheet
+ import com.pavlig43.roof_app.model.updateMultiplicity
+@@ -14,90 +15,94 @@
+ import com.pavlig43.roof_app.utils.saveFilePDF
+ import com.pavlig43.roof_app.utils.sharePDFFile
+ import dagger.hilt.android.lifecycle.HiltViewModel
++import dagger.hilt.android.qualifiers.ApplicationContext
+ import kotlinx.coroutines.flow.MutableStateFlow
++import kotlinx.coroutines.flow.StateFlow
+ import kotlinx.coroutines.flow.asStateFlow
+ import kotlinx.coroutines.flow.update
+ import java.io.File
+ import javax.inject.Inject
+ 
+ @HiltViewModel
+-class ShapesViewModel @Inject constructor() : ViewModel() {
++class ShapesViewModel @Inject constructor(
++    @ApplicationContext private val application: Application
++) : AndroidViewModel(application) {
+ 
+-    private val _shapesScreenState: MutableStateFlow<ShapesScreenState> =
+-        MutableStateFlow(ShapesScreenState.ShapesMain)
++    private val _shapesScreenState =
++        MutableStateFlow<ShapesScreenState>(ShapesScreenState.ShapesMain)
+     val shapesScreenState = _shapesScreenState.asStateFlow()
+ 
+ 
+     /**
+      * Список страниц ПДФ файла для отображения на экране
+      */
+-    private val _listBitmap:MutableStateFlow<List<Bitmap>> = MutableStateFlow(listOf())
++    private val _listBitmap = MutableStateFlow<List<Bitmap>>(listOf())
+     val listBitmap = _listBitmap.asStateFlow()
+ 
+     /**
+-     * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится , а потом только показывается на экране
++     * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится ,
++     * а потом только показывается на экране
+      */
+-    private val _pdfFile:MutableStateFlow<File?> = MutableStateFlow(null)
++    private val _pdfFile: MutableStateFlow<File?> = MutableStateFlow(null)
++    val pdfFile: StateFlow<File?> = _pdfFile.asStateFlow()
+ 
+     /**
+      * Имя файла, с которым можно сохранить документ ПДФ,
+      * в [checkName] проверяет есть ли уже такое в хранилище
+      */
+-    private val  _saveNameFile:MutableStateFlow<SaveNameFile> = MutableStateFlow(SaveNameFile())
++    private val _saveNameFile: MutableStateFlow<SaveNameFile> = MutableStateFlow(SaveNameFile())
+     val saveNameFile = _saveNameFile.asStateFlow()
+ 
+-    private val _sheet:MutableStateFlow<Sheet> = MutableStateFlow(Sheet())
++    private val _sheet: MutableStateFlow<Sheet> = MutableStateFlow(Sheet())
+     val sheet = _sheet.asStateFlow()
+ 
+ 
+-
+-
+-
+-    fun moveToShape(shapeName:String){
+-        when(shapeName){
+-            "Треугольник"-> _shapesScreenState.value = ShapesScreenState.Triangle
+-            "4-угольник" ->_shapesScreenState.value = ShapesScreenState.Quadrilateral
++    fun moveToShape(shapeName: Shapes) {
++        _shapesScreenState.value = when (shapeName) {
++            Shapes.Triangle -> ShapesScreenState.Triangle
++            Shapes.Quadrilateral -> ShapesScreenState.Quadrilateral
+         }
+     }
+ 
+-    fun returnCalculateTriangleScreen(){
++    fun returnCalculateTriangleScreen() {
+         _shapesScreenState.value = ShapesScreenState.Triangle
+     }
+ 
+-    fun changeWidthOfSheet(newWidth: Float){
++    fun changeWidthOfSheet(newWidth: Float) {
+         _sheet.value = _sheet.value.updateWidthGeneral(newWidth)
+     }
+-    fun changeOverlap(newOverlap:Float){
++
++    fun changeOverlap(newOverlap: Float) {
+         _sheet.value = _sheet.value.updateOverlap(newOverlap)
+     }
+ 
+-    fun changeMultiplicity(newMultiplicity:Float){
+-       _sheet.update { it.updateMultiplicity(newMultiplicity) }
++    fun changeMultiplicity(newMultiplicity: Float) {
++        _sheet.update { it.updateMultiplicity(newMultiplicity) }
+     }
+ 
+-    fun openDocument(file: File){
++    fun openDocument(file: File) {
+         _pdfFile.value = file
+-        _listBitmap.value = renderPDF(_pdfFile.value!!,viewModelScope)
++        _listBitmap.value = renderPDF(file, viewModelScope)
+         _shapesScreenState.value = ShapesScreenState.LoadDocumentImage
+     }
+-    fun checkName(newName:String,context: Context){
+-        val isValid = checkSaveName(newName, context)
+-        _saveNameFile.update { it.copy(name = newName,isValid=isValid) }
++
++    fun checkName(newName: String, context: Context) {
++        val isValid = context.checkSaveName(newName)
++        _saveNameFile.update { it.copy(name = newName, isValid = isValid) }
+     }
+-    fun saveFile(context: Context){
+-        saveFilePDF(context, _pdfFile.value, saveNameFile = _saveNameFile.value.name)
++
++    fun saveFile(context: Context) {
++        context.saveFilePDF(_pdfFile.value, saveNameFile = _saveNameFile.value.name)
+     }
+-    fun shareFile(context: Context){
+-        if (_pdfFile.value !=null){
+-            sharePDFFile(context,_pdfFile.value!!)
+-        }
+ 
++    fun shareFile() {
++        pdfFile.value?.let { pdfFile -> sharePDFFile(application, pdfFile) }
+     }
+ }
+ 
+ sealed class ShapesScreenState {
+     data object ShapesMain : ShapesScreenState()
+     data object Triangle : ShapesScreenState()
+-    data object LoadDocumentImage:ShapesScreenState()
+-    data object Quadrilateral:ShapesScreenState()
++    data object LoadDocumentImage : ShapesScreenState()
++    data object Quadrilateral : ShapesScreenState()
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/pavlig43/roof_app/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/MainActivity.kt b/app/src/main/java/com/pavlig43/roof_app/MainActivity.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/MainActivity.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/MainActivity.kt	(date 1726826652875)
+@@ -32,39 +32,45 @@
+ 
+         super.onCreate(savedInstanceState)
+         setContent {
+-
+             Roof_appTheme {
+-                val drawerState = rememberDrawerState(DrawerValue.Closed)
+-                val coroutineScope = rememberCoroutineScope()
+-                val navHostController = rememberNavController()
+-                val scrollState = rememberScrollState()
+-                DrawerNavigation(
+-                    drawerState = drawerState,
+-                    navController = navHostController,
+-                    scrollState = scrollState,
+-                    coroutineScope = coroutineScope,
+-                    content = {
+-                        Scaffold(topBar = { RoofAppBar(openNavigationDrawer = { coroutineScope.launch { drawerState.open() } }) }) { innerPadding ->
+-                            Box(modifier = Modifier.padding(innerPadding)) {
+-                                NavigationGraph(
+-                                    navController = navHostController,
+-
+-                                    )
+-                            }
+-                        }
+-                    })
++                AppContent()
++            }
++        }
++    }
++}
++
++@Composable
++private fun AppContent() {
++    val drawerState = rememberDrawerState(DrawerValue.Closed)
++    val coroutineScope = rememberCoroutineScope()
++    val navHostController = rememberNavController()
++    val scrollState = rememberScrollState()
++    DrawerNavigation(
++        drawerState = drawerState,
++        navController = navHostController,
++        scrollState = scrollState,
++        coroutineScope = coroutineScope,
++        content = {
++            Scaffold(topBar = {
++                RoofAppBar(
++                    openNavigationDrawer = { coroutineScope.launch { drawerState.open() } }
++                )
++            }) { innerPadding ->
++                Box(modifier = Modifier.padding(innerPadding)) {
++                    NavigationGraph(
++                        navController = navHostController,
++                    )
++                }
+             }
+         }
+-    }
+-
++    )
+ }
+ 
+ 
+ @OptIn(ExperimentalMaterial3Api::class)
+ @Composable
+ fun RoofAppBar(
+-    openNavigationDrawer: () -> Unit,
+-    modifier: Modifier = Modifier
++    openNavigationDrawer: () -> Unit
+ ) {
+ 
+     CenterAlignedTopAppBar(
+Index: app/src/main/java/com/pavlig43/roof_app/utils/calculateCmInM.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/utils/calculateCmInM.kt b/app/src/main/java/com/pavlig43/roof_app/utils/calculateCmInM.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/utils/calculateCmInM.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/utils/calculateCmInM.kt	(date 1726829822186)
+@@ -6,10 +6,12 @@
+  * поставил 3 знака после запятой (Излишество, но может быть влияет на точность расчетов)
+  * TODO() Нужно убрать эту функцию и все расчеты и взаимодействия с пользователем вести в см
+  */
+-fun calculateCmInM(newValue:String): Double {
+-    return newValue.toDoubleOrNull()
+-        ?.div(100)
+-        ?.let {it1-> String.format("%.3f", it1)
+-            .replace(",",".").toDouble() }
+-        ?:0.0
++fun calculateCmInM(newValue: String): Double {
++    return newValue.toDoubleOrNull() ?: return 0.0
++        .div(100)
++        .let { it1 ->
++            "%.3f".format(it1)
++                .replace(",", ".")
++                .toDouble()
++        }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/pavlig43/roof_app/utils/RenderPDF.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/utils/RenderPDF.kt b/app/src/main/java/com/pavlig43/roof_app/utils/RenderPDF.kt
+--- a/app/src/main/java/com/pavlig43/roof_app/utils/RenderPDF.kt	(revision 1e34bf1a3bd1d1cb24ef157cdea6895463980456)
++++ b/app/src/main/java/com/pavlig43/roof_app/utils/RenderPDF.kt	(date 1726828760442)
+@@ -4,24 +4,28 @@
+ import android.graphics.pdf.PdfRenderer
+ import android.os.ParcelFileDescriptor
+ import kotlinx.coroutines.CoroutineScope
++import kotlinx.coroutines.flow.Flow
++import kotlinx.coroutines.flow.flow
++import kotlinx.coroutines.flow.map
++import kotlinx.coroutines.flow.onCompletion
+ import kotlinx.coroutines.launch
+ import java.io.File
+ 
+ /**
+  * Функция из файла ПДФ рендерит список bitmap, который потом используется для отображения на экране
+- * в composable Image в  LazyColumn
++ * в composable Image в LazyColumn
+  */
+ fun renderPDF(
+     file: File,
+     coroutineScope: CoroutineScope,
+ ): MutableList<Bitmap> {
+ 
++
+     val bitmaps: MutableList<Bitmap> = mutableListOf()
+     coroutineScope.launch {
+         val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+         val pdfRender = PdfRenderer(fileDescriptor)
+ 
+-
+         for (pageNumber in 0 until pdfRender.pageCount) {
+ 
+             val page = pdfRender.openPage(pageNumber)
+@@ -35,4 +39,30 @@
+         }
+     }
+     return bitmaps
++}
++
++fun renderPDFasFlow(
++    file: File,
++): Flow<Bitmap> {
++
++    val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
++    val pdfRender = PdfRenderer(fileDescriptor)
++    return flow{
++        repeat(pdfRender.pageCount) { pageNumber ->
++            emit(pageNumber)
++        }
++    }.map { pageNumber ->
++        val page = pdfRender.openPage(pageNumber)
++        // ширина и высота делится на 2, так как по умолчанию у рендеренной картинки низкое качество изображения
++        val bitmap =
++            Bitmap.createBitmap(page.width * 2, page.height * 2, Bitmap.Config.ARGB_8888)
++        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
++        try {
++            bitmap
++        } finally {
++            page.close()
++        }
++    }.onCompletion {
++        fileDescriptor.close()
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/pavlig43/roof_app/ui/shapes/Shapes.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/pavlig43/roof_app/ui/shapes/Shapes.kt b/app/src/main/java/com/pavlig43/roof_app/ui/shapes/Shapes.kt
+new file mode 100644
+--- /dev/null	(date 1726828760448)
++++ b/app/src/main/java/com/pavlig43/roof_app/ui/shapes/Shapes.kt	(date 1726828760448)
+@@ -0,0 +1,12 @@
++package com.pavlig43.roof_app.ui.shapes
++
++import androidx.annotation.DrawableRes
++import com.pavlig43.roof_app.R
++
++enum class Shapes(
++    @DrawableRes val imageRes: Int,
++    val readableName: String,
++) {
++    Triangle(R.drawable.triangle, "Треугольник"),
++    Quadrilateral(R.drawable.quadro, "4-угольник")
++}
+\ No newline at end of file

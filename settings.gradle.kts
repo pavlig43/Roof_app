@@ -16,10 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-
     }
 }
 
+
 rootProject.name = "Roof_app"
 include(":app")
- 
+include(":mathBigDecimal")
+include(":lib")

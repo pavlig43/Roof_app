@@ -4,7 +4,7 @@
 
 
     <application
-        android:name=".RoofApp"
+        android:name="com.pavlig43.roofapp.RoofApp"
         android:exported="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -25,9 +25,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
-            android:name=".MainActivity"
+            android:name="com.pavlig43.roofapp.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Roof_app">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
