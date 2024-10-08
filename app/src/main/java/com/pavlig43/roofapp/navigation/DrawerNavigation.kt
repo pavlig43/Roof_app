@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.CoroutineScope
@@ -68,13 +69,11 @@ fun DrawerItem(
     screenDestination: ScreensDestination,
     selectedScreen: String,
     toNavigate: (String) -> Unit = {},
-
 ) {
     NavigationDrawerItem(
-        label = { Text(text = screenDestination.title) },
+        label = { Text(text = stringResource(screenDestination.title))  },
         selected = screenDestination.route == selectedScreen,
         icon = { },
         onClick = { toNavigate(screenDestination.route) },
-//        colors = NavigationDrawerItemDefaults.colors(selectedContainerColor = MaterialTheme.colorScheme.onSurface)
     )
 }

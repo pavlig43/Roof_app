@@ -17,9 +17,7 @@ import androidx.compose.ui.unit.dp
  * Отображает список картинок(bitmap - страниц файла ПДФ)
  */
 @Composable
-fun LoadDocumentImages(
-    listBitmap: List<Bitmap>,
-) {
+fun LoadDocumentImages(listBitmap: List<Bitmap>) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     LazyColumn {
         items(listBitmap) {

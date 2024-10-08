@@ -37,8 +37,11 @@ fun renderPDF(
     return bitmaps
 }
 
+
+
 fun renderPDFasFlow(file: File): Flow<Bitmap> {
     val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+
     val pdfRender = PdfRenderer(fileDescriptor)
     return flow {
         repeat(pdfRender.pageCount) { pageNumber ->
@@ -50,10 +53,8 @@ fun renderPDFasFlow(file: File): Flow<Bitmap> {
         val bitmap =
             Bitmap.createBitmap(page.width * 2, page.height * 2, Bitmap.Config.ARGB_8888)
         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
-        try {
+        page.use { page ->
             bitmap
-        } finally {
-            page.close()
         }
     }.onCompletion {
         fileDescriptor.close()

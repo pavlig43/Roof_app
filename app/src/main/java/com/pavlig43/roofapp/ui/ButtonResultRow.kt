@@ -7,6 +7,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.pavlig43.roof_app.R
 
 /**
  * Получть результат - должна выводить на экран ПДФ документ
@@ -24,10 +26,10 @@ fun ButtonResultRow(
         modifier = modifier.fillMaxWidth(),
     ) {
         Button(onClick = openSheetParams) {
-            Text(text = "Параметры листа")
+            Text(text = stringResource(R.string.sheet_params))
         }
         Button(onClick = getResult) {
-            Text(text = "Получить результат")
+            Text(text = stringResource(R.string.get_result))
         }
     }
 }

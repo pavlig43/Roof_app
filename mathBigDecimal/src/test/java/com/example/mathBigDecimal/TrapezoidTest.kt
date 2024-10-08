@@ -17,6 +17,6 @@ class TrapezoidTest {
     fun `calculate small foot from bigfoot and two edge and height of trapezoid2`(){
         val smallFoot = Trapezoid.smallFoot(BigDecimal(1100),BigDecimal(600),BigDecimal("781.02496"))
 
-        assertEquals(BigDecimal("100.00"), smallFoot,)
+        assertEquals(BigDecimal("100.00"), smallFoot)
     }
 }

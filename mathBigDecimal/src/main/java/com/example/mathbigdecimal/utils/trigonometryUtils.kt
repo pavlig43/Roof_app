@@ -1,9 +1,7 @@
 package com.example.mathbigdecimal.utils
 
 import java.math.BigDecimal
-import java.math.MathContext
 import java.math.RoundingMode
-import kotlin.math.atan2
 
 
 fun hypot(
@@ -15,9 +13,10 @@ fun hypot(
     return BigDecimal(a).setScale(2,RoundingMode.HALF_UP)
 }
 
-fun acos(value: BigDecimal): BigDecimal {
+fun acos(value: BigDecimal): BigDecimal? {
+    val doubleValue = value.toDouble()
+    return if (doubleValue in -1.0..1.0 ) kotlin.math.acos(doubleValue).toBigDecimal() else null
 
-    return kotlin.math.acos(value.toDouble()).toBigDecimal()
 }
 fun cos(value: BigDecimal): BigDecimal {
 

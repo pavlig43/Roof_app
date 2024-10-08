@@ -2,6 +2,7 @@ package com.pavlig43.roofapp.ui.shapes.triangle
 
 import android.content.Context
 import android.graphics.pdf.PdfDocument
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.roofapp.model.Dot
@@ -9,6 +10,8 @@ import com.pavlig43.roofapp.model.DotNameTriangle3Side
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.utils.createFile
 import com.pavlig43.roofapp.utils.pdfResult3SideTriangle
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +21,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.io.File
+import javax.inject.Inject
 
-class TriangleViewModel : ViewModel() {
+@HiltViewModel
+class TriangleViewModel @Inject constructor(@ApplicationContext val context: Context) : ViewModel(
+
+) {
     private val _geometryTriangle3SideShape: MutableStateFlow<GeometryTriangle3SideShape> =
         MutableStateFlow(GeometryTriangle3SideShape())
 
@@ -37,7 +44,9 @@ class TriangleViewModel : ViewModel() {
      * Текущая точка , которая выбранна пользователем
      */
     val currentDot: StateFlow<Dot> =
-        combine(_geometryTriangle3SideShape, _currentDotName) { _, _ -> changeCurrentDot() }
+        combine(_geometryTriangle3SideShape, _currentDotName) { _, _ ->
+           changeCurrentDot()
+        }
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
@@ -59,7 +68,7 @@ class TriangleViewModel : ViewModel() {
 
         val determinant =
             (top.distanceX - leftBottom.distanceX) * (rightBottom.distanceY - leftBottom.distanceY) -
-            (top.distanceY - leftBottom.distanceY) * (rightBottom.distanceX - leftBottom.distanceX)
+                (top.distanceY - leftBottom.distanceY) * (rightBottom.distanceX - leftBottom.distanceX)
         return determinant != 0f
     }
 
@@ -115,6 +124,7 @@ class TriangleViewModel : ViewModel() {
         val file = pdfDocument.createFile(context)
         return file
     }
+
 }
 
 /**

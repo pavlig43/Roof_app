@@ -15,5 +15,3 @@ allprojects {
     plugins.withId("org.jlleitschuh.gradle.ktlint") {
     }
 }
-
-

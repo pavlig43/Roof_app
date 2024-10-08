@@ -9,6 +9,8 @@ import com.pavlig43.roofapp.model.DotName4Side
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.utils.createFile
 import com.pavlig43.roofapp.utils.pdfResult4Side
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +20,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.io.File
+import javax.inject.Inject
 
-class QuadrilateralViewModel : ViewModel() {
+@HiltViewModel
+class QuadrilateralViewModel @Inject constructor(
+    @ApplicationContext val context: Context
+) : ViewModel() {
     private val _geometry4SideShape: MutableStateFlow<Geometry4SideShape> =
         MutableStateFlow(Geometry4SideShape())
 

@@ -26,60 +26,63 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
+import com.pavlig43.roofapp.model.SheetParam
 import com.pavlig43.roofapp.ui.CalculateSheetParams
 import com.pavlig43.roofapp.ui.ResultImagesFromPDF
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 import java.math.BigDecimal
 
 @Composable
-fun CalculationTile4ScatMainScreen(
-    calculationTile4ScatViewModel: CalculationTile4ScatViewModel = hiltViewModel(),
+fun CalculationTile4ScatMainScreen() {
+    CalculationTile4ScatMainScreenp()
+}
 
-    ) {
-    val stateNavigation by calculationTile4ScatViewModel.stateNavigation.collectAsState()
+@Composable
+private fun CalculationTile4ScatMainScreenp(viewModel: CalculationTile4ScatViewModel = hiltViewModel()) {
+    val stateNavigation by viewModel.stateNavigation.collectAsState()
 
-    val paramsState by calculationTile4ScatViewModel.roofState.collectAsState()
-    val listBitmap by calculationTile4ScatViewModel.listBitmap.collectAsState()
-    val nameFile by calculationTile4ScatViewModel.saveNameFile.collectAsState()
-    val context = LocalContext.current
+    val paramsState by viewModel.roofState.collectAsState()
+    val listBitmap by viewModel.listBitmap.collectAsState()
 
-    val isValid by calculationTile4ScatViewModel.isValid.collectAsState()
+    val pdfReaderState by viewModel.pdfReaderState.collectAsState()
+    val nameFile by viewModel.saveNameFile.collectAsState()
+
+    val isValid by viewModel.isValid.collectAsState()
+
     when (stateNavigation) {
         is StateCalculationTile4Scat.ChangeCalculation ->
+
             CalculationTile4Scat(
                 paramsState,
-                changeWidth = calculationTile4ScatViewModel::changeWidth,
-                changeLen = calculationTile4ScatViewModel::changeLen,
-                updateFromHeight = calculationTile4ScatViewModel::updateFromHeight,
-                updateFromAngle = calculationTile4ScatViewModel::updateFromAngle,
-                updateFromHypotenuse = calculationTile4ScatViewModel::updateFromHypotenuse,
-                changeOverlapOfSheet = calculationTile4ScatViewModel::changeOverlap,
-                changeWidthOfSheet = calculationTile4ScatViewModel::changeWidthOfSheet,
-                changeMultiplicity = calculationTile4ScatViewModel::changeMultiplicity,
-                getResult = { calculationTile4ScatViewModel.getResult(context) },
+                changeWidth = viewModel::changeWidth,
+                changeLen = viewModel::changeLen,
+                updateFromHeight = viewModel::updateFromHeight,
+                updateFromAngle = viewModel::updateFromAngle,
+                updateFromHypotenuse = viewModel::updateFromHypotenuse,
+                getResult = viewModel::getResult,
+                updateSheetParam = viewModel::updateSheetParams,
                 isValid = isValid,
             )
 
+
         is StateCalculationTile4Scat.GetDraw ->
             ResultImagesFromPDF(
-                listBitmap = listBitmap,
-                returnToCalculateScreen = { calculationTile4ScatViewModel.returnToCalculateScreen() },
-                shareFile = { calculationTile4ScatViewModel.shareFile(context) },
-                saveFile = { calculationTile4ScatViewModel.saveFile(context) },
+
+                pdfReaderState = pdfReaderState,
+                returnToCalculateScreen = viewModel::returnToCalculateScreen,
+                shareFile = viewModel::shareFile,
+                saveFile = viewModel::saveFile,
                 nameFile = nameFile,
-                checkSaveName = { newName ->
-                    calculationTile4ScatViewModel.checkName(
-                        newName,
-                        context,
-                    )
-                },
+                checkSaveName = viewModel::checkName,
             )
     }
 }
@@ -88,34 +91,32 @@ fun CalculationTile4ScatMainScreen(
  * Экран для выбора параметров 4хскатной крыши
  */
 @Composable
-fun CalculationTile4Scat(
+private fun CalculationTile4Scat(
     paramsState: RoofParamsClassic4Scat,
     changeWidth: (BigDecimal) -> Unit,
     changeLen: (BigDecimal) -> Unit,
     updateFromHeight: (BigDecimal) -> Unit,
     updateFromAngle: (BigDecimal) -> Unit,
     updateFromHypotenuse: (BigDecimal) -> Unit,
-    changeWidthOfSheet: (Float) -> Unit,
-    changeOverlapOfSheet: (Float) -> Unit,
-    changeMultiplicity: (Float) -> Unit,
+    updateSheetParam: (SheetParam)->Unit,
     getResult: () -> Unit,
     isValid: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CalculateItemTextField(
-            nameField = "Ширина крыши",
+            nameField = stringResource(R.string.width_roof),
             value = paramsState.width,
             onValueChange = changeWidth,
         )
         CalculateItemTextField(
-            nameField = "Длина крыши",
+            nameField = stringResource(R.string.len_roof),
             value = paramsState.len,
             onValueChange = changeLen,
         )
@@ -134,12 +135,10 @@ fun CalculationTile4Scat(
         }
         OtherParamsColumn(paramsState = paramsState, modifier = Modifier.padding(top = 12.dp))
         Log.d("widthGeneral,", paramsState.sheet.widthGeneral.toString())
-        Log.d("widthGeneralM,", (paramsState.sheet.widthGeneral * 100).toInt().toString())
+
         CalculateSheetParams(
             sheet = paramsState.sheet,
-            updateOverlap = changeOverlapOfSheet,
-            updateMultiplicity = changeMultiplicity,
-            updateWidthGeneral = changeWidthOfSheet,
+            updateSheetParam = updateSheetParam
         )
 
         Button(
@@ -155,18 +154,17 @@ fun CalculationTile4Scat(
  * Row для установления значений крыши
  */
 @Composable
-fun CalculateItemTextField(
+private fun CalculateItemTextField(
     nameField: String,
     value: BigDecimal,
     onValueChange: (BigDecimal) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-//    value = if (value == 0f) "" else value.toInt().toString(),
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text = "$nameField(cм)", modifier.fillMaxWidth(0.4f))
         TextField(
-            value =  value.toString(),
-            onValueChange = { onValueChange(it.toBigDecimal()) },
+            value = value.takeIf { it != BigDecimal.ZERO }?.toPlainString() ?: "",
+            onValueChange = { onValueChange(it.toBigDecimalOrNull() ?: BigDecimal.ZERO) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         )
     }
@@ -176,7 +174,7 @@ fun CalculateItemTextField(
  * Выпадающее меню в котором можно выбрать покат,угол наклона и высоту крыши дял установки значения
  */
 @Composable
-fun CalculateItemDropMenu(
+private fun CalculateItemDropMenu(
     paramsState: RoofParamsClassic4Scat,
     updateFromHypotenuse: (BigDecimal) -> Unit,
     updateFromHeight: (BigDecimal) -> Unit,
@@ -184,15 +182,15 @@ fun CalculateItemDropMenu(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("Покат") }
+    var selectedOption by remember { mutableStateOf(UnitOfMeasurement.POKAT) }
 
     Row(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(0.4f),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val unit = if (selectedOption == "Угол наклона") "градус" else "cm"
-            Text(text = "$selectedOption\n($unit)")
+            val unit = if (selectedOption == UnitOfMeasurement.ANGLE) stringResource(R.string.angle) else stringResource(R.string.cm)
+            Text(text = "${selectedOption.title}\n($unit)")
             IconButton(
                 onClick = {
                     expanded = !expanded
@@ -206,51 +204,45 @@ fun CalculateItemDropMenu(
         }
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text(text = "Покат") },
-                onClick = {
-                    selectedOption = "Покат"
+            UnitOfMeasurement.entries.forEach {
+                DropItemUnitOfMeasurement(it) { selected ->
+                    selectedOption = selected
                     expanded = false
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(text = "Высота крыши") },
-                onClick = {
-                    selectedOption = "Высота крыши"
-
-                    expanded = false
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(text = "Угол наклона") },
-                onClick = {
-                    selectedOption = "Угол наклона"
-                    expanded = false
-                },
-            )
+                }
+            }
         }
         when (selectedOption) {
-            "Покат" -> DropItemRoofParam(paramsState.hypotenuse, updateFromHypotenuse)
+            UnitOfMeasurement.POKAT -> DropItemRoofParam(paramsState.hypotenuse, updateFromHypotenuse)
 
-            "Высота крыши" -> DropItemRoofParam(paramsState.height, updateFromHeight)
+            UnitOfMeasurement.HEIGHTROOF -> DropItemRoofParam(paramsState.height, updateFromHeight)
 
-            "Угол наклона" -> DropItemRoofParam(paramsState.angle, updateFromAngle)
+            UnitOfMeasurement.ANGLE -> DropItemRoofParam(paramsState.angle, updateFromAngle)
         }
     }
+}
+
+@Composable
+private fun DropItemUnitOfMeasurement(
+    unitOfMeasurement: UnitOfMeasurement,
+    onClick: (UnitOfMeasurement) -> Unit,
+) {
+    DropdownMenuItem(
+        text = { Text(text = stringResource(unitOfMeasurement.title)) },
+        onClick = { onClick(unitOfMeasurement) },
+    )
 }
 
 /**
  * Поле для установки значения на выбор
  */
 @Composable
-fun DropItemRoofParam(
+private fun DropItemRoofParam(
     value: BigDecimal,
     updateRoof: (BigDecimal) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-//    value = if (value == 0f)"" else value.toInt().toString(),
     TextField(
-        value = value.toString(),
+        value = value.takeIf { it != BigDecimal.ZERO }?.toPlainString() ?: "",
         onValueChange = { updateRoof(it.toBigDecimalOrNull() ?: BigDecimal.ZERO) },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         modifier = modifier,
@@ -261,20 +253,20 @@ fun DropItemRoofParam(
  * Колонка с дополнительными расчетными параметрами для информации
  */
 @Composable
-fun OtherParamsColumn(
+private fun OtherParamsColumn(
     paramsState: RoofParamsClassic4Scat,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        OtherParamsRow(title = "Яндова", value = paramsState.yandova)
-        OtherParamsRow(title = "Покат", value = paramsState.hypotenuse)
-        OtherParamsRow(title = "Угол наклона", value = paramsState.angle)
-        OtherParamsRow(title = "Высота", value = paramsState.height)
+        OtherParamsRow(title = stringResource(R.string.yandova), value = paramsState.yandova)
+        OtherParamsRow(title = stringResource(R.string.pokat), value = paramsState.hypotenuse)
+        OtherParamsRow(title = stringResource(R.string.angle_tilt), value = paramsState.angle)
+        OtherParamsRow(title = stringResource(R.string.height_roof), value = paramsState.height)
     }
 }
 
 @Composable
-fun OtherParamsRow(
+private fun OtherParamsRow(
     title: String,
     value: BigDecimal,
     modifier: Modifier = Modifier,
@@ -282,8 +274,14 @@ fun OtherParamsRow(
     Row(modifier = modifier.fillMaxWidth()) {
         Text(text = title)
         Spacer(modifier = Modifier.weight(1f))
-        Text( value.toString())
+        Text(value.toString())
     }
+}
+
+private enum class UnitOfMeasurement(val title: Int) {
+    ANGLE(R.string.angle_tilt),
+    POKAT(R.string.pokat),
+    HEIGHTROOF(R.string.height_roof),
 }
 
 @Preview(showBackground = true)
@@ -293,14 +291,12 @@ private fun CalculationTile4ScatScreenPreview() {
         CalculationTile4Scat(
             paramsState = RoofParamsClassic4Scat(),
             changeWidth = { _ -> },
-            changeLen = { _ ->  },
-            updateFromHeight = { _ ->  },
-            updateFromAngle = { _ ->  },
-            updateFromHypotenuse = { _ ->  },
-            changeOverlapOfSheet = { _ ->  },
-            changeWidthOfSheet = { _ ->  },
-            changeMultiplicity = { _ ->  },
+            changeLen = { _ -> },
+            updateFromHeight = { _ -> },
+            updateFromAngle = { _ -> },
+            updateFromHypotenuse = { _ -> },
             getResult = {},
+            updateSheetParam = { _ -> },
             isValid = true,
         )
     }

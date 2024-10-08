@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
+import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.Dot
 
 /**
@@ -23,7 +25,7 @@ fun ChangeParamsDots(
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Column(modifier = modifier.background(Color.White), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Отклонение от левой нижней точки")
+            Text(text = stringResource(R.string.offset_from_left_bottom))
             ParamsDotRow(
                 value = dot.distanceX,
                 onValueChange = { newValue -> changeDot(dot.copy(distanceX = newValue)) },

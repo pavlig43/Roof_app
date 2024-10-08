@@ -75,27 +75,25 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(project(":mathBigDecimal"))
 
-    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
-    ksp("com.google.dagger:hilt-compiler:2.51.1")
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    implementation("androidx.hilt:hilt-work:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.navigation:navigation-compose:2.8.1")
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.work.runtime)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("androidx.work:work-runtime:2.7.1")
+    implementation(libs.coil.compose)
+    implementation("io.github.grizzi91:bouquet:1.1.2")
+
+
 
 
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
-
     androidTestImplementation(libs.androidx.espresso.core)
-
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
-
-
-

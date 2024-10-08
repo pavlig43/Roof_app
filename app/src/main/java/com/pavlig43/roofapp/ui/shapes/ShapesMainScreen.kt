@@ -28,44 +28,38 @@ import com.pavlig43.roofapp.ui.shapes.triangle.TriangleChoice
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 
 @Composable
-fun ShapesMainUi(
-    shapesViewModel: ShapesViewModel = hiltViewModel(),
-) {
+fun ShapesMainUi(viewModel: ShapesViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val shapesScreenState by shapesViewModel.shapesScreenState.collectAsState()
-    val sheet by shapesViewModel.sheet.collectAsState()
-    val listBitmap by shapesViewModel.listBitmap.collectAsState()
-    val nameFile by shapesViewModel.saveNameFile.collectAsState()
+    val shapesScreenState by viewModel.shapesScreenState.collectAsState()
+    val sheet by viewModel.sheet.collectAsState()
+    val nameFile by viewModel.saveNameFile.collectAsState()
+    val pdfReaderState by viewModel.pdfReaderState.collectAsState()
 
     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         when (shapesScreenState) {
-            is ShapesScreenState.ShapesMain -> ChoiceShape(moveToShape = shapesViewModel::moveToShape)
+            is ShapesScreenState.ShapesMain -> ChoiceShape(moveToShape = viewModel::moveToShape)
             is ShapesScreenState.Triangle ->
                 TriangleChoice(
-                    openDocument = shapesViewModel::openDocument,
+                    openDocument = viewModel::openDocument,
                     sheet = sheet,
-                    updateMultiplicity = shapesViewModel::changeMultiplicity,
-                    updateOverlap = shapesViewModel::changeOverlap,
-                    updateWidthGeneral = shapesViewModel::changeWidthOfSheet,
+                    updateSheetParams = viewModel::updateSheetParams
                 )
 
             is ShapesScreenState.Quadrilateral ->
                 QuadroChoice(
-                    openDocument = shapesViewModel::openDocument,
+                    openDocument = viewModel::openDocument,
                     sheet = sheet,
-                    updateMultiplicity = shapesViewModel::changeMultiplicity,
-                    updateOverlap = shapesViewModel::changeOverlap,
-                    updateWidthGeneral = shapesViewModel::changeWidthOfSheet,
+                    updateSheetParams = viewModel::updateSheetParams
                 )
 
             is ShapesScreenState.LoadDocumentImage ->
                 ResultImagesFromPDF(
-                    listBitmap = listBitmap,
-                    returnToCalculateScreen = shapesViewModel::returnCalculateTriangleScreen,
-                    shareFile = { shapesViewModel.shareFile() },
+                    pdfReaderState = pdfReaderState,
+                    returnToCalculateScreen = viewModel::returnCalculateTriangleScreen,
+                    shareFile = { viewModel.shareFile() },
                     nameFile = nameFile,
-                    saveFile = { shapesViewModel.saveFile(context) },
-                    checkSaveName = { newName -> shapesViewModel.checkName(newName, context) },
+                    saveFile = { viewModel.saveFile(context) },
+                    checkSaveName = { newName -> viewModel.checkName(newName, context) },
                 )
         }
     }

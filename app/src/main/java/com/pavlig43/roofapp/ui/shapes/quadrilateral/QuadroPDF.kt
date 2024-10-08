@@ -84,7 +84,7 @@ class QuadroPDF(
      * число листов , которое будет положено по ширине фигуре, пока листы не закроют ее полностью
      */
     private val countOfSheet: Int =
-        ceil((maxWidthShape - sheet.overlap) / sheet.visible).toInt()
+        ceil((maxWidthShape - sheet.overlap.value.toFloat()) / sheet.visible.toFloat()).toInt()
 
     /**
      * Высота фигуры - самая дольняя точка от нового начала координат в см
@@ -202,12 +202,11 @@ class QuadroPDF(
         val intervalYForXMax = findYPeakX(peakXMax)
         val intervalYForXMin = findYPeakX(peakXMin)
         for (s in 1..countOfSheet) {
-            Log.d("rrrr", oneCMInHeightYtPx.toString())
-            val y = (s - 1) * sheet.visible
+            val y = (s - 1) * sheet.visible.toFloat()
             val resultLeft = searchLineOfSheet(y)
             val resultRight =
                 searchLineOfSheet(
-                    y = y + sheet.widthGeneral,
+                    y = y + sheet.widthGeneral.value.toFloat(),
                     lastNotNullBottomX = resultLeft.getOrThrow().first.x,
                     lastNotNullTopX = resultLeft.getOrThrow().second.x,
                 )
@@ -223,8 +222,8 @@ class QuadroPDF(
                 val sheetMultiplicityCM = sheet.multiplicity
                 val lenOfSheetInCM = dotsOfSheet.leftTop.x - dotsOfSheet.leftBottom.x
                 val lenOfSheet =
-                    (ceil(lenOfSheetInCM / sheetMultiplicityCM) * sheetMultiplicityCM).toInt()
-                listOfSheets.add(sheet.copy(len = lenOfSheet))
+                    (ceil(lenOfSheetInCM / sheetMultiplicityCM.value.toFloat()) * sheetMultiplicityCM.value.toFloat()).toInt()
+                listOfSheets.add(sheet.copy(len = lenOfSheet.toBigDecimal()))
                 drawSheet(
                     canvas = canvas,
                     sheetDots =

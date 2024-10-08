@@ -1,22 +1,15 @@
 package com.pavlig43.roofapp.model
 
-import android.util.Log
 import com.example.mathbigdecimal.Trapezoid
 import com.example.mathbigdecimal.utils.acos
 import com.example.mathbigdecimal.utils.atan
 import com.example.mathbigdecimal.utils.cos
 import com.example.mathbigdecimal.utils.hypot
-import com.example.mathbigdecimal.utils.sqrt1
 import com.example.mathbigdecimal.utils.tan
 import com.example.mathbigdecimal.utils.toDegrees
 import com.example.mathbigdecimal.utils.toRadians
-
 import java.math.BigDecimal
 import java.math.MathContext
-
-
-
-
 
 /**
  * класс для орределения 4хскатной крыши
@@ -32,14 +25,13 @@ data class RoofParamsClassic4Scat(
     val sheet: Sheet = Sheet(),
 ) {
     val yandova: BigDecimal by lazy {
-        hypot(width.divide(BigDecimal(2)),hypotenuse)
+        hypot(width.divide(BigDecimal(2)), hypotenuse)
     }
 
     /**
      * Длина конька - верхнего основания трапеции
      */
     val smallFoot: BigDecimal by lazy {
-        val len = BigDecimal(len.toString())
 
         Trapezoid.smallFoot(
             bigFoot = len,
@@ -74,7 +66,7 @@ fun RoofParamsClassic4Scat.calculateFromHeight(newHeight: BigDecimal): RoofParam
         newHeight == BigDecimal.ZERO -> this.zeroRoofParamsClassic4Scat()
         else -> {
             val adjacent = width.divide(BigDecimal(2))
-            val hypotenuse = hypot(adjacent,newHeight)
+            val hypotenuse = hypot(adjacent, newHeight)
 
             val angleInRadians = atan(newHeight / adjacent)
 
@@ -88,16 +80,16 @@ fun RoofParamsClassic4Scat.calculateFromHeight(newHeight: BigDecimal): RoofParam
  * Пересчитывает угол наклона и высоту исходя из поката
  */
 fun RoofParamsClassic4Scat.calculateFromHypotenuse(hypotenuse: BigDecimal): RoofParamsClassic4Scat {
-
     return when {
         hypotenuse == BigDecimal.ZERO -> this.zeroRoofParamsClassic4Scat()
 
         else -> {
             val adjacent = width.divide(BigDecimal(2)) // прилежащий катет
-            val angleInRadians = acos(adjacent.divide(hypotenuse,MathContext(10)))
+            val angleInRadians =
+                acos(adjacent.divide(hypotenuse, MathContext(10)))
+                    ?: return this.copy(hypotenuse = hypotenuse, angle = BigDecimal.ZERO, height = BigDecimal.ZERO)
             val angle = toDegrees(angleInRadians)
             val height = adjacent * tan(angleInRadians)
-
 
             this.copy(angle = angle, height = height, hypotenuse = hypotenuse)
         }
@@ -105,5 +97,3 @@ fun RoofParamsClassic4Scat.calculateFromHypotenuse(hypotenuse: BigDecimal): Roof
 }
 
 fun RoofParamsClassic4Scat.zeroRoofParamsClassic4Scat() = this.copy(height = BigDecimal.ZERO, angle = BigDecimal.ZERO, hypotenuse = BigDecimal.ZERO)
-
-

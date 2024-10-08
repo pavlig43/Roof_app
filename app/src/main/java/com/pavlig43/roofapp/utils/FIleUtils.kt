@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import android.os.Environment
 import android.text.TextPaint
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.pavlig43.roof_app.BuildConfig
+import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.A4HEIGHT
 import com.pavlig43.roofapp.A4WIDTH
 import com.pavlig43.roofapp.model.Sheet
@@ -22,13 +24,12 @@ import java.io.FileOutputStream
 /**
  * Запускает окно, чтобы поделиться файлом в приложении на выбор
  */
-fun sharePDFFile(
-    context: Context,
+fun Context.sharePDFFile(
     pdfFile: File,
 ) {
     val uri =
         FileProvider.getUriForFile(
-            context,
+           this,
             BuildConfig.APPLICATION_ID + ".provider",
             pdfFile,
         )
@@ -38,7 +39,7 @@ fun sharePDFFile(
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
         }
-    context.startActivity(Intent.createChooser(sharedIntent, "Отправить"))
+    startActivity(Intent.createChooser(sharedIntent, getString(R.string.send)))
 }
 
 /**
@@ -60,8 +61,8 @@ fun Context.saveFilePDF(
  * Проверяет , есть ли документ с переданным именем в списке документов в хранилище данного приложения для ПДФ
  */
 fun Context.checkSaveName(newName: String): Boolean {
-    require(newName.isNotEmpty()) { "newName must not be empty string" }
-    val directory = getExternalFilesDir(null)
+
+    val directory = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
     val listFiles = directory?.listFiles() ?: return false
     val listOfFiles =
         listFiles.toList()
@@ -74,9 +75,12 @@ fun Context.checkSaveName(newName: String): Boolean {
 }
 
 fun PdfDocument.createFile(context: Context): File {
-    val file = File(context.getExternalFilesDir(null), "roof.pdf")
+    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "roof.pdf")
+    val files = context.getExternalFilesDir(null)?.listFiles()?.map { Uri.fromFile(it) }
+   Log.d("file",files.toString())
     file.outputStream().use { this.writeTo(it) }
     this.close()
+
     return file
 }
 
@@ -137,7 +141,7 @@ fun PdfDocument.pdfResult3SideTriangle(
     trianglePDF.sheetOnTriangle(canvas)
     this.finishPage(page)
     val listOfSheet = trianglePDF.getLstOfSheet()
-    Log.d("listOfSheet",listOfSheet.toString())
+    Log.d("listOfSheet", listOfSheet.toString())
     if (single) {
         val otherParams = trianglePDF.getOtherParams()
         this.addInfo(
@@ -185,7 +189,7 @@ fun PdfDocument.addInfo(
     }
     repeat(2) { textTrasfer.addTransferText() }
     canvas.drawText(
-        "Общая ширина листа -  ${listOfSheet.first().widthGeneral.toInt()} cm",
+        "Общая ширина листа -  ${listOfSheet.first().widthGeneral.value.toInt()} cm",
         x,
         textTrasfer.addTransferText(),
         paintText,
@@ -197,7 +201,7 @@ fun PdfDocument.addInfo(
         paintText,
     )
     canvas.drawText(
-        "Перехлест -  ${listOfSheet.first().overlap.toInt()} cm",
+        "Перехлест -  ${listOfSheet.first().overlap.value.toInt()} cm",
         x,
         textTrasfer.addTransferText(),
         paintText,

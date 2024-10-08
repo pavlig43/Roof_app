@@ -2,6 +2,9 @@ package com.pavlig43.roofapp.ui.calculationTile4scat
 
 import android.content.Context
 import android.graphics.pdf.PdfDocument
+import android.util.Log
+import androidx.compose.ui.res.stringResource
+import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.DotName4Side
 import com.pavlig43.roofapp.model.DotNameTriangle3Side
@@ -59,14 +62,15 @@ fun pdfResultRoof4Scat(
                     distanceY = roofParamsClassic4Scat.len.toFloat(),
                 ),
         )
+    Log.d("val geometry4SideShape", geometry4SideShape.toString())
 
     fun getOtherParams(): List<Pair<String, String>> {
         return listOf(
-            Pair("Ширина крыши", "${roofParamsClassic4Scat.width.toInt()} cm"),
-            Pair("Длина крыши", "${roofParamsClassic4Scat.len.toInt()} cm"),
-            Pair("Яндова", "${roofParamsClassic4Scat.yandova.toInt()} cm"),
-            Pair("Высота крыши", "${roofParamsClassic4Scat.height.toInt()} cm"),
-            Pair("Угол наклона", "${roofParamsClassic4Scat.angle.toInt()}°"),
+            Pair(context.getString(R.string.len_roof), "${roofParamsClassic4Scat.width.toInt()} cm"),
+            Pair(context.getString(R.string.width_roof), "${roofParamsClassic4Scat.len.toInt()} cm"),
+            Pair(context.getString(R.string.yandova), "${roofParamsClassic4Scat.yandova.toInt()} cm"),
+            Pair(context.getString(R.string.height_roof), "${roofParamsClassic4Scat.height.toInt()} cm"),
+            Pair(context.getString(R.string.angle_tilt), "${roofParamsClassic4Scat.angle.toInt()}°"),
         )
     }
 
@@ -91,4 +95,3 @@ fun pdfResultRoof4Scat(
     val file = pdfDocument.createFile(context)
     return file
 }
-

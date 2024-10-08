@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -28,11 +27,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
-
 import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.DotName4Side
 import com.pavlig43.roofapp.model.Sheet
+import com.pavlig43.roofapp.model.SheetParam
 import com.pavlig43.roofapp.ui.ButtonResultRow
 import com.pavlig43.roofapp.ui.CalculateSheetParams
 import com.pavlig43.roofapp.ui.ManualDialog
@@ -45,12 +45,10 @@ import java.io.File
 @Composable
 fun QuadroChoice(
     modifier: Modifier = Modifier,
-    quadrilateralViewModel: QuadrilateralViewModel = QuadrilateralViewModel(),
+    quadrilateralViewModel: QuadrilateralViewModel = hiltViewModel(),
     openDocument: (File) -> Unit,
+    updateSheetParams:(SheetParam)->Unit,
     sheet: Sheet,
-    updateWidthGeneral: (Float) -> Unit,
-    updateOverlap: (Float) -> Unit,
-    updateMultiplicity: (Float) -> Unit,
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -169,9 +167,7 @@ fun QuadroChoice(
             Dialog(onDismissRequest = { openSheetParams = false }) {
                 CalculateSheetParams(
                     sheet = sheet,
-                    updateWidthGeneral = updateWidthGeneral,
-                    updateMultiplicity = updateMultiplicity,
-                    updateOverlap = updateOverlap,
+                    updateSheetParam = updateSheetParams ,
                     isDialog = true,
                     closeDialog = { openSheetParams = false },
                     modifier = Modifier.background(Color.White),

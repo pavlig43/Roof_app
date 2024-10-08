@@ -14,8 +14,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.ui.MinusIcon
 
 /**
@@ -38,11 +40,11 @@ fun ParamsDotRow(
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = "Отклонение по $axis (см)",
+            text = stringResource(R.string.offset, axis),
             modifier =
-                Modifier
-                    .padding(end = 4.dp)
-                    .weight(0.55f),
+            Modifier
+                .padding(end = 4.dp)
+                .weight(0.55f),
         )
         if (canChangePlus) {
             Button(onClick = changePlus, modifier = Modifier.weight(0.2f)) {
@@ -55,7 +57,7 @@ fun ParamsDotRow(
             Spacer(modifier = Modifier.weight(0.2f))
         }
         TextField(
-            value = if (value == 0f) "" else value.toInt().toString(),
+            value = value.takeIf { it!=0f }?.toInt()?.toString()?:"",
             readOnly = !canChangeAxis,
             onValueChange = { it: String ->
                 val newValue = it.toIntOrNull() ?: 0

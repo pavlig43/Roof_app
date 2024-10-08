@@ -1,6 +1,8 @@
 package com.pavlig43.roofapp.model
 
-import kotlin.math.ceil
+import com.pavlig43.roof_app.R
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Лист железа
@@ -10,47 +12,60 @@ data class Sheet(
      * Вид покрытия -череица или профиль
      */
     val profile: RoofMetal = RoofMetal.TILE,
-    val widthGeneral: Float = 118f,
+    val widthGeneral: SheetParam = SheetParam(SheetParamName.WIDTHGENERAL,BigDecimal("118")),
     /**
      * Перехлест при раскладке
      */
-    val overlap: Float = 8f,
+    val overlap: SheetParam = SheetParam(SheetParamName.OVERLAP,BigDecimal("8")),
     /**
      *"*Кратность - округление расчетной длины листа в большую сторону. " +
      *                 "Например при длине листа 243 см и кратности 5 см результат будет 245 см"
      */
-    val multiplicity: Float = 5f,
-    private val len: Int = 0,
+    val multiplicity: SheetParam = SheetParam(SheetParamName.MULTIPLICITY,BigDecimal("5")),
+    private val len: BigDecimal = BigDecimal.ZERO,
 ) {
     /**
      * оКругленная длина листа с учетом кратности [multiplicity]
      */
-    val ceilLen: Int by lazy {
-        if (multiplicity == 0f) len else (ceil(len / multiplicity) * multiplicity).toInt()
+    val ceilLen: BigDecimal by lazy {
+        if (multiplicity.value == BigDecimal.ZERO) len else len.divide(multiplicity.value, 0, RoundingMode.CEILING).multiply(multiplicity.value)
     }
 
     /**
      * Видимая часть листа
      */
-    val visible: Float by lazy {
-        widthGeneral - overlap
+    val visible: BigDecimal by lazy {
+        widthGeneral.value - overlap.value
     }
 }
-
-fun Sheet.updateWidthGeneral(newWidthGeneral: Float): Sheet {
-    return this.copy(widthGeneral = newWidthGeneral)
+enum class SheetParamName(val title:Int){
+    WIDTHGENERAL(R.string.sheet_width),
+    OVERLAP(R.string.overlap),
+    MULTIPLICITY(R.string.multiplicity)
+}
+data class SheetParam(
+    val name: SheetParamName,
+    val value: BigDecimal
+)
+fun Sheet.updateSheetParams(sheetParam: SheetParam): Sheet {
+    return when(sheetParam.name){
+        SheetParamName.WIDTHGENERAL-> this.updateWidthGeneral(sheetParam)
+        SheetParamName.OVERLAP -> this.updateOverlap(sheetParam)
+        SheetParamName.MULTIPLICITY -> this.updateMultiplicity(sheetParam)
+    }
+}
+private fun Sheet.updateWidthGeneral(newWidthGeneral: SheetParam): Sheet {
+    return this.copy(widthGeneral =newWidthGeneral)
 }
 
-fun Sheet.updateOverlap(newOverlap: Float): Sheet {
+private fun Sheet.updateOverlap(newOverlap: SheetParam): Sheet {
     return this.copy(overlap = newOverlap)
 }
 
-fun Sheet.updateMultiplicity(newMultiplicity: Float): Sheet {
+private fun Sheet.updateMultiplicity(newMultiplicity: SheetParam): Sheet {
     return this.copy(multiplicity = newMultiplicity)
 }
 
 enum class RoofMetal {
     TILE,
 }
-
-

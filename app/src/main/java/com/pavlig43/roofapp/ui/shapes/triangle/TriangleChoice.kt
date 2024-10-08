@@ -26,9 +26,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.DotNameTriangle3Side
 import com.pavlig43.roofapp.model.Sheet
+import com.pavlig43.roofapp.model.SheetParam
 import com.pavlig43.roofapp.ui.ButtonResultRow
 import com.pavlig43.roofapp.ui.CalculateSheetParams
 import com.pavlig43.roofapp.ui.ManualDialog
@@ -36,16 +38,15 @@ import com.pavlig43.roofapp.ui.paramsDotShape.ChangeParamsDots
 import com.pavlig43.roofapp.utils.drawDot
 import com.pavlig43.roofapp.utils.drawRuler
 import java.io.File
+import java.math.BigDecimal
 
 @Composable
 fun TriangleChoice(
     modifier: Modifier = Modifier,
-    triangleViewModel: TriangleViewModel = TriangleViewModel(),
+    triangleViewModel: TriangleViewModel = hiltViewModel(),
     openDocument: (File) -> Unit,
     sheet: Sheet,
-    updateWidthGeneral: (Float) -> Unit,
-    updateOverlap: (Float) -> Unit,
-    updateMultiplicity: (Float) -> Unit,
+    updateSheetParams: (SheetParam)->Unit,
 ) {
     val geometryTriangle3SideShape by triangleViewModel.geometryTriangle3SideShape.collectAsState()
     val currentDot by triangleViewModel.currentDot.collectAsState()
@@ -149,9 +150,7 @@ fun TriangleChoice(
             Dialog(onDismissRequest = { openSheetParams = false }) {
                 CalculateSheetParams(
                     sheet = sheet,
-                    updateWidthGeneral = updateWidthGeneral,
-                    updateMultiplicity = updateMultiplicity,
-                    updateOverlap = updateOverlap,
+                    updateSheetParam = updateSheetParams,
                     isDialog = true,
                     closeDialog = { openSheetParams = false },
                     modifier = Modifier.background(Color.White),

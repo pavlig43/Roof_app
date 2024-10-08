@@ -18,10 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.pavlig43.roofapp.ui.calculationTile4scat.SaveNameFile
+import com.pavlig43.roofapp.ui.pdfImage.PDFView
+import com.rizzi.bouquet.VerticalPdfReaderState
 
 @Composable
 fun ResultImagesFromPDF(
-    listBitmap: List<Bitmap>,
+    pdfReaderState: VerticalPdfReaderState?=null,
     returnToCalculateScreen: () -> Unit,
     shareFile: () -> Unit,
     nameFile: SaveNameFile,
@@ -33,7 +35,7 @@ fun ResultImagesFromPDF(
         mutableStateOf(false)
     }
     BackHandler {
-        returnToCalculateScreen
+        returnToCalculateScreen()
     }
 
     Column(modifier = modifier.fillMaxWidth()) {
@@ -60,6 +62,9 @@ fun ResultImagesFromPDF(
                 Icon(imageVector = Icons.Filled.Add, contentDescription = null)
             }
         }
-        LoadDocumentImages(listBitmap = listBitmap)
+//        LoadDocumentImages(listBitmap = listBitmap)
+        if (pdfReaderState != null) {
+            PDFView(pdfReaderState)
+        }
     }
 }

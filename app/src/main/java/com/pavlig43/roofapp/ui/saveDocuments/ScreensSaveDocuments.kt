@@ -33,39 +33,39 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.ui.LoadDocumentImages
+import com.pavlig43.roofapp.ui.pdfImage.PDFView
 
 @Composable
-fun ScreensSaveDocuments(modifier: Modifier = Modifier) {
-    ScreensSaveDocumentsp(hiltViewModel())
+fun ScreensSaveDocuments() {
+    ScreensSaveDocumentsp()
 }
 
 @Composable
-private fun ScreensSaveDocumentsp(
-    viewModel: ListSaveDocumentsViewModel,
-) {
+private fun ScreensSaveDocumentsp(viewModel: ListSaveDocumentsViewModel = hiltViewModel()) {
     BackHandler {
         viewModel.returnScreenListDocument()
     }
-    val context = LocalContext.current
+
     val screensSaveDocumentsState by viewModel.screensSaveDocumentsState.collectAsState()
     val listOfDocument by viewModel.listSaveDocument.collectAsState()
-    val listBitmap by viewModel.listBitmap.collectAsState()
+    val pdfReaderState by viewModel.pdfReaderState.collectAsState()
     when (screensSaveDocumentsState) {
         is ScreensSaveDocumentsState.ListSaveDocumentsState ->
             ListSaveDocuments(
                 listOfDocument = listOfDocument,
                 openDocument = { document -> viewModel.openDocument(document) },
-                shareFile = { document -> viewModel.shareFile(context, document) },
-                deleteFile = { document -> viewModel.deleteFile(context, document) },
+                shareFile = viewModel::shareFile,
+                deleteFile = viewModel::deleteFile,
             )
 
         is ScreensSaveDocumentsState.DrawDocumentState -> {
-            LoadDocumentImages(listBitmap = listBitmap)
+            pdfReaderState?.let { PDFView(it) }
         }
     }
 }
@@ -81,9 +81,9 @@ private fun ListSaveDocuments(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
     ) {
         items(listOfDocument, key = { doc -> doc.name }) { document ->
             DocumentItemCard(
@@ -97,7 +97,7 @@ private fun ListSaveDocuments(
 }
 
 @Composable
-fun DocumentItemCard(
+private fun DocumentItemCard(
     document: Document,
     openDocument: (Document) -> Unit,
     shareFile: (Document) -> Unit,
@@ -129,9 +129,9 @@ fun DocumentItemCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(64.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.icons8_pdf_96),
@@ -141,7 +141,7 @@ fun DocumentItemCard(
                     )
                     Text(text = document.name, fontSize = 30.sp)
                 }
-                Text(text = "Для удаления смахни направо документ")
+                Text(text = stringResource(R.string.delete_document_manual))
             }
         }
         IconButton(
@@ -160,19 +160,19 @@ private fun ConfirmDeleteDocDialog(
     document: Document,
 ) {
     AlertDialog(
-        title = { Text(text = "Удалить этот документ???") },
+        title = { Text(text = stringResource(R.string.delete_this_doc_question)) },
         onDismissRequest = { onDialogDismissed() },
         confirmButton = {
             Button(onClick = {
                 deleteFile(document)
                 onDialogDismissed()
             }) {
-                Text(text = "Удалить")
+                Text(text = stringResource(R.string.delete))
             }
         },
         dismissButton = {
             Button(onClick = { onDialogDismissed() }) {
-                Text(text = "Отмена")
+                Text(text = stringResource(R.string.Cancel))
             }
         },
     )

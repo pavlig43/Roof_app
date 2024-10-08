@@ -1,27 +1,35 @@
 package com.pavlig43.roofapp.ui.shapes
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.roofapp.model.Sheet
-import com.pavlig43.roofapp.model.updateMultiplicity
-import com.pavlig43.roofapp.model.updateOverlap
-import com.pavlig43.roofapp.model.updateWidthGeneral
+import com.pavlig43.roofapp.model.SheetParam
+
+import com.pavlig43.roofapp.model.updateSheetParams
+
 import com.pavlig43.roofapp.ui.calculationTile4scat.SaveNameFile
 import com.pavlig43.roofapp.utils.checkSaveName
 import com.pavlig43.roofapp.utils.renderPDF
 import com.pavlig43.roofapp.utils.saveFilePDF
 import com.pavlig43.roofapp.utils.sharePDFFile
+import com.rizzi.bouquet.ResourceType
+import com.rizzi.bouquet.VerticalPdfReaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.io.File
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,18 +42,28 @@ class ShapesViewModel
             MutableStateFlow<ShapesScreenState>(ShapesScreenState.ShapesMain)
         val shapesScreenState = _shapesScreenState.asStateFlow()
 
+    /**
+     * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится ,
+     * а потом только показывается на экране
+     */
+    private val _pdfFile: MutableStateFlow<File?> = MutableStateFlow(null)
+    private val pdfFile: StateFlow<File?> = _pdfFile.asStateFlow()
+
         /**
          * Список страниц ПДФ файла для отображения на экране
          */
-        private val _listBitmap = MutableStateFlow<List<Bitmap>>(listOf())
-        val listBitmap = _listBitmap.asStateFlow()
+        private val pathURI = _pdfFile.
+        filterNotNull().
+        map { file->
+            Log.d("URI",file.toUri().toString())
+            file.toUri() }.
+        stateIn(viewModelScope, SharingStarted.Lazily,null)
 
-        /**
-         * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится ,
-         * а потом только показывается на экране
-         */
-        private val _pdfFile: MutableStateFlow<File?> = MutableStateFlow(null)
-        private val pdfFile: StateFlow<File?> = _pdfFile.asStateFlow()
+    val pdfReaderState: StateFlow<VerticalPdfReaderState?> = pathURI.filterNotNull().map { uri->
+        VerticalPdfReaderState(ResourceType.Local(uri))
+    }.stateIn(viewModelScope, SharingStarted.Lazily,null)
+
+
 
         /**
          * Имя файла, с которым можно сохранить документ ПДФ,
@@ -69,21 +87,14 @@ class ShapesViewModel
             _shapesScreenState.value = ShapesScreenState.Triangle
         }
 
-        fun changeWidthOfSheet(newWidth: Float) {
-            _sheet.value = _sheet.value.updateWidthGeneral(newWidth)
-        }
 
-        fun changeOverlap(newOverlap: Float) {
-            _sheet.value = _sheet.value.updateOverlap(newOverlap)
-        }
-
-        fun changeMultiplicity(newMultiplicity: Float) {
-            _sheet.update { it.updateMultiplicity(newMultiplicity) }
-        }
+    fun updateSheetParams(sheetParam: SheetParam){
+        _sheet.update { it.updateSheetParams(sheetParam) }
+    }
 
         fun openDocument(file: File) {
             _pdfFile.value = file
-            _listBitmap.value = renderPDF(file, viewModelScope)
+
             _shapesScreenState.value = ShapesScreenState.LoadDocumentImage
         }
 
@@ -100,7 +111,7 @@ class ShapesViewModel
         }
 
         fun shareFile() {
-            pdfFile.value?.let { pdfFile -> sharePDFFile(context, pdfFile) }
+            pdfFile.value?.let { pdfFile -> context.sharePDFFile( pdfFile) }
         }
     }
 
