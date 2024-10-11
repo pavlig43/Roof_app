@@ -1,8 +1,0 @@
-root = true
-
-[*.{kt,kts}]
-ktlint_function_naming_ignore_when_annotated_with=Composable
-trim_trailing_whitespace = true
-ktlint_no-trailing-whitespace = enabled
-ktlint_no-blank-line = enabled
-max_line_length = 180

@@ -4,16 +4,14 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_18
+    targetCompatibility = JavaVersion.VERSION_18
 }
 
-dependencies{
+dependencies {
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
-
 }
 tasks.withType<Test> {
-    useJUnitPlatform()  // Ensure to use JUnit Platform
+    useJUnitPlatform() // Ensure to use JUnit Platform
 }
-

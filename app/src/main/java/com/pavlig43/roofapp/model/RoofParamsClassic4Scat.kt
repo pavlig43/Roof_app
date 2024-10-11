@@ -96,4 +96,9 @@ fun RoofParamsClassic4Scat.calculateFromHypotenuse(hypotenuse: BigDecimal): Roof
     }
 }
 
-fun RoofParamsClassic4Scat.zeroRoofParamsClassic4Scat() = this.copy(height = BigDecimal.ZERO, angle = BigDecimal.ZERO, hypotenuse = BigDecimal.ZERO)
+fun RoofParamsClassic4Scat.zeroRoofParamsClassic4Scat() =
+    this.copy(
+        height = BigDecimal.ZERO,
+        angle = BigDecimal.ZERO,
+        hypotenuse = BigDecimal.ZERO,
+    )

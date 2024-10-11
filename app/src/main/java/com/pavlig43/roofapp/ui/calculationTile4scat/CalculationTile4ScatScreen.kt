@@ -31,7 +31,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
@@ -51,7 +50,6 @@ private fun CalculationTile4ScatMainScreenp(viewModel: CalculationTile4ScatViewM
     val stateNavigation by viewModel.stateNavigation.collectAsState()
 
     val paramsState by viewModel.roofState.collectAsState()
-    val listBitmap by viewModel.listBitmap.collectAsState()
 
     val pdfReaderState by viewModel.pdfReaderState.collectAsState()
     val nameFile by viewModel.saveNameFile.collectAsState()
@@ -73,10 +71,8 @@ private fun CalculationTile4ScatMainScreenp(viewModel: CalculationTile4ScatViewM
                 isValid = isValid,
             )
 
-
         is StateCalculationTile4Scat.GetDraw ->
             ResultImagesFromPDF(
-
                 pdfReaderState = pdfReaderState,
                 returnToCalculateScreen = viewModel::returnToCalculateScreen,
                 shareFile = viewModel::shareFile,
@@ -98,16 +94,16 @@ private fun CalculationTile4Scat(
     updateFromHeight: (BigDecimal) -> Unit,
     updateFromAngle: (BigDecimal) -> Unit,
     updateFromHypotenuse: (BigDecimal) -> Unit,
-    updateSheetParam: (SheetParam)->Unit,
+    updateSheetParam: (SheetParam) -> Unit,
     getResult: () -> Unit,
     isValid: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(12.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CalculateItemTextField(
@@ -138,7 +134,7 @@ private fun CalculationTile4Scat(
 
         CalculateSheetParams(
             sheet = paramsState.sheet,
-            updateSheetParam = updateSheetParam
+            updateSheetParam = updateSheetParam,
         )
 
         Button(
@@ -278,7 +274,9 @@ private fun OtherParamsRow(
     }
 }
 
-private enum class UnitOfMeasurement(val title: Int) {
+private enum class UnitOfMeasurement(
+    val title: Int,
+) {
     ANGLE(R.string.angle_tilt),
     POKAT(R.string.pokat),
     HEIGHTROOF(R.string.height_roof),

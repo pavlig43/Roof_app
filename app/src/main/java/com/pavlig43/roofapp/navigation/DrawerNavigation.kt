@@ -26,37 +26,22 @@ fun DrawerNavigation(
     content: @Composable () -> Unit,
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val selectedScreen = currentBackStackEntry?.destination?.route ?: TileLayout.route
+    val selectedScreen = currentBackStackEntry?.destination?.route ?: AllDestination.TileLayout.route
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
-                    DrawerItem(
-                        screenDestination = TileLayout,
-                        selectedScreen = selectedScreen,
-                        toNavigate = { route ->
-                            navController.navigate(route)
-                            coroutineScope.launch { drawerState.close() }
-                        },
-                    )
-
-                    DrawerItem(
-                        screenDestination = Shapes,
-                        selectedScreen = selectedScreen,
-                        toNavigate = { route ->
-                            navController.navigate(route)
-                            coroutineScope.launch { drawerState.close() }
-                        },
-                    )
-                    DrawerItem(
-                        screenDestination = SaveDocuments,
-                        selectedScreen = selectedScreen,
-                        toNavigate = { route ->
-                            navController.navigate(route)
-                            coroutineScope.launch { drawerState.close() }
-                        },
-                    )
+                    AllDestination.getAllDestination().forEach {
+                        DrawerItem(
+                            screenDestination = it,
+                            selectedScreen = selectedScreen,
+                            toNavigate = { route ->
+                                navController.navigate(route)
+                                coroutineScope.launch { drawerState.close() }
+                            },
+                        )
+                    }
                 }
             }
         },
@@ -71,7 +56,7 @@ fun DrawerItem(
     toNavigate: (String) -> Unit = {},
 ) {
     NavigationDrawerItem(
-        label = { Text(text = stringResource(screenDestination.title))  },
+        label = { Text(text = stringResource(screenDestination.title)) },
         selected = screenDestination.route == selectedScreen,
         icon = { },
         onClick = { toNavigate(screenDestination.route) },

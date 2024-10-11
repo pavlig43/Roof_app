@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.android.application)
     id("org.jlleitschuh.gradle.ktlint")
     id("com.google.devtools.ksp")
     kotlin("plugin.serialization")
@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(project(":mathBigDecimal"))
+    implementation("io.github.grizzi91:bouquet:1.1.2")
 
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
@@ -86,10 +87,6 @@ dependencies {
     implementation(libs.androidx.work.runtime)
 
     implementation(libs.coil.compose)
-    implementation("io.github.grizzi91:bouquet:1.1.2")
-
-
-
 
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)

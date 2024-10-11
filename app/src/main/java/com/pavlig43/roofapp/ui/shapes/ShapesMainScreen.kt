@@ -42,14 +42,14 @@ fun ShapesMainUi(viewModel: ShapesViewModel = hiltViewModel()) {
                 TriangleChoice(
                     openDocument = viewModel::openDocument,
                     sheet = sheet,
-                    updateSheetParams = viewModel::updateSheetParams
+                    updateSheetParams = viewModel::updateSheetParams,
                 )
 
             is ShapesScreenState.Quadrilateral ->
                 QuadroChoice(
                     openDocument = viewModel::openDocument,
                     sheet = sheet,
-                    updateSheetParams = viewModel::updateSheetParams
+                    updateSheetParams = viewModel::updateSheetParams,
                 )
 
             is ShapesScreenState.LoadDocumentImage ->

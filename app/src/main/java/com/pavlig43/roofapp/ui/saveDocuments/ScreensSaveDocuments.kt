@@ -1,5 +1,6 @@
 package com.pavlig43.roofapp.ui.saveDocuments
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -27,18 +28,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
-import com.pavlig43.roofapp.ui.LoadDocumentImages
 import com.pavlig43.roofapp.ui.pdfImage.PDFView
 
 @Composable
@@ -53,18 +53,20 @@ private fun ScreensSaveDocumentsp(viewModel: ListSaveDocumentsViewModel = hiltVi
     }
 
     val screensSaveDocumentsState by viewModel.screensSaveDocumentsState.collectAsState()
-    val listOfDocument by viewModel.listSaveDocument.collectAsState()
     val pdfReaderState by viewModel.pdfReaderState.collectAsState()
+    val listSaveDocuments by viewModel.listSaveDocument.collectAsState()
     when (screensSaveDocumentsState) {
         is ScreensSaveDocumentsState.ListSaveDocumentsState ->
+
             ListSaveDocuments(
-                listOfDocument = listOfDocument,
+                listOfDocument = listSaveDocuments,
                 openDocument = { document -> viewModel.openDocument(document) },
                 shareFile = viewModel::shareFile,
                 deleteFile = viewModel::deleteFile,
             )
 
         is ScreensSaveDocumentsState.DrawDocumentState -> {
+            Log.d("doc", listSaveDocuments.toString())
             pdfReaderState?.let { PDFView(it) }
         }
     }
@@ -73,7 +75,7 @@ private fun ScreensSaveDocumentsp(viewModel: ListSaveDocumentsViewModel = hiltVi
 @Composable
 private fun ListSaveDocuments(
     modifier: Modifier = Modifier,
-    listOfDocument: List<Document>,
+    listOfDocument: SnapshotStateList<Document>,
     openDocument: (Document) -> Unit = {},
     shareFile: (Document) -> Unit = {},
     deleteFile: (Document) -> Unit = {},
@@ -81,11 +83,14 @@ private fun ListSaveDocuments(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
     ) {
-        items(listOfDocument, key = { doc -> doc.name }) { document ->
+        items(listOfDocument, key = { doc ->
+            doc.name
+        }) { document ->
+            Log.d("filesdocument", document.toString())
             DocumentItemCard(
                 document = document,
                 openDocument = openDocument,
@@ -129,9 +134,9 @@ private fun DocumentItemCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(64.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .height(64.dp),
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.icons8_pdf_96),

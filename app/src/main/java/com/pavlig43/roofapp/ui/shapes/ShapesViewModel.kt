@@ -1,19 +1,15 @@
 package com.pavlig43.roofapp.ui.shapes
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
-
 import com.pavlig43.roofapp.model.updateSheetParams
-
 import com.pavlig43.roofapp.ui.calculationTile4scat.SaveNameFile
 import com.pavlig43.roofapp.utils.checkSaveName
-import com.pavlig43.roofapp.utils.renderPDF
 import com.pavlig43.roofapp.utils.saveFilePDF
 import com.pavlig43.roofapp.utils.sharePDFFile
 import com.rizzi.bouquet.ResourceType
@@ -28,8 +24,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.File
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,37 +38,38 @@ class ShapesViewModel
             MutableStateFlow<ShapesScreenState>(ShapesScreenState.ShapesMain)
         val shapesScreenState = _shapesScreenState.asStateFlow()
 
-    /**
-     * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится ,
-     * а потом только показывается на экране
-     */
-    private val _pdfFile: MutableStateFlow<File?> = MutableStateFlow(null)
-    private val pdfFile: StateFlow<File?> = _pdfFile.asStateFlow()
+        /**
+         * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится ,
+         * а потом только показывается на экране
+         */
+        private val pdfFile = MutableStateFlow<File?>(null)
 
         /**
          * Список страниц ПДФ файла для отображения на экране
          */
-        private val pathURI = _pdfFile.
-        filterNotNull().
-        map { file->
-            Log.d("URI",file.toUri().toString())
-            file.toUri() }.
-        stateIn(viewModelScope, SharingStarted.Lazily,null)
+        private val pathURI =
+            pdfFile
+                .filterNotNull()
+                .map { file ->
+                    Log.d("URI", file.toUri().toString())
+                    file.toUri()
+                }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val pdfReaderState: StateFlow<VerticalPdfReaderState?> = pathURI.filterNotNull().map { uri->
-        VerticalPdfReaderState(ResourceType.Local(uri))
-    }.stateIn(viewModelScope, SharingStarted.Lazily,null)
-
-
+        val pdfReaderState: StateFlow<VerticalPdfReaderState?> =
+            pathURI
+                .filterNotNull()
+                .map { uri ->
+                    VerticalPdfReaderState(ResourceType.Local(uri))
+                }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
         /**
          * Имя файла, с которым можно сохранить документ ПДФ,
          * в [checkName] проверяет есть ли уже такое в хранилище
          */
-        private val _saveNameFile: MutableStateFlow<SaveNameFile> = MutableStateFlow(SaveNameFile())
+        private val _saveNameFile = MutableStateFlow(SaveNameFile())
         val saveNameFile = _saveNameFile.asStateFlow()
 
-        private val _sheet: MutableStateFlow<Sheet> = MutableStateFlow(Sheet())
+        private val _sheet = MutableStateFlow(Sheet())
         val sheet = _sheet.asStateFlow()
 
         fun moveToShape(shapeName: Shapes) {
@@ -87,13 +84,12 @@ class ShapesViewModel
             _shapesScreenState.value = ShapesScreenState.Triangle
         }
 
+        fun updateSheetParams(sheetParam: SheetParam) {
+            _sheet.update { it.updateSheetParams(sheetParam) }
+        }
 
-    fun updateSheetParams(sheetParam: SheetParam){
-        _sheet.update { it.updateSheetParams(sheetParam) }
-    }
-
-        fun openDocument(file: File) {
-            _pdfFile.value = file
+        fun openDocument(getFile: suspend (Sheet) -> File?) {
+            viewModelScope.launch { pdfFile.update { getFile(_sheet.value) } }
 
             _shapesScreenState.value = ShapesScreenState.LoadDocumentImage
         }
@@ -107,11 +103,11 @@ class ShapesViewModel
         }
 
         fun saveFile(context: Context) {
-            context.saveFilePDF(_pdfFile.value!!, saveNameFile = _saveNameFile.value.name)
+            viewModelScope.launch { context.saveFilePDF(pdfFile.value!!, saveNameFile = _saveNameFile.value.name) }
         }
 
         fun shareFile() {
-            pdfFile.value?.let { pdfFile -> context.sharePDFFile( pdfFile) }
+            pdfFile.value?.let { pdfFile -> context.sharePDFFile(pdfFile) }
         }
     }
 

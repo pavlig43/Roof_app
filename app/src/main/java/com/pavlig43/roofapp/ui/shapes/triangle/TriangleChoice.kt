@@ -22,7 +22,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -38,21 +37,19 @@ import com.pavlig43.roofapp.ui.paramsDotShape.ChangeParamsDots
 import com.pavlig43.roofapp.utils.drawDot
 import com.pavlig43.roofapp.utils.drawRuler
 import java.io.File
-import java.math.BigDecimal
 
 @Composable
 fun TriangleChoice(
     modifier: Modifier = Modifier,
-    triangleViewModel: TriangleViewModel = hiltViewModel(),
-    openDocument: (File) -> Unit,
+    viewModel: TriangleViewModel = hiltViewModel(),
+    openDocument: (suspend (Sheet) -> File?) -> Unit,
     sheet: Sheet,
-    updateSheetParams: (SheetParam)->Unit,
+    updateSheetParams: (SheetParam) -> Unit,
 ) {
-    val geometryTriangle3SideShape by triangleViewModel.geometryTriangle3SideShape.collectAsState()
-    val currentDot by triangleViewModel.currentDot.collectAsState()
-    val isValid by triangleViewModel.isValid.collectAsState()
+    val geometryTriangle3SideShape by viewModel.geometryTriangle3SideShape.collectAsState()
+    val currentDot by viewModel.currentDot.collectAsState()
+    val isValid by viewModel.isValid.collectAsState()
 
-    val context = LocalContext.current
     val configuration = LocalConfiguration.current
 
     // Получаем ширину экрана в пикселях
@@ -78,12 +75,12 @@ fun TriangleChoice(
                             when {
                                 (topCenter - offset).getDistance() <= 45f -> {
                                     showDotDialog = true
-                                    triangleViewModel.changeCurrentDotName(DotNameTriangle3Side.TOP)
+                                    viewModel.changeCurrentDotName(DotNameTriangle3Side.TOP)
                                 }
 
                                 (rightBottomCenter - offset).getDistance() <= 45f -> {
                                     showDotDialog = true
-                                    triangleViewModel.changeCurrentDotName(DotNameTriangle3Side.RIGHTBOTTOM)
+                                    viewModel.changeCurrentDotName(DotNameTriangle3Side.RIGHTBOTTOM)
                                 }
                             }
                         }
@@ -135,14 +132,17 @@ fun TriangleChoice(
         if (showDotDialog) {
             ChangeParamsDots(
                 dot = currentDot,
-                changeDot = triangleViewModel::changeParamsDot,
+                changeDot = viewModel::changeParamsDot,
                 onDismissRequest = { showDotDialog = false },
             )
         }
         if (isValid) {
             ButtonResultRow(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                getResult = { openDocument(triangleViewModel.createPDFFile(context, sheet)) },
+                getResult = {
+//                    triangleViewModel.createPDFFile(sheet)
+                    openDocument(viewModel::createPDFFile)
+                },
                 openSheetParams = { openSheetParams = !openSheetParams },
             )
         }

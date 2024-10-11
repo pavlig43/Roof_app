@@ -26,12 +26,11 @@ fun CalculateSheetParams(
     closeDialog: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
-        arrayOf(sheet.widthGeneral, sheet.overlap, sheet.multiplicity).forEach {sheetParam->
+        arrayOf(sheet.widthGeneral, sheet.overlap, sheet.multiplicity).forEach { sheetParam ->
             CalculateSheetParamsRow(
                 sheetParam = sheetParam,
-                onValueChange = updateSheetParam
-
-                )
+                onValueChange = updateSheetParam,
+            )
         }
 //        CalculateSheetParamsRow(
 //            nameField = stringResource(R.string.params_with_unit, stringResource(sheet.widthGeneral.name.title), stringResource(R.string.cm)),
@@ -50,7 +49,7 @@ fun CalculateSheetParams(
 //        )
         Text(
             "*Кратность - округление расчетной длины листа в большую сторону. " +
-                    "Например при длине листа 243 см и кратности 5 см результат будет 245 см",
+                "Например при длине листа 243 см и кратности 5 см результат будет 245 см",
         )
         if (isDialog) {
             Button(onClick = closeDialog) {
@@ -70,7 +69,10 @@ fun CalculateSheetParamsRow(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = stringResource(R.string.params_with_unit, stringResource(sheetParam.name.title), stringResource(R.string.cm)), modifier.fillMaxWidth(0.4f))
+        Text(
+            text = stringResource(R.string.params_with_unit, stringResource(sheetParam.name.title), stringResource(R.string.cm)),
+            modifier.fillMaxWidth(0.4f),
+        )
         TextField(
             value = sheetParam.value.takeIf { it != BigDecimal.ZERO }?.toPlainString() ?: "",
             onValueChange = { onValueChange(sheetParam.copy(value = it.toBigDecimalOrNull() ?: BigDecimal.ZERO)) },

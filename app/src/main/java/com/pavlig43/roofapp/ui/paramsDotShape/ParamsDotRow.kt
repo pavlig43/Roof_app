@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.pavlig43.roof_app.R
-import com.pavlig43.roofapp.ui.MinusIcon
+import com.pavlig43.roofapp.icons.MinusIcon
 
 /**
  * компоуз функция, которая показывает строку, где можно менять отклонение от крайней левой точки фигуры по одной из оси
@@ -42,9 +42,9 @@ fun ParamsDotRow(
         Text(
             text = stringResource(R.string.offset, axis),
             modifier =
-            Modifier
-                .padding(end = 4.dp)
-                .weight(0.55f),
+                Modifier
+                    .padding(end = 4.dp)
+                    .weight(0.55f),
         )
         if (canChangePlus) {
             Button(onClick = changePlus, modifier = Modifier.weight(0.2f)) {
@@ -57,7 +57,7 @@ fun ParamsDotRow(
             Spacer(modifier = Modifier.weight(0.2f))
         }
         TextField(
-            value = value.takeIf { it!=0f }?.toInt()?.toString()?:"",
+            value = value.takeIf { it != 0f }?.toInt()?.toString() ?: "",
             readOnly = !canChangeAxis,
             onValueChange = { it: String ->
                 val newValue = it.toIntOrNull() ?: 0

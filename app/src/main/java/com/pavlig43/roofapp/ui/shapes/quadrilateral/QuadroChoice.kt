@@ -22,7 +22,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,17 +44,16 @@ import java.io.File
 @Composable
 fun QuadroChoice(
     modifier: Modifier = Modifier,
-    quadrilateralViewModel: QuadrilateralViewModel = hiltViewModel(),
-    openDocument: (File) -> Unit,
-    updateSheetParams:(SheetParam)->Unit,
+    viewModel: QuadrilateralViewModel = hiltViewModel(),
+    openDocument: (suspend (Sheet) -> File?) -> Unit,
+    updateSheetParams: (SheetParam) -> Unit,
     sheet: Sheet,
 ) {
-    val context = LocalContext.current
     val configuration = LocalConfiguration.current
 
-    val geometryShape by quadrilateralViewModel.geometryShape.collectAsState()
-    val currentDot by quadrilateralViewModel.currentDot.collectAsState()
-    val isValid by quadrilateralViewModel.isValid.collectAsState()
+    val geometryShape by viewModel.geometry4SideShape.collectAsState()
+    val currentDot by viewModel.currentDot.collectAsState()
+    val isValid by viewModel.isValid.collectAsState()
     var openManual by remember { mutableStateOf(false) }
 
     // Получаем ширину экрана в пикселях
@@ -81,19 +79,19 @@ fun QuadroChoice(
                             when {
                                 (leftTopCenter - offset).getDistance() <= 45f -> {
                                     showDotDialog = true
-                                    quadrilateralViewModel.changeCurrentDotName(DotName4Side.LEFTTOP)
+                                    viewModel.changeCurrentDotName(DotName4Side.LEFTTOP)
                                 }
 
                                 (rightTopCenter - offset).getDistance() <= 45f
 
                                 -> {
                                     showDotDialog = true
-                                    quadrilateralViewModel.changeCurrentDotName(DotName4Side.RIGHTTOP)
+                                    viewModel.changeCurrentDotName(DotName4Side.RIGHTTOP)
                                 }
 
                                 (rightBottomCenter - offset).getDistance() <= 45f -> {
                                     showDotDialog = true
-                                    quadrilateralViewModel.changeCurrentDotName(DotName4Side.RIGHTBOTTOM)
+                                    viewModel.changeCurrentDotName(DotName4Side.RIGHTBOTTOM)
                                 }
                             }
                         }
@@ -152,14 +150,16 @@ fun QuadroChoice(
         if (showDotDialog) {
             ChangeParamsDots(
                 dot = currentDot,
-                changeDot = quadrilateralViewModel::changeParamsDot,
+                changeDot = viewModel::changeParamsDot,
                 onDismissRequest = { showDotDialog = false },
             )
         }
         if (isValid) {
             ButtonResultRow(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                getResult = { openDocument(quadrilateralViewModel.createPDFFile(context, sheet)) },
+                getResult = {
+                    openDocument(viewModel::createPDFFile)
+                },
                 openSheetParams = { openSheetParams != openSheetParams },
             )
         }
@@ -167,7 +167,7 @@ fun QuadroChoice(
             Dialog(onDismissRequest = { openSheetParams = false }) {
                 CalculateSheetParams(
                     sheet = sheet,
-                    updateSheetParam = updateSheetParams ,
+                    updateSheetParam = updateSheetParams,
                     isDialog = true,
                     closeDialog = { openSheetParams = false },
                     modifier = Modifier.background(Color.White),

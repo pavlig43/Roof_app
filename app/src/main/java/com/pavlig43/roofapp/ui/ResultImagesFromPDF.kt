@@ -1,6 +1,5 @@
 package com.pavlig43.roofapp.ui
 
-import android.graphics.Bitmap
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +22,7 @@ import com.rizzi.bouquet.VerticalPdfReaderState
 
 @Composable
 fun ResultImagesFromPDF(
-    pdfReaderState: VerticalPdfReaderState?=null,
+    pdfReaderState: VerticalPdfReaderState? = null,
     returnToCalculateScreen: () -> Unit,
     shareFile: () -> Unit,
     nameFile: SaveNameFile,

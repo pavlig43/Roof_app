@@ -12,23 +12,31 @@ data class Sheet(
      * Вид покрытия -череица или профиль
      */
     val profile: RoofMetal = RoofMetal.TILE,
-    val widthGeneral: SheetParam = SheetParam(SheetParamName.WIDTHGENERAL,BigDecimal("118")),
+    val widthGeneral: SheetParam = SheetParam(SheetParamName.WIDTHGENERAL, BigDecimal("118")),
     /**
      * Перехлест при раскладке
      */
-    val overlap: SheetParam = SheetParam(SheetParamName.OVERLAP,BigDecimal("8")),
+    val overlap: SheetParam = SheetParam(SheetParamName.OVERLAP, BigDecimal("8")),
     /**
      *"*Кратность - округление расчетной длины листа в большую сторону. " +
      *                 "Например при длине листа 243 см и кратности 5 см результат будет 245 см"
      */
-    val multiplicity: SheetParam = SheetParam(SheetParamName.MULTIPLICITY,BigDecimal("5")),
+    val multiplicity: SheetParam = SheetParam(SheetParamName.MULTIPLICITY, BigDecimal("5")),
     private val len: BigDecimal = BigDecimal.ZERO,
 ) {
     /**
      * оКругленная длина листа с учетом кратности [multiplicity]
      */
     val ceilLen: BigDecimal by lazy {
-        if (multiplicity.value == BigDecimal.ZERO) len else len.divide(multiplicity.value, 0, RoundingMode.CEILING).multiply(multiplicity.value)
+        if (multiplicity.value == BigDecimal.ZERO) {
+            len
+        } else {
+            len.divide(
+                multiplicity.value,
+                0,
+                RoundingMode.CEILING,
+            ).multiply(multiplicity.value)
+        }
     }
 
     /**
@@ -38,24 +46,28 @@ data class Sheet(
         widthGeneral.value - overlap.value
     }
 }
-enum class SheetParamName(val title:Int){
+
+enum class SheetParamName(val title: Int) {
     WIDTHGENERAL(R.string.sheet_width),
     OVERLAP(R.string.overlap),
-    MULTIPLICITY(R.string.multiplicity)
+    MULTIPLICITY(R.string.multiplicity),
 }
+
 data class SheetParam(
     val name: SheetParamName,
-    val value: BigDecimal
+    val value: BigDecimal,
 )
+
 fun Sheet.updateSheetParams(sheetParam: SheetParam): Sheet {
-    return when(sheetParam.name){
-        SheetParamName.WIDTHGENERAL-> this.updateWidthGeneral(sheetParam)
+    return when (sheetParam.name) {
+        SheetParamName.WIDTHGENERAL -> this.updateWidthGeneral(sheetParam)
         SheetParamName.OVERLAP -> this.updateOverlap(sheetParam)
         SheetParamName.MULTIPLICITY -> this.updateMultiplicity(sheetParam)
     }
 }
+
 private fun Sheet.updateWidthGeneral(newWidthGeneral: SheetParam): Sheet {
-    return this.copy(widthGeneral =newWidthGeneral)
+    return this.copy(widthGeneral = newWidthGeneral)
 }
 
 private fun Sheet.updateOverlap(newOverlap: SheetParam): Sheet {
