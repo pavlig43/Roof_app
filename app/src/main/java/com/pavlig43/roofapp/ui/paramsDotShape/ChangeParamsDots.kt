@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.Dot
+import java.math.BigDecimal
 
 /**
  * компоуз функция, предствляющая собой диалог в котором можно изменить отклонение от левой нижней точки по обеим осям
@@ -24,27 +25,36 @@ fun ChangeParamsDots(
     modifier: Modifier = Modifier,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
-        Column(modifier = modifier.background(Color.White), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = modifier.background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Text(text = stringResource(R.string.offset_from_left_bottom))
             ParamsDotRow(
-                value = dot.distanceX,
-                onValueChange = { newValue -> changeDot(dot.copy(distanceX = newValue)) },
+                value = dot.offset.x,
+                onValueChange = {
+                        newValue ->
+                    changeDot(dot.copy(offset = dot.offset.copy(x = newValue)))
+                },
                 axis = "X",
                 canChangePlus = dot.canMinusX,
-                plus = dot.distanceX >= 0,
+                plus = dot.offset.x >= BigDecimal.ZERO,
                 canChangeAxis = dot.canChangeX,
                 changePlus = {
-                    changeDot(dot.copy(distanceX = -dot.distanceX))
+                    changeDot(dot.copy(offset = dot.offset.copy(x = -dot.offset.x)))
                 },
             )
             ParamsDotRow(
-                value = dot.distanceY,
-                onValueChange = { newValue -> changeDot(dot.copy(distanceY = newValue)) },
+                value = dot.offset.y,
+                onValueChange = {
+                        newValue ->
+                    changeDot(dot.copy(offset = dot.offset.copy(y = newValue)))
+                },
                 canChangePlus = dot.canMinusY,
-                plus = dot.distanceY >= 0,
+                plus = dot.offset.y >= BigDecimal.ZERO,
                 canChangeAxis = dot.canChangeY,
                 changePlus = {
-                    changeDot(dot.copy(distanceY = -dot.distanceY))
+                    changeDot(dot.copy(offset = dot.offset.copy(y = -dot.offset.y)))
                 },
             )
             Button(

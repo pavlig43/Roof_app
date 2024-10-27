@@ -2,7 +2,7 @@ package com.pavlig43.roofapp.ui.calculationTile4scat
 
 import android.content.Context
 import android.graphics.pdf.PdfDocument
-import android.util.Log
+import com.example.mathbigdecimal.OffsetBD
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.DotName4Side
@@ -17,6 +17,7 @@ import com.pavlig43.roofapp.utils.pdfResult3SideTriangle
 import com.pavlig43.roofapp.utils.pdfResult4Side
 import java.io.File
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 suspend fun pdfResultRoof4Scat(
     roofParamsClassic4Scat: RoofParamsClassic4Scat,
@@ -25,54 +26,87 @@ suspend fun pdfResultRoof4Scat(
 ): File {
     val geometryTriangle3SideShape =
         GeometryTriangle3SideShape(
-            leftBottom = Dot(DotNameTriangle3Side.LEFTBOTTOM, distanceX = 0f, distanceY = 0f),
+            leftBottom = Dot(DotNameTriangle3Side.LEFTBOTTOM),
             top =
-                Dot(
-                    DotNameTriangle3Side.TOP,
-                    distanceX = roofParamsClassic4Scat.hypotenuse.toFloat(),
-                    distanceY = (roofParamsClassic4Scat.width.divide(BigDecimal(2))).toFloat(),
+            Dot(
+                DotNameTriangle3Side.TOP,
+                offset =
+                OffsetBD(
+                    roofParamsClassic4Scat.pokat.value,
+                    roofParamsClassic4Scat.width.value.divide(
+                        BigDecimal(2),
+
+                        RoundingMode.HALF_UP,
+                    ),
                 ),
+            ),
             rightBottom =
-                Dot(
-                    DotNameTriangle3Side.RIGHTBOTTOM,
-                    distanceX = 0f,
-                    distanceY = roofParamsClassic4Scat.width.toFloat(),
-                ),
+            Dot(
+                DotNameTriangle3Side.RIGHTBOTTOM,
+                OffsetBD(BigDecimal.ZERO, roofParamsClassic4Scat.width.value),
+            ),
         )
     val geometry4SideShape =
         Geometry4SideShape(
-            leftBottom = Dot(DotName4Side.LEFTBOTTOM, distanceX = 0f, distanceY = 0f),
+            leftBottom = Dot(DotName4Side.LEFTBOTTOM),
             leftTop =
-                Dot(
-                    DotName4Side.LEFTTOP,
-                    distanceX = roofParamsClassic4Scat.hypotenuse.toFloat(),
-                    distanceY = (roofParamsClassic4Scat.len.toFloat() - roofParamsClassic4Scat.smallFoot.toFloat()) / 2,
+            Dot(
+                DotName4Side.LEFTTOP,
+                OffsetBD(
+                    roofParamsClassic4Scat.pokat.value,
+                    (roofParamsClassic4Scat.len.value - roofParamsClassic4Scat.smallFoot).divide(
+                        BigDecimal(2),
+
+                        RoundingMode.HALF_UP,
+                    ),
                 ),
+            ),
             rightTop =
-                @Suppress("ktlint:standard:max-line-length")
-                Dot(
-                    DotName4Side.RIGHTBOTTOM,
-                    distanceX = roofParamsClassic4Scat.hypotenuse.toFloat(),
-                    distanceY =
-                        (roofParamsClassic4Scat.len.toFloat() - roofParamsClassic4Scat.smallFoot.toFloat()) / 2 +
-                            roofParamsClassic4Scat.smallFoot.toFloat(),
+
+            Dot(
+                DotName4Side.RIGHTBOTTOM,
+                OffsetBD(
+                    roofParamsClassic4Scat.pokat.value,
+                    (roofParamsClassic4Scat.len.value - roofParamsClassic4Scat.smallFoot).divide(
+                        BigDecimal(2),
+
+                        RoundingMode.HALF_UP,
+                    ) + roofParamsClassic4Scat.smallFoot,
                 ),
+            ),
             rightBottom =
-                Dot(
-                    DotName4Side.RIGHTBOTTOM,
-                    distanceX = 0f,
-                    distanceY = roofParamsClassic4Scat.len.toFloat(),
+            Dot(
+                DotName4Side.RIGHTBOTTOM,
+                offset =
+                OffsetBD(
+                    BigDecimal.ZERO,
+                    roofParamsClassic4Scat.len.value,
                 ),
+            ),
         )
-    Log.d("val geometry4SideShape", geometry4SideShape.toString())
 
     fun getOtherParams(): List<Pair<String, String>> =
         listOf(
-            Pair(context.getString(R.string.len_roof), "${roofParamsClassic4Scat.width.toInt()} cm"),
-            Pair(context.getString(R.string.width_roof), "${roofParamsClassic4Scat.len.toInt()} cm"),
-            Pair(context.getString(R.string.yandova), "${roofParamsClassic4Scat.yandova.toInt()} cm"),
-            Pair(context.getString(R.string.height_roof), "${roofParamsClassic4Scat.height.toInt()} cm"),
-            Pair(context.getString(R.string.angle_tilt), "${roofParamsClassic4Scat.angle.toInt()}°"),
+            Pair(
+                context.getString(R.string.len_roof),
+                "${roofParamsClassic4Scat.width.value} ${context.getString(R.string.cm)}",
+            ),
+            Pair(
+                context.getString(R.string.width_roof),
+                "${roofParamsClassic4Scat.len.value} ${context.getString(R.string.cm)}",
+            ),
+            Pair(
+                context.getString(R.string.yandova),
+                "${roofParamsClassic4Scat.yandova.toInt()} ${context.getString(R.string.cm)}",
+            ),
+            Pair(
+                context.getString(R.string.height_roof),
+                "${roofParamsClassic4Scat.height.value} ${context.getString(R.string.cm)}",
+            ),
+            Pair(
+                context.getString(R.string.angle_tilt),
+                "${roofParamsClassic4Scat.angle.value} °",
+            ),
         )
 
     val countSheet4SideShape: MutableList<Sheet> =

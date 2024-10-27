@@ -32,9 +32,9 @@ import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.DotName4Side
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
-import com.pavlig43.roofapp.ui.ButtonResultRow
-import com.pavlig43.roofapp.ui.CalculateSheetParams
-import com.pavlig43.roofapp.ui.ManualDialog
+import com.pavlig43.roofapp.ui.general.ButtonResultRow
+import com.pavlig43.roofapp.ui.general.CalculateSheetParams
+import com.pavlig43.roofapp.ui.general.ManualDialog
 import com.pavlig43.roofapp.ui.paramsDotShape.ChangeParamsDots
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 import com.pavlig43.roofapp.utils.drawDot
@@ -72,30 +72,30 @@ fun QuadroChoice(
     Box(modifier = modifier.fillMaxSize()) {
         Canvas(
             modifier =
-                modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        detectTapGestures { offset: Offset ->
-                            when {
-                                (leftTopCenter - offset).getDistance() <= 45f -> {
-                                    showDotDialog = true
-                                    viewModel.changeCurrentDotName(DotName4Side.LEFTTOP)
-                                }
+            modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures { offset: Offset ->
+                        when {
+                            (leftTopCenter - offset).getDistance() <= 45f -> {
+                                showDotDialog = true
+                                viewModel.changeCurrentDotName(DotName4Side.LEFTTOP)
+                            }
 
-                                (rightTopCenter - offset).getDistance() <= 45f
+                            (rightTopCenter - offset).getDistance() <= 45f
 
-                                -> {
-                                    showDotDialog = true
-                                    viewModel.changeCurrentDotName(DotName4Side.RIGHTTOP)
-                                }
+                            -> {
+                                showDotDialog = true
+                                viewModel.changeCurrentDotName(DotName4Side.RIGHTTOP)
+                            }
 
-                                (rightBottomCenter - offset).getDistance() <= 45f -> {
-                                    showDotDialog = true
-                                    viewModel.changeCurrentDotName(DotName4Side.RIGHTBOTTOM)
-                                }
+                            (rightBottomCenter - offset).getDistance() <= 45f -> {
+                                showDotDialog = true
+                                viewModel.changeCurrentDotName(DotName4Side.RIGHTBOTTOM)
                             }
                         }
-                    },
+                    }
+                },
         ) {
             drawRuler(
                 screenWidth = screenWidth,
@@ -142,7 +142,10 @@ fun QuadroChoice(
         }
         FloatingActionButton(
             { openManual = !openManual },
-            modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
+            modifier =
+            Modifier
+                .align(Alignment.TopEnd)
+                .size(24.dp),
         ) {
             Icon(Icons.Default.Info, contentDescription = null)
         }
@@ -180,6 +183,7 @@ fun QuadroChoice(
     }
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(showBackground = true)
 @Composable
 private fun ParamsDotRowPreview() {

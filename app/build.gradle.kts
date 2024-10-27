@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.android.application)
-    id("org.jlleitschuh.gradle.ktlint")
     id("com.google.devtools.ksp")
     kotlin("plugin.serialization")
     id("com.google.dagger.hilt.android")
@@ -54,15 +53,7 @@ android {
         }
     }
 }
-ktlint {
-    android = true
-    ignoreFailures = false
-    reporters {
-        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
-        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
-        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.SARIF)
-    }
-}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)

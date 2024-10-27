@@ -6,10 +6,9 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
 class GeometryUtilsTest {
-
     @Test
-    fun `calculate acos`(){
+    fun `calculate acos`() {
         val acosResult = acos(BigDecimal("8.3"))
-        assertEquals(null,acosResult)
+        assertEquals(null, acosResult)
     }
 }

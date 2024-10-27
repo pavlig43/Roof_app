@@ -11,6 +11,7 @@ import com.pavlig43.roofapp.model.Dot
 /**
  * Рисует на канвасе экрана устройства точку фигуры
  */
+@Suppress("LongParameterList")
 fun DrawScope.drawDot(
     downOffset: Boolean,
     offsetY: Float = 35f,
@@ -27,7 +28,7 @@ fun DrawScope.drawDot(
     drawCircle(if (startDot) Color.Green else Color.Black, center = center, radius = 15f)
     drawContext.canvas.nativeCanvas.apply {
         drawText(
-            "(${dot.distanceX.toInt()}cm, ${dot.distanceY.toInt()}cm)",
+            "(${dot.offset.x}cm, ${dot.offset.y}cm)",
             center.x,
             center.y + if (!downOffset) offsetY else -offsetY,
             textPaint,

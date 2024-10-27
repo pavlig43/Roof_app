@@ -1,6 +1,7 @@
 package com.pavlig43.roofapp.model
 
-import androidx.compose.ui.geometry.Offset
+import com.example.mathbigdecimal.OffsetBD
+import java.math.BigDecimal
 
 /**
  * класс для определения расстяния от наальной точки(я использую левую нижнюю)
@@ -8,8 +9,7 @@ import androidx.compose.ui.geometry.Offset
  */
 data class Dot(
     val name: Enum<*>,
-    val distanceX: Float = 0f,
-    val distanceY: Float = 0f,
+    val offset: OffsetBD = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
     val canMinusX: Boolean = false,
     val canMinusY: Boolean = false,
     val canChangeX: Boolean = true,
@@ -36,19 +36,8 @@ enum class DotNameTriangle3Side {
  * [startOffset] = Offset(abs(-10),abs(0)) После этой функции получаем а(10,0) вторая точка b(0,4)
  * Лучше ставить ограничения на отрицательные координаты некоторых точек, чтобы  получать правильные многоугольники
  */
-fun Dot.withOStartOffset(startOffset: Offset) =
+fun Dot.withOStartOffset(startOffset: OffsetBD) =
     this.copy(
-        distanceX = this.distanceX + startOffset.x,
-        distanceY = this.distanceY + startOffset.y,
+        offset = this.offset.plus(startOffset.absoluteValue),
     )
 
-/**
- * в точке координаты указаны в сантиметрах, переводит в пиксели для канваса
- */
-fun Dot.toPX(
-    oneCMInWidthXPx: Float,
-    oneCMInHeightYtPx: Float,
-) = this.copy(
-    distanceX = this.distanceX * oneCMInWidthXPx,
-    distanceY = this.distanceY * oneCMInHeightYtPx,
-)

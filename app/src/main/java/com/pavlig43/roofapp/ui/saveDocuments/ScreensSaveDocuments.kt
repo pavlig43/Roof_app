@@ -54,7 +54,7 @@ private fun ScreensSaveDocumentsp(viewModel: ListSaveDocumentsViewModel = hiltVi
 
     val screensSaveDocumentsState by viewModel.screensSaveDocumentsState.collectAsState()
     val pdfReaderState by viewModel.pdfReaderState.collectAsState()
-    val listSaveDocuments by viewModel.listSaveDocument.collectAsState()
+    val listSaveDocuments by viewModel.listSaveDocuments.collectAsState()
     when (screensSaveDocumentsState) {
         is ScreensSaveDocumentsState.ListSaveDocumentsState ->
 
@@ -83,14 +83,13 @@ private fun ListSaveDocuments(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
     ) {
         items(listOfDocument, key = { doc ->
             doc.name
         }) { document ->
-            Log.d("filesdocument", document.toString())
             DocumentItemCard(
                 document = document,
                 openDocument = openDocument,
@@ -100,6 +99,8 @@ private fun ListSaveDocuments(
         }
     }
 }
+
+private const val dragAmountForDelete = 15
 
 @Composable
 private fun DocumentItemCard(
@@ -120,23 +121,23 @@ private fun DocumentItemCard(
 
     Box(
         modifier =
-            modifier.pointerInput(Unit) {
-                detectHorizontalDragGestures { change, dragAmount ->
-                    change.consume()
-                    if (dragAmount > 15) {
-                        isShowDeleteDialog = true
-                    }
+        modifier.pointerInput(Unit) {
+            detectHorizontalDragGestures { change, dragAmount ->
+                change.consume()
+                if (dragAmount > dragAmountForDelete) {
+                    isShowDeleteDialog = true
                 }
-            },
+            }
+        },
     ) {
         Card(modifier = Modifier.clickable { openDocument(document) }) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(64.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.icons8_pdf_96),

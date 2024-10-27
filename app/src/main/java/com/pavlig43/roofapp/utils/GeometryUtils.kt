@@ -1,38 +1,56 @@
 package com.pavlig43.roofapp.utils
 
 import android.util.Log
-import androidx.compose.ui.geometry.Offset
+import com.example.mathbigdecimal.OffsetBD
+import com.example.mathbigdecimal.utils.abs
 import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.SheetDots
-import kotlin.math.abs
-import kotlin.math.sqrt
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Ищет координату "Х" при известной "У" на отрезке между точками [first] и [second]
  * методом линейной интерполяции
- * если dotOne.distanceY == dotTwo.distanceY , то получаем, что отрезок параллелен оси "У" и координата "Х" не имеет значения TODO() нужно более аргументировано подойти к этому моменту
+ * если dotOne.offset.y
+ * == dotTwo.offset.y
+ * , то получаем, что отрезок параллелен оси "У" и координата "Х" не имеет значения
+ * TODO() нужно более аргументировано подойти к этому моменту
  * Если известный "У" находится за пределами отрезка, то вернет null
  *
  */
 fun searchInterpolation(
     first: Dot,
     second: Dot,
-    y: Float,
-    constX: Float,
-): Offset? {
+    y: BigDecimal,
+    constX: BigDecimal,
+): OffsetBD? {
     val (dotOne, dotTwo) =
-        if (first.distanceY < second.distanceY) {
+        if (first.offset.y
+            < second.offset.y
+        ) {
             Pair(first, second)
         } else {
             Pair(second, first)
         }
     when {
-        dotOne.distanceY > y || dotTwo.distanceY < y -> return null
-        dotOne.distanceY == dotTwo.distanceY -> return Offset(constX, y)
+        dotOne.offset.y
+            > y ||
+            dotTwo.offset.y
+            < y -> return null
+
+        dotOne.offset.y
+            == dotTwo.offset.y
+        -> return OffsetBD(constX, y)
+
         else -> {
             val x =
-                first.distanceX + (second.distanceX - first.distanceX) * (y - first.distanceY) / (second.distanceY - first.distanceY)
-            return Offset(abs(x), y)
+                first.offset.x + (second.offset.x - first.offset.x) * (
+                    y - first.offset.y
+                    ) / (
+                    second.offset.y -
+                        first.offset.y
+                    )
+            return OffsetBD(abs(x).setScale(0, RoundingMode.FLOOR), y)
         }
     }
 }
@@ -45,8 +63,8 @@ fun searchInterpolation(
  * поэтому выбираем минимальные и максимальные значения от пересечения
  */
 fun searchDotsSheet(
-    resultLeft: Result<Pair<Offset, Offset>>,
-    resultRight: Result<Pair<Offset, Offset>>,
+    resultLeft: Result<Pair<OffsetBD, OffsetBD>>,
+    resultRight: Result<Pair<OffsetBD, OffsetBD>>,
 ): SheetDots? {
     if (resultLeft.isSuccess && resultRight.isSuccess) {
         val firstLeft = resultLeft.getOrThrow().first
@@ -54,32 +72,32 @@ fun searchDotsSheet(
         val firstRight = resultRight.getOrThrow().first
         val secondRight = resultRight.getOrThrow().second
         val leftBottom =
-            Offset(
+            OffsetBD(
                 minOf(firstLeft.x, secondLeft.x, secondRight.x, firstRight.x),
                 minOf(firstLeft.y, secondRight.y, secondLeft.y, secondRight.y),
             )
         val leftTop =
-            Offset(
+            OffsetBD(
                 maxOf(firstLeft.x, secondLeft.x, secondRight.x, firstRight.x),
                 minOf(firstLeft.y, secondLeft.y, secondRight.y, secondRight.y),
             )
         val rightTop =
-            Offset(
+            OffsetBD(
                 maxOf(firstLeft.x, secondLeft.x, secondRight.x, firstRight.x),
                 maxOf(firstLeft.y, secondLeft.y, secondRight.y, secondRight.y),
             )
         val rightBottom =
-            Offset(
+            OffsetBD(
                 minOf(firstLeft.x, secondLeft.x, secondRight.x, firstRight.x),
                 maxOf(firstLeft.y, secondLeft.y, secondRight.y, secondRight.y),
             )
 
         val sheetDots =
             SheetDots(
-                leftBottom = leftBottom,
-                leftTop = leftTop,
-                rightTop = rightTop,
-                rightBottom = rightBottom,
+                leftBottom = leftBottom.changeOffset(),
+                leftTop = leftTop.changeOffset(),
+                rightTop = rightTop.changeOffset(),
+                rightBottom = rightBottom.changeOffset(),
             )
         Log.d("dotSheet", sheetDots.toString())
         return sheetDots
@@ -88,19 +106,4 @@ fun searchDotsSheet(
         Log.d("resultLeft", resultLeft.exceptionOrNull().toString())
         return null
     }
-}
-
-/**
- * Функция отдает расстояние между двумя точками
- */
-fun getSide(
-    first: Dot,
-    second: Dot,
-): Int {
-    return sqrt(
-        (
-            ((second.distanceX - first.distanceX) * (second.distanceX - first.distanceX)) +
-                ((second.distanceY - first.distanceY) * (second.distanceY - first.distanceY))
-        ).toDouble(),
-    ).toInt()
 }

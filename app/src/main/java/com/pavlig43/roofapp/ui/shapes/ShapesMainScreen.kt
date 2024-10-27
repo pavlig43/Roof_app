@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.pavlig43.roofapp.ui.ResultImagesFromPDF
+import com.pavlig43.roofapp.ui.general.ResultImagesFromPDF
 import com.pavlig43.roofapp.ui.shapes.quadrilateral.QuadroChoice
 import com.pavlig43.roofapp.ui.shapes.triangle.TriangleChoice
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
@@ -73,9 +73,9 @@ fun ChoiceShape(
     val scrollState = rememberScrollState()
     Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .verticalScroll(scrollState),
+        modifier
+            .fillMaxWidth()
+            .verticalScroll(scrollState),
     ) {
         Shapes.entries.forEach { shape ->
             CardShape(
@@ -96,10 +96,10 @@ fun CardShape(
 ) {
     Card(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-                .clickable { moveToShape(shape) },
+        modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clickable { moveToShape(shape) },
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -116,6 +116,7 @@ fun CardShape(
     }
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(showBackground = true)
 @Composable
 private fun ChoiceShapePreview() {

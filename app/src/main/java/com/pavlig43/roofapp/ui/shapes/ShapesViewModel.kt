@@ -1,7 +1,6 @@
 package com.pavlig43.roofapp.ui.shapes
 
 import android.content.Context
-import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,86 +29,85 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShapesViewModel
-    @Inject
-    constructor(
-        @ApplicationContext private val context: Context,
-    ) : ViewModel() {
-        private val _shapesScreenState =
-            MutableStateFlow<ShapesScreenState>(ShapesScreenState.ShapesMain)
-        val shapesScreenState = _shapesScreenState.asStateFlow()
+@Inject
+constructor(
+    @ApplicationContext private val context: Context,
+) : ViewModel() {
+    private val _shapesScreenState =
+        MutableStateFlow<ShapesScreenState>(ShapesScreenState.ShapesMain)
+    val shapesScreenState = _shapesScreenState.asStateFlow()
 
-        /**
-         * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится ,
-         * а потом только показывается на экране
-         */
-        private val pdfFile = MutableStateFlow<File?>(null)
+    /**
+     * Когда пользователь Выбрал все параметры, сначала создается ПДФ файл, который рендерится ,
+     * а потом только показывается на экране
+     */
+    private val pdfFile = MutableStateFlow<File?>(null)
 
-        /**
-         * Список страниц ПДФ файла для отображения на экране
-         */
-        private val pathURI =
-            pdfFile
-                .filterNotNull()
-                .map { file ->
-                    Log.d("URI", file.toUri().toString())
-                    file.toUri()
-                }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+    /**
+     * Список страниц ПДФ файла для отображения на экране
+     */
 
-        val pdfReaderState: StateFlow<VerticalPdfReaderState?> =
-            pathURI
-                .filterNotNull()
-                .map { uri ->
-                    VerticalPdfReaderState(ResourceType.Local(uri))
-                }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+    val pdfReaderState: StateFlow<VerticalPdfReaderState?> =
+        pdfFile
+            .filterNotNull()
+            .map { file ->
+                val uri = file.toUri()
+                VerticalPdfReaderState(ResourceType.Local(uri))
+            }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-        /**
-         * Имя файла, с которым можно сохранить документ ПДФ,
-         * в [checkName] проверяет есть ли уже такое в хранилище
-         */
-        private val _saveNameFile = MutableStateFlow(SaveNameFile())
-        val saveNameFile = _saveNameFile.asStateFlow()
+    /**
+     * Имя файла, с которым можно сохранить документ ПДФ,
+     * в [checkName] проверяет есть ли уже такое в хранилище
+     */
+    private val _saveNameFile = MutableStateFlow(SaveNameFile())
+    val saveNameFile = _saveNameFile.asStateFlow()
 
-        private val _sheet = MutableStateFlow(Sheet())
-        val sheet = _sheet.asStateFlow()
+    private val _sheet = MutableStateFlow(Sheet())
+    val sheet = _sheet.asStateFlow()
 
-        fun moveToShape(shapeName: Shapes) {
-            _shapesScreenState.value =
-                when (shapeName) {
-                    Shapes.Triangle -> ShapesScreenState.Triangle
-                    Shapes.Quadrilateral -> ShapesScreenState.Quadrilateral
-                }
-        }
+    fun moveToShape(shapeName: Shapes) {
+        _shapesScreenState.value =
+            when (shapeName) {
+                Shapes.Triangle -> ShapesScreenState.Triangle
+                Shapes.Quadrilateral -> ShapesScreenState.Quadrilateral
+            }
+    }
 
-        fun returnCalculateTriangleScreen() {
-            _shapesScreenState.value = ShapesScreenState.Triangle
-        }
+    fun returnCalculateTriangleScreen() {
+        _shapesScreenState.value = ShapesScreenState.Triangle
+    }
 
-        fun updateSheetParams(sheetParam: SheetParam) {
-            _sheet.update { it.updateSheetParams(sheetParam) }
-        }
+    fun updateSheetParams(sheetParam: SheetParam) {
+        _sheet.update { it.updateSheetParams(sheetParam) }
+    }
 
-        fun openDocument(getFile: suspend (Sheet) -> File?) {
-            viewModelScope.launch { pdfFile.update { getFile(_sheet.value) } }
+    fun openDocument(getFile: suspend (Sheet) -> File?) {
+        viewModelScope.launch { pdfFile.update { getFile(_sheet.value) } }
 
-            _shapesScreenState.value = ShapesScreenState.LoadDocumentImage
-        }
+        _shapesScreenState.value = ShapesScreenState.LoadDocumentImage
+    }
 
-        fun checkName(
-            newName: String,
-            context: Context,
-        ) {
-            val isValid = context.checkSaveName(newName)
-            _saveNameFile.update { it.copy(name = newName, isValid = isValid) }
-        }
+    fun checkName(
+        newName: String,
+        context: Context,
+    ) {
+        val isValid = context.checkSaveName(newName)
+        _saveNameFile.update { it.copy(name = newName, isValid = isValid) }
+    }
 
-        fun saveFile(context: Context) {
-            viewModelScope.launch { context.saveFilePDF(pdfFile.value!!, saveNameFile = _saveNameFile.value.name) }
-        }
-
-        fun shareFile() {
-            pdfFile.value?.let { pdfFile -> context.sharePDFFile(pdfFile) }
+    fun saveFile(context: Context) {
+        viewModelScope.launch {
+            context.saveFilePDF(
+                pdfFile.value!!,
+                saveNameFile = _saveNameFile.value.name,
+            )
         }
     }
+
+    fun shareFile() {
+        pdfFile.value?.let { pdfFile -> context.sharePDFFile(pdfFile) }
+    }
+}
 
 sealed class ShapesScreenState {
     data object ShapesMain : ShapesScreenState()

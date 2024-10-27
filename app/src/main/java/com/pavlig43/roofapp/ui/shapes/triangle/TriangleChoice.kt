@@ -30,9 +30,9 @@ import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.model.DotNameTriangle3Side
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
-import com.pavlig43.roofapp.ui.ButtonResultRow
-import com.pavlig43.roofapp.ui.CalculateSheetParams
-import com.pavlig43.roofapp.ui.ManualDialog
+import com.pavlig43.roofapp.ui.general.ButtonResultRow
+import com.pavlig43.roofapp.ui.general.CalculateSheetParams
+import com.pavlig43.roofapp.ui.general.ManualDialog
 import com.pavlig43.roofapp.ui.paramsDotShape.ChangeParamsDots
 import com.pavlig43.roofapp.utils.drawDot
 import com.pavlig43.roofapp.utils.drawRuler
@@ -68,23 +68,23 @@ fun TriangleChoice(
     Box(modifier = modifier.fillMaxSize()) {
         Canvas(
             modifier =
-                modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        detectTapGestures { offset: Offset ->
-                            when {
-                                (topCenter - offset).getDistance() <= 45f -> {
-                                    showDotDialog = true
-                                    viewModel.changeCurrentDotName(DotNameTriangle3Side.TOP)
-                                }
+            modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures { offset: Offset ->
+                        when {
+                            (topCenter - offset).getDistance() <= 45f -> {
+                                showDotDialog = true
+                                viewModel.changeCurrentDotName(DotNameTriangle3Side.TOP)
+                            }
 
-                                (rightBottomCenter - offset).getDistance() <= 45f -> {
-                                    showDotDialog = true
-                                    viewModel.changeCurrentDotName(DotNameTriangle3Side.RIGHTBOTTOM)
-                                }
+                            (rightBottomCenter - offset).getDistance() <= 45f -> {
+                                showDotDialog = true
+                                viewModel.changeCurrentDotName(DotNameTriangle3Side.RIGHTBOTTOM)
                             }
                         }
-                    },
+                    }
+                },
         ) {
             drawRuler(
                 screenWidth = screenWidth,
@@ -124,7 +124,10 @@ fun TriangleChoice(
         }
         FloatingActionButton(
             { openManual = !openManual },
-            modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
+            modifier =
+            Modifier
+                .align(Alignment.TopEnd)
+                .size(24.dp),
         ) {
             Icon(Icons.Default.Info, contentDescription = null)
         }

@@ -4,8 +4,10 @@ import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
+@Suppress("MagicNumber")
 val MinusIcon: ImageVector
     get() {
+
         return ImageVector
             .Builder(
                 name = "Minus",

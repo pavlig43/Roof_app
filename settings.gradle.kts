@@ -28,4 +28,3 @@ dependencyResolutionManagement {
 rootProject.name = "Roof_app"
 include(":app")
 include(":mathBigDecimal")
-include(":baselineprofile")

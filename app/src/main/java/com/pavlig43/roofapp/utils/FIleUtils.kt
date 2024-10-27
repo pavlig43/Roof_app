@@ -41,8 +41,17 @@ fun Context.sharePDFFile(pdfFile: File) {
     startActivity(Intent.createChooser(sharedIntent, getString(R.string.send)))
 }
 
+fun Context.deleteFile(pdfFile: File) {
+    val directory = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+    val file = File(directory, pdfFile.name)
+    if (file.exists()) {
+        file.delete()
+    }
+}
+
 /**
- * Сохраняет файл с переданным именем в хранилище, файл можно посмотреть только из приложения, доступа к нему из других приложений нет
+ * Сохраняет файл с переданным именем в хранилище, файл можно посмотреть только из приложения,
+ * доступа к нему из других приложений нет
  */
 suspend fun Context.saveFilePDF(
     pdfFile: File,
@@ -106,7 +115,7 @@ suspend fun PdfDocument.pdfResult4Side(
         val canvas = page.canvas
 
         quadroPDF.ruler(canvas)
-        quadroPDF.ruler(canvas, horizontal = false, zero = true)
+        quadroPDF.ruler(canvas)
         quadroPDF.drawQuadro(canvas)
         quadroPDF.sheetOnQuadro(canvas)
         this@pdfResult4Side.finishPage(page)
@@ -143,7 +152,7 @@ suspend fun PdfDocument.pdfResult3SideTriangle(
         val page = this@pdfResult3SideTriangle.startPage(pageInfo)
         val canvas = page.canvas
         trianglePDF.ruler(canvas)
-        trianglePDF.ruler(canvas, horizontal = false, zero = true)
+        trianglePDF.ruler(canvas)
         trianglePDF.drawTriangle(canvas)
         trianglePDF.sheetOnTriangle(canvas)
         this@pdfResult3SideTriangle.finishPage(page)
@@ -163,8 +172,10 @@ suspend fun PdfDocument.pdfResult3SideTriangle(
     }
 
 /**
- * Добавляет информацию относительно крыши целиком ,либо фигуры (количество и длина листов, яндовая , покат и т.д)
- * [fullRoof] - если true, то [listOfSheet] умножается на 2, так считаться изначально будут только разные стороны (для четырехскатки трапеция и треугольник по одному разу
+ * Добавляет информацию относительно крыши целиком ,
+ * либо фигуры (количество и длина листов, яндовая , покат и т.д)
+ * [fullRoof] - если true, то [listOfSheet] умножается на 2, так считаться изначально будут
+ * только разные стороны (для четырехскатки трапеция и треугольник по одному разу
  * ,а противоположные стороны им равны)
  */
 suspend fun PdfDocument.addInfo(
@@ -210,7 +221,11 @@ suspend fun PdfDocument.addInfo(
         )
 
         canvas.drawText(
-            "${context.getString(R.string.overlap)} = ${listOfSheet.first().overlap} -  ${listOfSheet.first().overlap.value.toInt()} cm",
+            "${
+                context.getString(
+                    R.string.overlap,
+                )
+            } = ${listOfSheet.first().overlap} -  ${listOfSheet.first().overlap.value.toInt()} cm",
             x,
             textTrasfer.addTransferText(),
             paintText,

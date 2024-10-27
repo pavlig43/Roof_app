@@ -3,20 +3,20 @@ package com.pavlig43.roofapp.ui.shapes.triangle
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.util.Log
-import androidx.compose.ui.geometry.Offset
+import com.example.mathbigdecimal.OffsetBD
 import com.pavlig43.roofapp.A4HEIGHT
 import com.pavlig43.roofapp.A4WIDTH
+import com.pavlig43.roofapp.PADDING_PERCENT
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.convertSheetDotToPx
 import com.pavlig43.roofapp.model.replaceX
-import com.pavlig43.roofapp.model.toPX
-import com.pavlig43.roofapp.utils.drawSheet
-import com.pavlig43.roofapp.utils.getSide
-import com.pavlig43.roofapp.utils.rulerOnCanvasPDF
+import com.pavlig43.roofapp.utils.canvasDrawUtils.drawSheet
+import com.pavlig43.roofapp.utils.canvasDrawUtils.rulerOnCanvasPDF
 import com.pavlig43.roofapp.utils.searchDotsSheet
 import com.pavlig43.roofapp.utils.searchInterpolation
-import kotlin.math.ceil
+import com.pavlig43.roofapp.utils.toOffset
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class TrianglePDF(
     geometryTriangle3SideShape: GeometryTriangle3SideShape,
@@ -24,8 +24,8 @@ class TrianglePDF(
 ) {
     private val widthPage = A4WIDTH
     private val heightPage = A4HEIGHT
-    private val paddingWidth = (widthPage * 0.05).toFloat()
-    private val paddingHeight = (heightPage * 0.05).toFloat()
+    private val paddingWidth = (widthPage * PADDING_PERCENT).toFloat()
+    private val paddingHeight = (heightPage * PADDING_PERCENT).toFloat()
 
     private val listOfSheets: MutableList<Sheet> = mutableListOf()
 
@@ -36,56 +36,66 @@ class TrianglePDF(
     /**
      * самая большая величина координаты высоты фигуры
      */
-    private val peakXMax = b.distanceX
+    private val peakXMax = b.offset.x
 
     /**
      * самая маленькая величина координаты высоты фигуры(низшая точка)
      */
-    private val peakXMin = a.distanceX
+    private val peakXMin = a.offset.x
 
-    private val leftSide = getSide(a, b)
-    private val bottomSide = getSide(a, c)
-    private val rightSide = getSide(b, c)
+    private val leftSide = a.offset.getSide(b.offset)
+    private val bottomSide = a.offset.getSide(c.offset)
+    private val rightSide = b.offset.getSide(c.offset)
 
     /**
      * ширина фигуры - самая дольняя точка от нового начала координат в см
      */
-    private val maxWidthShape = c.distanceY
+    private val maxWidthShape = c.offset.y
 
-    private val countCeilMetersWidth = ceil(maxWidthShape / 100).toInt()
+    private val countCeilCMWidth =
+        maxWidthShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
+            .toInt()
 
     /**
      * число листов , которое будет положено по ширине фигуре, пока листы не закроют ее полностью
      */
     private val countOfSheet: Int =
-        ceil((maxWidthShape - sheet.overlap.value.toFloat()) / sheet.visible.toFloat()).toInt()
+        (maxWidthShape - sheet.overlap.value).divide(sheet.visible, RoundingMode.CEILING).toInt()
 
     /**
      * Высота фигуры - самая дольняя точка от нового начала координат в см
      */
-    private val maxHeightShape = b.distanceX
+    private val maxHeightShape = b.offset.x
 
-    private val countCeilMetersHeight = ceil(maxHeightShape / 100).toInt()
+    private val countCeilCMHeight =
+        maxHeightShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
+            .toInt()
 
-    private val oneCMInHeightYtPx: Float =
-        (heightPage * 0.9 / (countCeilMetersWidth * 100)).toFloat()
+    private fun getCountPXinOneCM(
+        sizeSidePage: Int,
+        pagePadding: Float,
+        countCeilCM: Int,
+    ): BigDecimal =
+        ((sizeSidePage - pagePadding * 2) / countCeilCM).toBigDecimal()
 
-    private val oneCMInWidthXPx: Float =
-        (widthPage * 0.9 / (countCeilMetersHeight * 100)).toFloat()
+    private val oneCMInHeightYtPx: BigDecimal =
+        getCountPXinOneCM(heightPage, paddingHeight, countCeilCMWidth)
+
+    private val oneCMInWidthXPx: BigDecimal =
+        getCountPXinOneCM(widthPage, paddingWidth, countCeilCMHeight)
 
     fun ruler(
         canvas: Canvas,
-        zero: Boolean = true,
-        horizontal: Boolean = true,
     ) {
         rulerOnCanvasPDF(
             canvas,
-            maxWidthShape = maxWidthShape,
-            maxHeightShape = maxHeightShape,
-            oneCMInWidthXPx = oneCMInWidthXPx,
-            oneCMInHeightYtPx = oneCMInHeightYtPx,
-            horizontal = horizontal,
-            zero = zero,
+            countCeilCMWidth = countCeilCMWidth,
+            countCeilCMHeight = countCeilCMHeight,
+            oneCMInHeightYtPx = oneCMInHeightYtPx.toFloat(),
+            oneCMInWidthXPx = oneCMInWidthXPx.toFloat(),
+            paddingWidth = paddingWidth,
+            paddingHeight = paddingHeight,
+
         )
     }
 
@@ -99,18 +109,23 @@ class TrianglePDF(
                 style = Paint.Style.STROKE
             },
     ) {
-        val aPX = a.toPX(oneCMInHeightYtPx = oneCMInHeightYtPx, oneCMInWidthXPx = oneCMInWidthXPx)
-        val bPX = b.toPX(oneCMInHeightYtPx = oneCMInHeightYtPx, oneCMInWidthXPx = oneCMInWidthXPx)
-        val cPX = c.toPX(oneCMInHeightYtPx = oneCMInHeightYtPx, oneCMInWidthXPx = oneCMInWidthXPx)
+        val (aPX, bPX, cPX) =
+            listOf(a, b, c).map {
+                it.offset
+                    .changeOffset(
+                        oneUnitInHeightYtPx = oneCMInHeightYtPx,
+                        oneUnitInWidthXPx = oneCMInWidthXPx,
+                    ).toOffset()
+            }
 
         val path =
             android.graphics.Path().apply {
-                moveTo(aPX.distanceX + paddingWidth, aPX.distanceY + paddingHeight)
-                lineTo(bPX.distanceX + paddingWidth, bPX.distanceY + paddingHeight)
-                moveTo(bPX.distanceX + paddingWidth, bPX.distanceY + paddingHeight)
-                lineTo(cPX.distanceX + paddingWidth, cPX.distanceY + paddingHeight)
-                moveTo(cPX.distanceX + paddingWidth, cPX.distanceY + paddingHeight)
-                lineTo(aPX.distanceX + paddingWidth, aPX.distanceY + paddingHeight)
+                moveTo(aPX.x + paddingWidth, aPX.y + paddingHeight)
+                lineTo(bPX.x + paddingWidth, bPX.y + paddingHeight)
+                moveTo(bPX.x + paddingWidth, bPX.y + paddingHeight)
+                lineTo(cPX.x + paddingWidth, cPX.y + paddingHeight)
+                moveTo(cPX.x + paddingWidth, cPX.y + paddingHeight)
+                lineTo(aPX.x + paddingWidth, aPX.y + paddingHeight)
                 close()
             }
         canvas.drawPath(path, paint)
@@ -118,19 +133,21 @@ class TrianglePDF(
 
     /**
      * Выдает точки пересечения вертикальной стороны листа железа с каждой из сторон 3х-угольника
-     * Если 3х-угольник правильный , то каждая вертикальная сторона листа имеет МАКСИМУМ  пересечений с 2 сторонами 3х-угольника
+     * Если 3х-угольник правильный , то каждая вертикальная сторона листа имеет МАКСИМУМ
+     * пересечений с 2 сторонами 3х-угольника
      * Если пересечение попадает на угол фигуры, то обе точки пересечения с фигурой одинаковые
-     * Если пересечение отсутствует(в случае , когда правая сторона  последнего листа выходит за пределы фигуры)
+     * Если пересечение отсутствует(в случае , когда правая сторона  последнего листа выходит
+     * за пределы фигуры)
      * то "Х" берется от левой стороны этого же листа [lastNotNullBottomX] и [lastNotNullTopX]
      */
     private fun searchLineOfSheet(
-        y: Float,
-        lastNotNullBottomX: Float = 0f,
-        lastNotNullTopX: Float = 0f,
-    ): Result<Pair<Offset, Offset>> {
-        val intersectAB = searchInterpolation(a, b, y, a.distanceX)
-        val intersectBC = searchInterpolation(b, c, y, b.distanceX)
-        val intersectAC = searchInterpolation(a, c, y, a.distanceX)
+        y: BigDecimal,
+        lastNotNullBottomX: BigDecimal = BigDecimal.ZERO,
+        lastNotNullTopX: BigDecimal = BigDecimal.ZERO,
+    ): Result<Pair<OffsetBD, OffsetBD>> {
+        val intersectAB = searchInterpolation(a, b, y, a.offset.x)
+        val intersectBC = searchInterpolation(b, c, y, b.offset.x)
+        val intersectAC = searchInterpolation(a, c, y, a.offset.x)
 
         val lst =
             setOfNotNull(
@@ -144,8 +161,8 @@ class TrianglePDF(
             0 ->
                 Result.success(
                     Pair(
-                        Offset(lastNotNullBottomX, y),
-                        Offset(lastNotNullTopX, y),
+                        OffsetBD(lastNotNullBottomX, y),
+                        OffsetBD(lastNotNullTopX, y),
                     ),
                 )
 
@@ -154,15 +171,14 @@ class TrianglePDF(
     }
 
     fun sheetOnTriangle(canvas: Canvas) {
-        val intervalYForXMax = b.distanceY..b.distanceY
-        val intervalYForXMin = a.distanceY..a.distanceY
+        val intervalYForXMax = b.offset.y..b.offset.y
+        val intervalYForXMin = a.offset.y..a.offset.y
         for (s in 1..countOfSheet) {
-            Log.d("rrrr", oneCMInHeightYtPx.toString())
-            val y = (s - 1) * sheet.visible.toFloat()
+            val y = (s - 1).toBigDecimal() * sheet.visible
             val resultLeft = searchLineOfSheet(y)
             val resultRight =
                 searchLineOfSheet(
-                    y = y + sheet.widthGeneral.value.toFloat(),
+                    y = y + sheet.widthGeneral.value,
                     lastNotNullBottomX = resultLeft.getOrThrow().first.x,
                     lastNotNullTopX = resultLeft.getOrThrow().second.x,
                 )
@@ -178,32 +194,34 @@ class TrianglePDF(
                 val sheetMultiplicityCM = sheet.multiplicity
                 val lenOfSheetInCM = dotsOfSheet.leftTop.x - dotsOfSheet.leftBottom.x
                 val lenOfSheet =
-                    (ceil(lenOfSheetInCM / sheetMultiplicityCM.value.toFloat()) * sheetMultiplicityCM.value.toFloat()).toInt()
+                    lenOfSheetInCM.divide(
+                        sheet.multiplicity.value,
+                        RoundingMode.CEILING,
+                    ) * sheetMultiplicityCM.value
 
                 drawSheet(
                     canvas = canvas,
                     sheetDots =
-                        dotsOfSheet
-                            .convertSheetDotToPx(
-                                oneMeterInHeightYtPx = oneCMInHeightYtPx,
-                                oneMeterInWidthXPx = oneCMInWidthXPx,
-                            ),
+                    dotsOfSheet
+                        .convertSheetDotToPx(
+                            oneMeterInHeightYtPx = oneCMInHeightYtPx,
+                            oneMeterInWidthXPx = oneCMInWidthXPx,
+                        ),
                     lenOfSheet = lenOfSheet,
                 )
-                listOfSheets.add(sheet.copy(len = lenOfSheet.toBigDecimal()))
+                listOfSheets.add(sheet.copy(len = lenOfSheet))
             }
         }
     }
 
     fun getLstOfSheet() = listOfSheets
 
-    fun getOtherParams(): List<Pair<String, String>> {
-        return listOf(
+    fun getOtherParams(): List<Pair<String, String>> =
+        listOf(
             Pair("Сторона AB", "$leftSide cm"),
             Pair("Сторона BC", "$rightSide cm"),
             Pair("Сторона AC", "$bottomSide cm"),
             Pair("Высота треугольника", "${maxHeightShape.toInt()} cm"),
             Pair("Ширина треугольника", "${maxWidthShape.toInt()} cm"),
         )
-    }
 }

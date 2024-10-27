@@ -26,7 +26,8 @@ fun DrawerNavigation(
     content: @Composable () -> Unit,
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val selectedScreen = currentBackStackEntry?.destination?.route ?: AllDestination.TileLayout.route
+    val selectedScreen =
+        currentBackStackEntry?.destination?.route ?: AllDestination.TileLayout.route
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
