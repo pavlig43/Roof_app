@@ -3,15 +3,17 @@ package com.pavlig43.roofapp.ui.shapes.triangle
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
+import androidx.compose.ui.geometry.Offset
 import com.example.mathbigdecimal.OffsetBD
-import com.pavlig43.roofapp.A4HEIGHT
-import com.pavlig43.roofapp.A4WIDTH
+import com.pavlig43.roofapp.A4X
+import com.pavlig43.roofapp.A4Y
 import com.pavlig43.roofapp.PADDING_PERCENT
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.convertSheetDotToPx
 import com.pavlig43.roofapp.model.replaceX
 import com.pavlig43.roofapp.utils.canvasDrawUtils.drawSheet
-import com.pavlig43.roofapp.utils.canvasDrawUtils.rulerOnCanvasPDF
+import com.pavlig43.roofapp.utils.canvasDrawUtils.сoordinateSystem.coordinateSystem
 import com.pavlig43.roofapp.utils.searchDotsSheet
 import com.pavlig43.roofapp.utils.searchInterpolation
 import com.pavlig43.roofapp.utils.toOffset
@@ -22,8 +24,8 @@ class TrianglePDF(
     geometryTriangle3SideShape: GeometryTriangle3SideShape,
     val sheet: Sheet,
 ) {
-    private val widthPage = A4WIDTH
-    private val heightPage = A4HEIGHT
+    private val widthPage = A4X
+    private val heightPage = A4Y
     private val paddingWidth = (widthPage * PADDING_PERCENT).toFloat()
     private val paddingHeight = (heightPage * PADDING_PERCENT).toFloat()
 
@@ -87,16 +89,25 @@ class TrianglePDF(
     fun ruler(
         canvas: Canvas,
     ) {
-        rulerOnCanvasPDF(
-            canvas,
-            countCeilCMWidth = countCeilCMWidth,
-            countCeilCMHeight = countCeilCMHeight,
-            oneCMInHeightYtPx = oneCMInHeightYtPx.toFloat(),
-            oneCMInWidthXPx = oneCMInWidthXPx.toFloat(),
-            paddingWidth = paddingWidth,
-            paddingHeight = paddingHeight,
+        canvas.coordinateSystem(
+            countCMInX = maxHeightShape.toInt(),
+            countCMInY = maxWidthShape.toInt(),
 
+            startOffsetLine = Offset(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
+            countPxInOneCM = TODO(),
+            rulerParam = TODO(),
+            scaleRuler = TODO(),
         )
+//        rulerOnCanvasPDF(
+//            canvas,
+//            countCMInX = maxHeightShape.toInt(),
+//            countCMInY = maxWidthShape.toInt(),
+//            countPxInOneCMY = oneCMInHeightYtPx.toFloat(),
+//            oneCMInWidthXPx = oneCMInWidthXPx.toFloat(),
+//            startOffsetLine = Offset(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
+//
+//
+//            )
     }
 
     fun drawTriangle(
@@ -119,7 +130,7 @@ class TrianglePDF(
             }
 
         val path =
-            android.graphics.Path().apply {
+            Path().apply {
                 moveTo(aPX.x + paddingWidth, aPX.y + paddingHeight)
                 lineTo(bPX.x + paddingWidth, bPX.y + paddingHeight)
                 moveTo(bPX.x + paddingWidth, bPX.y + paddingHeight)

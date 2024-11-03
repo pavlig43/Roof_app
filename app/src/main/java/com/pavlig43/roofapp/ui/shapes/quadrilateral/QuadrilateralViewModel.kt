@@ -5,11 +5,18 @@ import android.graphics.pdf.PdfDocument
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mathbigdecimal.OffsetBD
+import com.example.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.roofapp.PageConfig
+import com.pavlig43.roofapp.getCountPxInOneCM
 import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.DotName4Side
 import com.pavlig43.roofapp.model.Sheet
+import com.pavlig43.roofapp.utils.PageContentBuilder
+import com.pavlig43.roofapp.utils.canvasDrawUtils.ShapeCanvas
+import com.pavlig43.roofapp.utils.canvasDrawUtils.drawShape.drawShapeWithRulerAndFillRectangle
 import com.pavlig43.roofapp.utils.createFile
-import com.pavlig43.roofapp.utils.pdfResult4Side
+import com.pavlig43.roofapp.utils.renderContent
+import com.pavlig43.roofapp.utils.toOffset
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,8 +70,8 @@ constructor(
 
     private fun shapeIsValid(geometry4SideShape: Geometry4SideShape): Boolean =
         geometry4SideShape.leftTop.offset.x > BigDecimal.ZERO &&
-            geometry4SideShape.rightTop.offset.x > BigDecimal.ZERO &&
-            geometry4SideShape.rightBottom.offset.y != BigDecimal.ZERO
+                geometry4SideShape.rightTop.offset.x > BigDecimal.ZERO &&
+                geometry4SideShape.rightBottom.offset.y != BigDecimal.ZERO
 
     fun changeCurrentDotName(dotName4Side: DotName4Side) {
         currentDotName.value = dotName4Side
@@ -102,13 +109,35 @@ constructor(
      */
     suspend fun createPDFFile(sheet: Sheet): File {
         val pdfDocument = PdfDocument()
-        pdfDocument.pdfResult4Side(
-            context = context,
-            _geometry4SideShape.value,
-            pageNumber = 1,
-            sheet = sheet,
-            single = true,
+        val a = CoordinateShape(
+            _geometry4SideShape.value.tolst(),
+            isMoveToPositiveQuadrant = true
         )
+        val sc = a.toShapeCanvas()
+        val listOfRectangle =
+            a.fillShapeWithRectangles(sheet.widthGeneral.value, sheet.overlap.value)
+                .map { rightRectangle ->
+                    rightRectangle.listOfDots.map { it.toOffset() }.run { ShapeCanvas(this) }
+                }
+        val pageConfig = PageConfig()
+        val countPxInOneCM = pageConfig.getCountPxInOneCM(a)
+        val arr = listOf(
+            PageContentBuilder(
+                pageConfig = pageConfig,
+                generateDraw = {
+                    this.drawShapeWithRulerAndFillRectangle(
+                        shapeCanvas = sc,
+
+                        countPxInOneCM = countPxInOneCM,
+                        listOfRectangle = listOfRectangle,
+                        startOffset = pageConfig.startOffset
+
+                    )
+                }
+            ),
+        )
+
+        pdfDocument.renderContent(arr)
         val file = pdfDocument.createFile(context)
         return file
     }
@@ -122,8 +151,8 @@ data class Geometry4SideShape(
             canMinusY = true,
             offset =
             OffsetBD(
-                x = BigDecimal("300"),
-                y = BigDecimal.ZERO,
+                x = BigDecimal("500"),
+                y = BigDecimal("-200"),
             ),
         ),
     val rightTop: Dot =
@@ -132,8 +161,8 @@ data class Geometry4SideShape(
             canMinusY = true,
             offset =
             OffsetBD(
-                x = BigDecimal("500"),
-                y = BigDecimal("500"),
+                x = BigDecimal("400"),
+                y = BigDecimal("200"),
             ),
         ),
     val rightBottom: Dot =
@@ -142,8 +171,16 @@ data class Geometry4SideShape(
             canMinusX = true,
             offset =
             OffsetBD(
-                x = BigDecimal("-100"),
-                y = BigDecimal("250"),
+                x = BigDecimal("-200"),
+                y = BigDecimal("400"),
             ),
         ),
 )
+
+fun Geometry4SideShape.tolst(): List<OffsetBD> {
+    return listOf(leftBottom.offset, leftTop.offset, rightTop.offset, rightBottom.offset)
+}
+
+fun CoordinateShape.toShapeCanvas(): ShapeCanvas {
+    return ShapeCanvas(this.listOfDots.map { it.toOffset() })
+}

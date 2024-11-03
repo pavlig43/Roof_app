@@ -10,6 +10,8 @@ const val STROKE_WIDTH_THIN_PDF_CANVAS = 1f
 
 @Suppress("MagicNumber")
 val DASH_INTERVALS = floatArrayOf(10f, 20f)
+
+const val FULL_ALPHA = 255
 const val SEMI_ALPHA = 123
 
 const val TEXT_SIZE_SMALL = 12f

@@ -1,8 +1,8 @@
 package com.pavlig43.roofapp.model
 
 import com.example.mathbigdecimal.OffsetBD
-import com.pavlig43.roofapp.A4HEIGHT
-import com.pavlig43.roofapp.A4WIDTH
+import com.pavlig43.roofapp.A4X
+import com.pavlig43.roofapp.A4Y
 import com.pavlig43.roofapp.PADDING_PERCENT
 import java.math.BigDecimal
 
@@ -19,8 +19,8 @@ data class SheetDots(
 fun SheetDots.convertSheetDotToPx(
     oneMeterInHeightYtPx: BigDecimal,
     oneMeterInWidthXPx: BigDecimal,
-    paddingWidth: BigDecimal = (A4WIDTH * PADDING_PERCENT).toBigDecimal(),
-    paddingHeight: BigDecimal = (A4HEIGHT * PADDING_PERCENT).toBigDecimal(),
+    paddingWidth: BigDecimal = (A4X * PADDING_PERCENT).toBigDecimal(),
+    paddingHeight: BigDecimal = (A4Y * PADDING_PERCENT).toBigDecimal(),
 ): SheetDots {
     fun OffsetBD.transform(): OffsetBD =
 

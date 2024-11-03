@@ -5,7 +5,6 @@ import com.example.mathbigdecimal.utils.abs
 import com.example.mathbigdecimal.utils.lineInterpolationForShape
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.concurrent.Flow
 
 open class CoordinateShape(
     listOfBasicDots: List<OffsetBD>,
@@ -13,7 +12,7 @@ open class CoordinateShape(
 ) {
 
 
-    private val startOffset = if (isMoveToPositiveQuadrant) {
+    private val moveToPositiveQuadrantOffset = if (isMoveToPositiveQuadrant) {
         val x = listOfBasicDots.minOf { it.x }
         val y = listOfBasicDots.minOf { it.y }
         OffsetBD(x, y)
@@ -23,7 +22,7 @@ open class CoordinateShape(
             BigDecimal.ZERO
         )
     }
-    val listOfDots = listOfBasicDots.map { it.plus(startOffset.absoluteValue) }
+    val listOfDots = listOfBasicDots.map { it.plus(moveToPositiveQuadrantOffset.absoluteValue) }
 
     val peakXMax = listOfDots.maxOfOrNull { it.x } ?: BigDecimal.ZERO
     val peakXMin = listOfDots.minOfOrNull { it.x } ?: BigDecimal.ZERO
@@ -32,14 +31,14 @@ open class CoordinateShape(
     val peakYMin = listOfDots.minOfOrNull { it.y } ?: BigDecimal.ZERO
 
 
-    val widthShape = abs(peakYMin) + abs(peakYMax)
-    val heightShape = abs(peakXMin) + abs(peakXMax)
+    val maxDistanceY = abs(peakYMin) + abs(peakYMax)
+    val maxDistanceX = abs(peakXMin) + abs(peakXMax)
 
     val countCeilCMWidth =
-        widthShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
+        maxDistanceY.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
             .toInt()
     val countCeilCMHeight =
-        heightShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
+        maxDistanceX.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
             .toInt()
 
     /**
@@ -93,9 +92,9 @@ open class CoordinateShape(
 
         val rectangleVisible = rectangleWidth - overlap
         val countRectangle =
-            (widthShape - overlap).divide(rectangleVisible, RoundingMode.CEILING).toInt()
+            (maxDistanceY - overlap).divide(rectangleVisible, 0, RoundingMode.CEILING).toInt()
         val listOfRectangle: MutableList<RightRectangle> = mutableListOf()
-        val a = Flow
+
 
         for (s in 1..countRectangle) {
             val y = rectangleVisible * (s - 1).toBigDecimal()

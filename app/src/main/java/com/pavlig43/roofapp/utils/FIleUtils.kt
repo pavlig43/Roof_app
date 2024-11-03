@@ -2,16 +2,19 @@ package com.pavlig43.roofapp.utils
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import android.graphics.pdf.PdfDocument.PageInfo
 import android.os.Environment
 import android.text.TextPaint
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.pavlig43.roof_app.BuildConfig
 import com.pavlig43.roof_app.R
-import com.pavlig43.roofapp.A4HEIGHT
-import com.pavlig43.roofapp.A4WIDTH
+import com.pavlig43.roofapp.A4X
+import com.pavlig43.roofapp.A4Y
+import com.pavlig43.roofapp.PageConfig
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.ui.shapes.quadrilateral.Geometry4SideShape
 import com.pavlig43.roofapp.ui.shapes.quadrilateral.QuadroPDF
@@ -83,7 +86,7 @@ fun Context.checkSaveName(newName: String): Boolean {
                     .last()
                     .replace(".pdf", "")
             }
-    return newName !in listOfFiles
+    return newName !in listOfFiles && newName.isNotBlank()
 }
 
 suspend fun PdfDocument.createFile(context: Context): File =
@@ -110,7 +113,7 @@ suspend fun PdfDocument.pdfResult4Side(
     withContext(Dispatchers.IO) {
         val quadroPDF = QuadroPDF(geometry4SideShape, sheet)
 
-        val pageInfo = PdfDocument.PageInfo.Builder(A4WIDTH, A4HEIGHT, pageNumber).create()
+        val pageInfo = PageInfo.Builder(A4X, A4Y, pageNumber).create()
         val page = this@pdfResult4Side.startPage(pageInfo)
         val canvas = page.canvas
 
@@ -148,7 +151,7 @@ suspend fun PdfDocument.pdfResult3SideTriangle(
     withContext(Dispatchers.IO) {
         val trianglePDF = TrianglePDF(geometryTriangle3SideShape, sheet)
 
-        val pageInfo = PdfDocument.PageInfo.Builder(A4WIDTH, A4HEIGHT, pageNumber).create()
+        val pageInfo = PageInfo.Builder(A4X, A4Y, pageNumber).create()
         val page = this@pdfResult3SideTriangle.startPage(pageInfo)
         val canvas = page.canvas
         trianglePDF.ruler(canvas)
@@ -191,11 +194,11 @@ suspend fun PdfDocument.addInfo(
     pageNumber: Int,
 ) {
     withContext(Dispatchers.IO) {
-        val pageInfo = PdfDocument.PageInfo.Builder(A4WIDTH, A4HEIGHT, pageNumber).create()
+        val pageInfo = PageInfo.Builder(A4X, A4Y, pageNumber).create()
         val page = this@addInfo.startPage(pageInfo)
         val canvas = page.canvas
-        val x = A4WIDTH * 0.05f
-        val startY = A4HEIGHT * 0.05f
+        val x = A4X * 0.05f
+        val startY = A4Y * 0.05f
         val textTrasfer = AddVerticalPaddingForLineText(startY)
 
         canvas.drawText("", x, textTrasfer.addTransferText(), paintText)
@@ -244,3 +247,42 @@ suspend fun PdfDocument.addInfo(
         this@addInfo.finishPage(page)
     }
 }
+
+fun PdfDocument.renderContent(
+    listOfPageContentBuilders: List<PageContentBuilder>,
+
+    ) {
+
+    listOfPageContentBuilders.forEachIndexed { index, pageContentBuilder ->
+        createPage(pageContentBuilder = pageContentBuilder, pageNumber = index + 1)
+    }
+
+
+}
+
+
+fun PdfDocument.createPage(
+    pageContentBuilder: PageContentBuilder,
+    pageNumber: Int
+
+
+) {
+    val pageInfo = pageContentBuilder.pageConfig.run { PageInfo.Builder(x, y, pageNumber).create() }
+    val page = startPage(pageInfo)
+
+
+    val canvas = page.canvas
+    canvas.apply { pageContentBuilder.generateDraw(this) }
+    finishPage(page)
+
+}
+
+
+data class PageContentBuilder(
+    val pageConfig: PageConfig = PageConfig(),
+    val generateDraw: Canvas.() -> Unit,
+
+    )
+
+
+
