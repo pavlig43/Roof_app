@@ -1,6 +1,6 @@
 package com.pavlig43.roofapp.utils
 
-import androidx.compose.ui.geometry.Offset
+import android.graphics.PointF
 import com.example.mathbigdecimal.OffsetBD
 
-fun OffsetBD.toOffset() = Offset(x.toFloat(), y.toFloat())
+fun OffsetBD.toPointF() = PointF(x.toFloat(), y.toFloat())

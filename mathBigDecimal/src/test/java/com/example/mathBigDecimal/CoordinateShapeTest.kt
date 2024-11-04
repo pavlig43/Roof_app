@@ -9,12 +9,11 @@ import java.math.BigDecimal
 
 class CoordinateShapeTest {
 
-
     @Suppress("LongMethod")
     @Test
     fun `fillShapeWith Trapezoid Rectangles With RectangleWidth = 118 And Overlap = 8`() {
         val coordinateShape = CoordinateShape(
-            listOfBasicDots = listOf(
+            basicPolygon = listOf(
                 OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
                 OffsetBD(BigDecimal("600"), BigDecimal("500")),
                 OffsetBD(BigDecimal("600"), BigDecimal("600")),
@@ -112,15 +111,13 @@ class CoordinateShapeTest {
 
             assertEquals(0, a.compareTo(b), "\n actual: $a, \n expected: $b")
         }
-
-
     }
 
     @Suppress("LongMethod")
     @Test
     fun `fillShapeWith Random Quadrilateral Rectangles With RectangleWidth = 118 And Overlap = 8`() {
         val coordinateShape = CoordinateShape(
-            listOfBasicDots = listOf(
+            basicPolygon = listOf(
                 OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
                 OffsetBD(BigDecimal("500"), BigDecimal("-200")),
                 OffsetBD(BigDecimal("400"), BigDecimal("200")),
@@ -187,15 +184,13 @@ class CoordinateShapeTest {
 
             assertEquals(0, a.compareTo(b), "\n actual: $a, \n expected: $b")
         }
-
-
     }
 
     @Suppress("LongMethod")
     @Test
     fun `fillShapeWith Random Triangle  With RectangleWidth = 118 And Overlap = 8`() {
         val coordinateShape = CoordinateShape(
-            listOfBasicDots = listOf(
+            basicPolygon = listOf(
                 OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
                 OffsetBD(BigDecimal("500"), BigDecimal("-200")),
                 OffsetBD(BigDecimal("-200"), BigDecimal("300")),

@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.icons.MinusIcon
-import com.pavlig43.roofapp.ui.general.rowParam.TextFieldBigDecimal
+import com.pavlig43.roofapp.ui.kit.rowParam.TextFieldBigDecimal
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 import java.math.BigDecimal
 
@@ -48,11 +48,16 @@ fun ParamsDotRow(
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = stringResource(R.string.offset, axis),
+            text = stringResource(R.string.PointF, axis),
             modifier = Modifier.weight(TEXT_WEIGHT),
         )
         if (canChangePlus) {
-            Button(onClick = changePlus, modifier = Modifier.weight(BUTTON_WEIGHT).padding(horizontal = 4.dp)) {
+            Button(
+                onClick = changePlus,
+                modifier = Modifier
+                    .weight(BUTTON_WEIGHT)
+                    .padding(horizontal = 4.dp)
+            ) {
                 Icon(
                     imageVector = if (plus) Icons.Default.Add else MinusIcon,
                     contentDescription = null,

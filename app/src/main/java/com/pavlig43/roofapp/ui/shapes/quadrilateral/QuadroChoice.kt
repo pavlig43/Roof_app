@@ -32,9 +32,9 @@ import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.DotName4Side
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
-import com.pavlig43.roofapp.ui.general.ButtonResultRow
-import com.pavlig43.roofapp.ui.general.CalculateSheetParams
-import com.pavlig43.roofapp.ui.general.ManualDialog
+import com.pavlig43.roofapp.ui.kit.ButtonResultRow
+import com.pavlig43.roofapp.ui.kit.CalculateSheetParams
+import com.pavlig43.roofapp.ui.kit.ManualDialog
 import com.pavlig43.roofapp.ui.paramsDotShape.ChangeParamsDots
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 import com.pavlig43.roofapp.utils.drawDot
@@ -75,21 +75,22 @@ fun QuadroChoice(
             modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    detectTapGestures { offset: Offset ->
+                    detectTapGestures { pointF: Offset ->
+
                         when {
-                            (leftTopCenter - offset).getDistance() <= 45f -> {
+                            (leftTopCenter - pointF).getDistance() <= 45f -> {
                                 showDotDialog = true
                                 viewModel.changeCurrentDotName(DotName4Side.LEFTTOP)
                             }
 
-                            (rightTopCenter - offset).getDistance() <= 45f
+                            (rightTopCenter - pointF).getDistance() <= 45f
 
-                            -> {
+                                -> {
                                 showDotDialog = true
                                 viewModel.changeCurrentDotName(DotName4Side.RIGHTTOP)
                             }
 
-                            (rightBottomCenter - offset).getDistance() <= 45f -> {
+                            (rightBottomCenter - pointF).getDistance() <= 45f -> {
                                 showDotDialog = true
                                 viewModel.changeCurrentDotName(DotName4Side.RIGHTBOTTOM)
                             }
@@ -104,16 +105,16 @@ fun QuadroChoice(
             drawDot(
                 center = leftBottomCenter,
                 dot = geometryShape.leftBottom,
-                downOffset = true,
+                downPointF = true,
                 startDot = true,
             )
-            drawDot(center = leftTopCenter, dot = geometryShape.leftTop, downOffset = true)
+            drawDot(center = leftTopCenter, dot = geometryShape.leftTop, downPointF = true)
             drawDot(
                 center = rightBottomCenter,
                 dot = geometryShape.rightBottom,
-                downOffset = false,
+                downPointF = false,
             )
-            drawDot(center = rightTopCenter, dot = geometryShape.rightTop, downOffset = false)
+            drawDot(center = rightTopCenter, dot = geometryShape.rightTop, downPointF = false)
 
             drawLine(
                 Color.Black,

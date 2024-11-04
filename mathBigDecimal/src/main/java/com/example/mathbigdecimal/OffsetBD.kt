@@ -98,10 +98,5 @@ class OffsetBD(
         val xComparison = this.x.compareTo(other.x)
         val yComparison = this.y.compareTo(other.y)
         return if (xComparison != 0 || yComparison != 0) 1 else 0
-
     }
 }
-
-
-
-

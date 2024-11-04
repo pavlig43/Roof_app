@@ -1,22 +1,18 @@
 package com.pavlig43.roofapp.ui.shapes.quadrilateral
 
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
-import androidx.compose.ui.geometry.Offset
 import com.example.mathbigdecimal.OffsetBD
+import com.example.pdfcanvasdraw.pdf.page.AndroidCanvas
 import com.pavlig43.roofapp.A4X
 import com.pavlig43.roofapp.A4Y
 import com.pavlig43.roofapp.PADDING_PERCENT
 import com.pavlig43.roofapp.SEMI_ALPHA
 import com.pavlig43.roofapp.STROKE_WIDTH_MEDIUM_PDF_CANVAS
 import com.pavlig43.roofapp.model.Sheet
-import com.pavlig43.roofapp.model.convertSheetDotToPx
 import com.pavlig43.roofapp.model.replaceX
-import com.pavlig43.roofapp.model.withOStartOffset
-import com.pavlig43.roofapp.utils.canvasDrawUtils.drawSheet
-import com.pavlig43.roofapp.utils.canvasDrawUtils.сoordinateSystem.coordinateSystem
+import com.pavlig43.roofapp.model.withOstartPointF
 import com.pavlig43.roofapp.utils.searchDotsSheet
 import com.pavlig43.roofapp.utils.searchInterpolation
 import java.math.BigDecimal
@@ -44,42 +40,41 @@ class QuadroPDF(
         geometry4SideShape.leftTop,
         geometry4SideShape.rightTop,
         geometry4SideShape.rightBottom,
-    ).minOf { it.offset.x }
+    ).minOf { it.PointF.x }
 
     val sOy = arrayOf(
         geometry4SideShape.leftBottom,
         geometry4SideShape.leftTop,
         geometry4SideShape.rightTop,
         geometry4SideShape.rightBottom,
-    ).minOf { it.offset.y }
-    private val startOffset: OffsetBD =
+    ).minOf { it.PointF.y }
+    private val startPointF: OffsetBD =
         OffsetBD(sOx, sOy)
 
-    private val a = geometry4SideShape.leftBottom.withOStartOffset(startOffset)
-    private val b = geometry4SideShape.leftTop.withOStartOffset(startOffset)
-    private val c = geometry4SideShape.rightTop.withOStartOffset(startOffset)
-    private val d = geometry4SideShape.rightBottom.withOStartOffset(startOffset)
-
+    private val a = geometry4SideShape.leftBottom.withOstartPointF(startPointF)
+    private val b = geometry4SideShape.leftTop.withOstartPointF(startPointF)
+    private val c = geometry4SideShape.rightTop.withOstartPointF(startPointF)
+    private val d = geometry4SideShape.rightBottom.withOstartPointF(startPointF)
 
     /**
      * самая большая величина координаты высоты фигуры
      */
-    private val peakXMax = listOf(a, b, c, d).maxOf { it.offset.x }
+    private val peakXMax = listOf(a, b, c, d).maxOf { it.PointF.x }
 
     /**
      * самая маленькая величина координаты высоты фигуры(низшая точка)
      */
-    private val peakXMin = listOf(a, b, c, d).minOf { it.offset.x }
+    private val peakXMin = listOf(a, b, c, d).minOf { it.PointF.x }
 
-    private val leftSide = a.offset.getSide(b.offset)
-    private val bottomSide = a.offset.getSide(d.offset)
-    private val topSide = b.offset.getSide(c.offset)
-    private val rightSide = c.offset.getSide(d.offset)
+    private val leftSide = a.PointF.getSide(b.PointF)
+    private val bottomSide = a.PointF.getSide(d.PointF)
+    private val topSide = b.PointF.getSide(c.PointF)
+    private val rightSide = c.PointF.getSide(d.PointF)
 
     /**
      * ширина фигуры - самая дольняя точка от нового начала координат в см
      */
-    private val maxWidthShape = maxOf(c.offset.y, d.offset.y)
+    private val maxWidthShape = maxOf(c.PointF.y, d.PointF.y)
 
     private val countCeilCMWidth =
         maxWidthShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
@@ -94,7 +89,7 @@ class QuadroPDF(
     /**
      * Высота фигуры - самая дольняя точка от нового начала координат в см
      */
-    private val maxHeightShape = maxOf(b.offset.x, c.offset.x)
+    private val maxHeightShape = maxOf(b.PointF.x, c.PointF.x)
 
     private val countCeilCMHeight =
         maxHeightShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
@@ -113,22 +108,19 @@ class QuadroPDF(
     private val oneCMInWidthXPx: BigDecimal =
         getCountPXinOneCM(widthPage, paddingWidth, countCeilCMHeight)
 
-    fun ruler(canvas: Canvas) {
-        canvas.coordinateSystem(
-            countCMInX = maxHeightShape.toInt(),
-            countCMInY = maxWidthShape.toInt(),
-
-            startOffsetLine = Offset(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
-            countPxInOneCM = TODO(),
-            rulerParam = TODO(),
-            scaleRuler = TODO(),
-        )
-
+    fun ruler(canvas: AndroidCanvas) {
+//        canvas.coordinateSystem(
+//            countCMInX = maxHeightShape.toInt(),
+//            countCMInY = maxWidthShape.toInt(),
+//
+//            startPointFLine = PointF(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
+//            countPxInOneCM = TODO(),
+//            rulerParam = TODO(),
+//            scaleRuler = TODO(),
+//        )
     }
 
-
     fun drawQuadro(
-        canvas: Canvas,
         paint: Paint =
             Paint().apply {
                 color = Color.BLACK
@@ -137,15 +129,13 @@ class QuadroPDF(
                 style = Paint.Style.STROKE
             },
     ) {
-
-
 //        val (aPX, bPX, cPX, dPX) =
 //            listOf(a, b, c, d).map {
-//                it.offset
-//                    .changeOffset(
+//                it.PointF
+//                    .changePointF(
 //                        oneUnitInHeightYtPx = oneCMInHeightYtPx,
 //                        oneUnitInWidthXPx = oneCMInWidthXPx,
-//                    ).toOffset()
+//                    ).toPointF()
 //            }
 //
 //        val path =
@@ -177,10 +167,10 @@ class QuadroPDF(
         lastNotNullBottomX: BigDecimal = BigDecimal.ZERO,
         lastNotNullTopX: BigDecimal = BigDecimal.ZERO,
     ): Result<Pair<OffsetBD, OffsetBD>> {
-        val intersectAB = searchInterpolation(a, b, y, a.offset.x)
-        val intersectBC = searchInterpolation(b, c, y, b.offset.x)
-        val intersectDC = searchInterpolation(d, c, y, d.offset.x)
-        val intersectAD = searchInterpolation(a, d, y, a.offset.x)
+        val intersectAB = searchInterpolation(a, b, y, a.PointF.x)
+        val intersectBC = searchInterpolation(b, c, y, b.PointF.x)
+        val intersectDC = searchInterpolation(d, c, y, d.PointF.x)
+        val intersectAD = searchInterpolation(a, d, y, a.PointF.x)
         val lst =
             setOfNotNull(
                 intersectAB,
@@ -212,10 +202,10 @@ class QuadroPDF(
         val peakDots =
             listOf(a, b, c, d)
                 .asSequence()
-                .filter { it.offset.x == peak }
-                .sortedBy { it.offset.y }
+                .filter { it.PointF.x == peak }
+                .sortedBy { it.PointF.y }
                 .take(2)
-                .map { it.offset.y }
+                .map { it.PointF.y }
                 .toList()
         return when (peakDots.size) {
             1 -> peakDots[0]..peakDots[0]
@@ -224,7 +214,7 @@ class QuadroPDF(
         }
     }
 
-    fun sheetOnQuadro(canvas: Canvas) {
+    fun sheetOnQuadro() {
         val intervalYForXMax = findYPeakX(peakXMax)
         val intervalYForXMin = findYPeakX(peakXMin)
         for (s in 1..countOfSheet) {
@@ -255,16 +245,16 @@ class QuadroPDF(
                         .multiply(sheetMultiplicityCM.value)
 
                 listOfSheets.add(sheet.copy(len = lenOfSheet))
-                drawSheet(
-                    canvas = canvas,
-                    sheetDots =
-                    dotsOfSheet
-                        .convertSheetDotToPx(
-                            oneMeterInHeightYtPx = oneCMInHeightYtPx,
-                            oneMeterInWidthXPx = oneCMInWidthXPx,
-                        ),
-                    lenOfSheet = lenOfSheet,
-                )
+//                com.example.pdfcanvasdraw.canvasDrawUtils.drawSheet(
+//                    canvas = canvas,
+//                    sheetDots =
+//                    dotsOfSheet
+//                        .convertSheetDotToPx(
+//                            oneMeterInHeightYtPx = oneCMInHeightYtPx,
+//                            oneMeterInWidthXPx = oneCMInWidthXPx,
+//                        ),
+//                    lenOfSheet = lenOfSheet,
+//                )
             }
         }
     }

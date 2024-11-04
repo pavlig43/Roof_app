@@ -50,7 +50,6 @@ constructor(
         viewModelScope.launch { _roofState.collect { Log.d("testState", it.toString()) } }
     }
 
-
     private val _selectedOptionDropMenu = MutableStateFlow(_roofState.value.pokat)
 
     val selectedOptionDropMenu = _selectedOptionDropMenu.asStateFlow()
@@ -63,10 +62,8 @@ constructor(
                 RoofParamName.POKAT -> _roofState.value.pokat
                 else -> _selectedOptionDropMenu.value
             }
-
         }
         Log.d("selectOPt", _selectedOptionDropMenu.value.toString())
-
     }
 
     private val pdfFile = MutableStateFlow<File?>(null)
@@ -108,13 +105,10 @@ constructor(
     }
 
     fun updateRoofParams(roofParam: RoofParam) {
-
         _roofState.update {
             it.updateRoofParams(roofParam)
         }
         changeSelectedOption(roofParam)
-
-
     }
 
     fun updateSheetParams(sheetParam: SheetParam) {

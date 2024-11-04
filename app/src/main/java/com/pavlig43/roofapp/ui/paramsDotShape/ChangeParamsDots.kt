@@ -29,32 +29,30 @@ fun ChangeParamsDots(
             modifier = modifier.background(Color.White),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = stringResource(R.string.offset_from_left_bottom))
+            Text(text = stringResource(R.string.PointF_from_left_bottom))
             ParamsDotRow(
-                value = dot.offset.x,
-                onValueChange = {
-                        newValue ->
-                    changeDot(dot.copy(offset = dot.offset.copy(x = newValue)))
+                value = dot.PointF.x,
+                onValueChange = { newValue ->
+                    changeDot(dot.copy(PointF = dot.PointF.copy(x = newValue)))
                 },
                 axis = "X",
                 canChangePlus = dot.canMinusX,
-                plus = dot.offset.x >= BigDecimal.ZERO,
+                plus = dot.PointF.x >= BigDecimal.ZERO,
                 canChangeAxis = dot.canChangeX,
                 changePlus = {
-                    changeDot(dot.copy(offset = dot.offset.copy(x = -dot.offset.x)))
+                    changeDot(dot.copy(PointF = dot.PointF.copy(x = -dot.PointF.x)))
                 },
             )
             ParamsDotRow(
-                value = dot.offset.y,
-                onValueChange = {
-                        newValue ->
-                    changeDot(dot.copy(offset = dot.offset.copy(y = newValue)))
+                value = dot.PointF.y,
+                onValueChange = { newValue ->
+                    changeDot(dot.copy(PointF = dot.PointF.copy(y = newValue)))
                 },
                 canChangePlus = dot.canMinusY,
-                plus = dot.offset.y >= BigDecimal.ZERO,
+                plus = dot.PointF.y >= BigDecimal.ZERO,
                 canChangeAxis = dot.canChangeY,
                 changePlus = {
-                    changeDot(dot.copy(offset = dot.offset.copy(y = -dot.offset.y)))
+                    changeDot(dot.copy(PointF = dot.PointF.copy(y = -dot.PointF.y)))
                 },
             )
             Button(

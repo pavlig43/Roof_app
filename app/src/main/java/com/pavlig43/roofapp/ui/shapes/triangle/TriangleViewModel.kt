@@ -69,7 +69,7 @@ constructor(
     private fun shapeIsValid(geometryTriangle3SideShape: GeometryTriangle3SideShape): Boolean {
         val (leftBottom, top, rightBottom) = geometryTriangle3SideShape
 
-        return Triangle.isValid(leftBottom.offset, rightBottom.offset, top.offset)
+        return Triangle.isValid(leftBottom.PointF, rightBottom.PointF, top.PointF)
     }
 
     fun changeCurrentDotName(dotNameTriangle3Side: DotNameTriangle3Side) {
@@ -137,17 +137,12 @@ data class GeometryTriangle3SideShape(
     val top: Dot =
         Dot(
             name = DotNameTriangle3Side.TOP,
-            offset = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
+            PointF = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
         ),
     val rightBottom: Dot =
         Dot(
             name = DotNameTriangle3Side.RIGHTBOTTOM,
-            offset = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
+            PointF = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO),
             canChangeX = false,
         ),
 )
-
-
-
-
-

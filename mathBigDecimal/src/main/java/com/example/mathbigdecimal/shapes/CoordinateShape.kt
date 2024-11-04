@@ -7,14 +7,13 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 open class CoordinateShape(
-    listOfBasicDots: List<OffsetBD>,
+    basicPolygon: List<OffsetBD>,
     isMoveToPositiveQuadrant: Boolean = false,
 ) {
 
-
     private val moveToPositiveQuadrantOffset = if (isMoveToPositiveQuadrant) {
-        val x = listOfBasicDots.minOf { it.x }
-        val y = listOfBasicDots.minOf { it.y }
+        val x = basicPolygon.minOf { it.x }
+        val y = basicPolygon.minOf { it.y }
         OffsetBD(x, y)
     } else {
         OffsetBD(
@@ -22,31 +21,23 @@ open class CoordinateShape(
             BigDecimal.ZERO
         )
     }
-    val listOfDots = listOfBasicDots.map { it.plus(moveToPositiveQuadrantOffset.absoluteValue) }
+    val polygon = basicPolygon.map { it.plus(moveToPositiveQuadrantOffset.absoluteValue) }
 
-    val peakXMax = listOfDots.maxOfOrNull { it.x } ?: BigDecimal.ZERO
-    val peakXMin = listOfDots.minOfOrNull { it.x } ?: BigDecimal.ZERO
+    val peakXMax = polygon.maxOfOrNull { it.x } ?: BigDecimal.ZERO
+    val peakXMin = polygon.minOfOrNull { it.x } ?: BigDecimal.ZERO
 
-    val peakYMax = listOfDots.maxOfOrNull { it.y } ?: BigDecimal.ZERO
-    val peakYMin = listOfDots.minOfOrNull { it.y } ?: BigDecimal.ZERO
-
+    val peakYMax = polygon.maxOfOrNull { it.y } ?: BigDecimal.ZERO
+    val peakYMin = polygon.minOfOrNull { it.y } ?: BigDecimal.ZERO
 
     val maxDistanceY = abs(peakYMin) + abs(peakYMax)
     val maxDistanceX = abs(peakXMin) + abs(peakXMax)
-
-    val countCeilCMWidth =
-        maxDistanceY.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
-            .toInt()
-    val countCeilCMHeight =
-        maxDistanceX.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
-            .toInt()
 
     /**
      * ищем последовательность "У" при котором "Х" находится на пике(минимальном или максимальном)
      */
     private fun findRangeYPeakX(peak: BigDecimal): ClosedRange<BigDecimal> {
         val peakY =
-            listOfDots
+            polygon
                 .asSequence()
                 .filter { it.x == peak }
                 .sortedBy { it.y }
@@ -81,7 +72,6 @@ open class CoordinateShape(
         }
     }
 
-
     /**
      * Заполняет(закрашивает) фигуру прямоугольниками от верха до низа
      */
@@ -89,18 +79,16 @@ open class CoordinateShape(
         rectangleWidth: BigDecimal,
         overlap: BigDecimal = BigDecimal.ZERO
     ): List<RightRectangle> {
-
         val rectangleVisible = rectangleWidth - overlap
         val countRectangle =
             (maxDistanceY - overlap).divide(rectangleVisible, 0, RoundingMode.CEILING).toInt()
         val listOfRectangle: MutableList<RightRectangle> = mutableListOf()
 
-
         for (s in 1..countRectangle) {
             val y = rectangleVisible * (s - 1).toBigDecimal()
-            val resultLeft = listOfDots.lineInterpolationForShape(y).getSide()
+            val resultLeft = polygon.lineInterpolationForShape(y).getSide()
             val resultRight = (y + rectangleWidth).run {
-                listOfDots.lineInterpolationForShape(this)
+                polygon.lineInterpolationForShape(this)
                     .getSide(
                         this,
                         resultLeft.first.x,
@@ -110,22 +98,55 @@ open class CoordinateShape(
             val listDotsRectangleShape =
                 listOf(resultLeft.first, resultLeft.second, resultRight.second, resultRight.first)
             listOfRectangle.add(RightRectangle(listDotsRectangleShape).replaceX(this))
-
-
         }
         return listOfRectangle.toList()
     }
 
     fun compareTo(other: CoordinateShape): Int {
-
-        return listOfDots.zip(other.listOfDots).map { (a, b) ->
-
+        return polygon.zip(other.polygon).map { (a, b) ->
 
             a.compareTo(b)
         }.firstOrNull { it != 0 } ?: 0
-
     }
 
-    override fun toString(): String = listOfDots.toString()
-}
+    /**
+     * check polygon for convexity.
+     * TODO :not work for a pentagram - view in Test
+     * TODO :not work for degenerate polygon - view in Test
+     *
+     */
+    @Suppress("ReturnCount", "MagicNumber")
+    private fun inConvex(): Boolean {
 
+        if (polygon.size < 3) return false
+        var sign = 0
+        for (i in polygon.indices) {
+            val p0 = polygon[i]
+            val p1 = polygon[(i + 1) % polygon.size]
+            val p2 = polygon[(i + 2) % polygon.size]
+            val pointAb = OffsetBD(p1.x - p0.x, p1.y - p0.y)
+            val pointBc = OffsetBD(p2.x - p1.x, p2.y - p1.y)
+            val scalar = pointAb.x * pointBc.y - pointAb.y * pointBc.x
+            println("scalar $p0-$p1-$p2: $scalar")
+
+            val currentSign = when {
+                scalar > BigDecimal.ZERO -> 1
+                scalar < BigDecimal.ZERO -> -1
+                else -> 0
+            }
+            if (currentSign != 0) {
+                if (sign == 0) {
+
+                    sign = currentSign
+                } else if (sign != currentSign) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    val isConvex = inConvex()
+
+    override fun toString(): String = polygon.toString()
+}

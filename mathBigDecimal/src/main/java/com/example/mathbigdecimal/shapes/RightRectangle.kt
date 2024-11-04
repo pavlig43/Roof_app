@@ -22,7 +22,6 @@ class RightRectangle(listOfBasicsDots: List<OffsetBD>) : CoordinateShape(listOfB
         val topIntersect = intervalY.start <= parentShape.peakYRangeMax.endInclusive &&
                 parentShape.peakYRangeMax.start <= intervalY.endInclusive
 
-
         val bottomIntersect = intervalY.start <= parentShape.peakYRangeMin.endInclusive &&
                 parentShape.peakYRangeMin.start <= intervalY.endInclusive
 

@@ -22,21 +22,22 @@ fun SheetDots.convertSheetDotToPx(
     paddingWidth: BigDecimal = (A4X * PADDING_PERCENT).toBigDecimal(),
     paddingHeight: BigDecimal = (A4Y * PADDING_PERCENT).toBigDecimal(),
 ): SheetDots {
-    fun OffsetBD.transform(): OffsetBD =
-
-        this.changeOffset(
-            oneUnitInHeightYtPx = oneMeterInHeightYtPx,
-            oneUnitInWidthXPx = oneMeterInWidthXPx,
-            paddingXOffset = paddingWidth,
-            paddingYOffset = paddingHeight,
-        )
-
-    return this.copy(
-        leftBottom = this.leftBottom.transform(),
-        leftTop = this.leftTop.transform(),
-        rightTop = this.rightTop.transform(),
-        rightBottom = this.rightBottom.transform(),
-    )
+//    fun OffsetBD.transform(): OffsetBD =
+//
+//        this.changePointF(
+//            oneUnitInHeightYtPx = oneMeterInHeightYtPx,
+//            oneUnitInWidthXPx = oneMeterInWidthXPx,
+//            paddingXPointF = paddingWidth,
+//            paddingYPointF = paddingHeight,
+//        )
+//
+//    return this.copy(
+//        leftBottom = this.leftBottom.transform(),
+//        leftTop = this.leftTop.transform(),
+//        rightTop = this.rightTop.transform(),
+//        rightBottom = this.rightBottom.transform(),
+//    )
+    return this
 }
 
 /**

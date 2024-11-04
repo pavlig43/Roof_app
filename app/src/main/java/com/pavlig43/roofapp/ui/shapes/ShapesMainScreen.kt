@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.pavlig43.roofapp.ui.general.ResultImagesFromPDF
+import com.pavlig43.roofapp.ui.kit.ResultImagesFromPDF
 import com.pavlig43.roofapp.ui.shapes.quadrilateral.QuadroChoice
 import com.pavlig43.roofapp.ui.shapes.triangle.TriangleChoice
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme

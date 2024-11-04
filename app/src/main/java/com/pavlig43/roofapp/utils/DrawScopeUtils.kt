@@ -1,6 +1,7 @@
 package com.pavlig43.roofapp.utils
 
 import android.graphics.Paint
+import android.graphics.PointF
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -13,8 +14,8 @@ import com.pavlig43.roofapp.model.Dot
  */
 @Suppress("LongParameterList")
 fun DrawScope.drawDot(
-    downOffset: Boolean,
-    offsetY: Float = 35f,
+    downPointF: Boolean,
+    PointFY: Float = 35f,
     startDot: Boolean = false,
     center: Offset,
     dot: Dot,
@@ -28,12 +29,16 @@ fun DrawScope.drawDot(
     drawCircle(if (startDot) Color.Green else Color.Black, center = center, radius = 15f)
     drawContext.canvas.nativeCanvas.apply {
         drawText(
-            "(${dot.offset.x}cm, ${dot.offset.y}cm)",
+            "(${dot.PointF.x}cm, ${dot.PointF.y}cm)",
             center.x,
-            center.y + if (!downOffset) offsetY else -offsetY,
+            center.y + if (!downPointF) PointFY else -PointFY,
             textPaint,
         )
     }
+}
+
+fun PointF.toOffset(): Offset {
+    return Offset(x, y)
 }
 
 fun DrawScope.drawRuler(

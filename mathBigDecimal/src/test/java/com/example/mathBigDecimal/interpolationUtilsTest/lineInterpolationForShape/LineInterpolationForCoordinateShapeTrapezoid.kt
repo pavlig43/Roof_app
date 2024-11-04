@@ -21,7 +21,6 @@ class LineInterpolationForCoordinateShapeTrapezoid {
         result.zip(expected) { a, b -> assertEquals(0, a.compareTo(b)) }
     }
 
-
     @Test
     fun testDifferentYValues() {
         val testCases = mapOf(
@@ -109,6 +108,5 @@ class LineInterpolationForCoordinateShapeTrapezoid {
         testCases.forEach { (y, expected) ->
             withYEquals(y, expected)
         }
-
     }
 }

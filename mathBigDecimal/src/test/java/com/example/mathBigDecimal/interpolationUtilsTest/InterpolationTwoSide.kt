@@ -9,7 +9,6 @@ import java.math.BigDecimal
 
 class InterpolationTwoSide {
 
-
     @Test
     fun `test intersection when only first pair matches the y value`() {
         val first =
@@ -23,7 +22,6 @@ class InterpolationTwoSide {
                 OffsetBD(BigDecimal(500), BigDecimal(200))
             )
         val result = Pair(first, second).searchInterpolation(BigDecimal(100))
-
 
         val expected =
             Pair(
@@ -48,7 +46,6 @@ class InterpolationTwoSide {
             )
         val result = Pair(first, second).searchInterpolation(BigDecimal(150))
 
-
         val expected =
             Pair(
                 OffsetBD(BigDecimal("500"), BigDecimal("150")),
@@ -72,8 +69,5 @@ class InterpolationTwoSide {
             )
         val result = Pair(first, second).searchInterpolation(BigDecimal(150))
         assertNull(result)
-
     }
-
 }
-

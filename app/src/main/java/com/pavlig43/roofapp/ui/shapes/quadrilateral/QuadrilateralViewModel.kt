@@ -6,17 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mathbigdecimal.OffsetBD
 import com.example.mathbigdecimal.shapes.CoordinateShape
-import com.pavlig43.roofapp.PageConfig
-import com.pavlig43.roofapp.getCountPxInOneCM
+import com.example.pdfcanvasdraw.abstractCanvas.drawShape.ShapeCanvas
+import com.example.pdfcanvasdraw.abstractCanvas.drawShape.drawShapeWithRulerAndFillRectangle
+import com.example.pdfcanvasdraw.pdf.model.PageConfig
+import com.example.pdfcanvasdraw.pdf.page.implementation.shape.ShapeWithRulerAndRectangleRenderer
+import com.example.pdfcanvasdraw.pdf.page.implementation.shape.getCountPxInOneCM
+import com.example.pdfcanvasdraw.pdf.renderDocument.PdfBuilder
 import com.pavlig43.roofapp.model.Dot
 import com.pavlig43.roofapp.model.DotName4Side
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.utils.PageContentBuilder
-import com.pavlig43.roofapp.utils.canvasDrawUtils.ShapeCanvas
-import com.pavlig43.roofapp.utils.canvasDrawUtils.drawShape.drawShapeWithRulerAndFillRectangle
 import com.pavlig43.roofapp.utils.createFile
-import com.pavlig43.roofapp.utils.renderContent
-import com.pavlig43.roofapp.utils.toOffset
+import com.pavlig43.roofapp.utils.toPointF
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,9 +70,9 @@ constructor(
             }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private fun shapeIsValid(geometry4SideShape: Geometry4SideShape): Boolean =
-        geometry4SideShape.leftTop.offset.x > BigDecimal.ZERO &&
-                geometry4SideShape.rightTop.offset.x > BigDecimal.ZERO &&
-                geometry4SideShape.rightBottom.offset.y != BigDecimal.ZERO
+        geometry4SideShape.leftTop.PointF.x > BigDecimal.ZERO &&
+                geometry4SideShape.rightTop.PointF.x > BigDecimal.ZERO &&
+                geometry4SideShape.rightBottom.PointF.y != BigDecimal.ZERO
 
     fun changeCurrentDotName(dotName4Side: DotName4Side) {
         currentDotName.value = dotName4Side
@@ -108,7 +109,7 @@ constructor(
 
      */
     suspend fun createPDFFile(sheet: Sheet): File {
-        val pdfDocument = PdfDocument()
+
         val a = CoordinateShape(
             _geometry4SideShape.value.tolst(),
             isMoveToPositiveQuadrant = true
@@ -117,28 +118,40 @@ constructor(
         val listOfRectangle =
             a.fillShapeWithRectangles(sheet.widthGeneral.value, sheet.overlap.value)
                 .map { rightRectangle ->
-                    rightRectangle.listOfDots.map { it.toOffset() }.run { ShapeCanvas(this) }
+                    rightRectangle.polygon.map { it.toPointF() }.run {
+                        ShapeCanvas(
+                            this
+                        )
+                    }
                 }
         val pageConfig = PageConfig()
-        val countPxInOneCM = pageConfig.getCountPxInOneCM(a)
+        val countPxInOneCM = pageConfig.getCountPxInOneCM(sc)
         val arr = listOf(
             PageContentBuilder(
                 pageConfig = pageConfig,
                 generateDraw = {
-                    this.drawShapeWithRulerAndFillRectangle(
+                    drawShapeWithRulerAndFillRectangle(
                         shapeCanvas = sc,
 
                         countPxInOneCM = countPxInOneCM,
                         listOfRectangle = listOfRectangle,
-                        startOffset = pageConfig.startOffset
+                        startPointF = pageConfig.startPointF
 
                     )
                 }
             ),
         )
 
-        pdfDocument.renderContent(arr)
-        val file = pdfDocument.createFile(context)
+        val pdArr = ShapeWithRulerAndRectangleRenderer(
+            shapeCanvas = sc,
+            listOfRectangle = listOfRectangle
+        )
+        val pdfDocumentNew: PdfDocument = PdfBuilder().createPdf(
+            listOf(pdArr)
+        )
+
+//        pdfDocument.renderContent(arr)
+        val file = pdfDocumentNew.createFile(context)
         return file
     }
 }
@@ -149,7 +162,7 @@ data class Geometry4SideShape(
         Dot(
             name = DotName4Side.LEFTTOP,
             canMinusY = true,
-            offset =
+            PointF =
             OffsetBD(
                 x = BigDecimal("500"),
                 y = BigDecimal("-200"),
@@ -159,7 +172,7 @@ data class Geometry4SideShape(
         Dot(
             name = DotName4Side.RIGHTTOP,
             canMinusY = true,
-            offset =
+            PointF =
             OffsetBD(
                 x = BigDecimal("400"),
                 y = BigDecimal("200"),
@@ -169,7 +182,7 @@ data class Geometry4SideShape(
         Dot(
             name = DotName4Side.RIGHTBOTTOM,
             canMinusX = true,
-            offset =
+            PointF =
             OffsetBD(
                 x = BigDecimal("-200"),
                 y = BigDecimal("400"),
@@ -178,9 +191,9 @@ data class Geometry4SideShape(
 )
 
 fun Geometry4SideShape.tolst(): List<OffsetBD> {
-    return listOf(leftBottom.offset, leftTop.offset, rightTop.offset, rightBottom.offset)
+    return listOf(leftBottom.PointF, leftTop.PointF, rightTop.PointF, rightBottom.PointF)
 }
 
 fun CoordinateShape.toShapeCanvas(): ShapeCanvas {
-    return ShapeCanvas(this.listOfDots.map { it.toOffset() })
+    return ShapeCanvas(this.polygon.map { it.toPointF() })
 }

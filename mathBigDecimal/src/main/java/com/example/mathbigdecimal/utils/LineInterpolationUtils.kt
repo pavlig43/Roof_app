@@ -65,10 +65,8 @@ fun Pair<Pair<OffsetBD, OffsetBD>, Pair<OffsetBD, OffsetBD>>.searchInterpolation
                 null
             }
         }
-
     }
     return result
-
 }
 
 /**
@@ -82,14 +80,8 @@ fun Pair<Pair<OffsetBD, OffsetBD>, Pair<OffsetBD, OffsetBD>>.searchInterpolation
  * На вход
  */
 fun List<OffsetBD>.lineInterpolationForShape(y: BigDecimal): List<OffsetBD> {
-
     return this.zipWithNextCircular { a, b -> searchInterpolation(a, b, y) }
         .filterNotNull()
         .toSet()
         .sortedBy { it.x }
-
 }
-
-
-
-

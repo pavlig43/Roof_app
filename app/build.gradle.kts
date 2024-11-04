@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(project(":mathBigDecimal"))
+    implementation(project(":pdfCanvasDraw"))
     implementation("io.github.grizzi91:bouquet:1.1.2")
 
     ksp(libs.hilt.android.compiler)

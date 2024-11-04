@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.core.net.toUri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.roofapp.utils.deleteFile
@@ -14,6 +15,7 @@ import com.rizzi.bouquet.ResourceType
 import com.rizzi.bouquet.VerticalPdfReaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
@@ -30,6 +33,7 @@ import javax.inject.Inject
 internal class ListSaveDocumentsViewModel
 @Inject
 constructor(
+    val st: SavedStateHandle,
     @ApplicationContext val context: Context,
 ) : ViewModel() {
     private val _screensSaveDocumentsState =
@@ -57,6 +61,7 @@ constructor(
         }.stateIn(viewModelScope, SharingStarted.Lazily, mutableStateListOf())
 
     private fun loadListSaveDocuments(): SnapshotStateList<Document> {
+        viewModelScope.launch(Dispatchers.Default) { }
         val files =
             context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.listFiles()
                 ?: emptyArray()

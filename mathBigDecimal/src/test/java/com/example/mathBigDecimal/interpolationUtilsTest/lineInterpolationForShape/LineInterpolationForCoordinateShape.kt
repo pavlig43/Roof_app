@@ -14,27 +14,23 @@ class LineInterpolationForCoordinateShape {
         val top = OffsetBD(BigDecimal("6"), BigDecimal("5"))
         val rb = OffsetBD(BigDecimal("0"), BigDecimal("10"))
 
-
         val shapeTriangle = listOf(lb, top, rb)
-
 
         val result = shapeTriangle.lineInterpolationForShape(BigDecimal("3"))
 
         val expected = setOf(
-            OffsetBD(BigDecimal.ZERO, BigDecimal("3")), OffsetBD(BigDecimal("3.6"), BigDecimal("3"))
+            OffsetBD(BigDecimal.ZERO, BigDecimal("3")),
+            OffsetBD(BigDecimal("3.6"), BigDecimal("3"))
         )
         result.zip(expected) { a, b -> assertEquals(0, a.compareTo(b)) }
-
     }
 
     @Test
     fun testLineInterpolationForShapeWithQuadrilateral() {
-
         val lb = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO)
         val lt = OffsetBD(BigDecimal.ZERO, BigDecimal("10"))
         val rt = OffsetBD(BigDecimal("10"), BigDecimal("10"))
         val rb = OffsetBD(BigDecimal("10"), BigDecimal.ZERO)
-
 
         val shape = listOf(lb, lt, rt, rb)
 

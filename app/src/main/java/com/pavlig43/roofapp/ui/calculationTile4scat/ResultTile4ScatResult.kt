@@ -30,7 +30,7 @@ suspend fun pdfResultRoof4Scat(
             top =
             Dot(
                 DotNameTriangle3Side.TOP,
-                offset =
+                PointF =
                 OffsetBD(
                     roofParamsClassic4Scat.pokat.value,
                     roofParamsClassic4Scat.width.value.divide(
@@ -77,7 +77,7 @@ suspend fun pdfResultRoof4Scat(
             rightBottom =
             Dot(
                 DotName4Side.RIGHTBOTTOM,
-                offset =
+                PointF =
                 OffsetBD(
                     BigDecimal.ZERO,
                     roofParamsClassic4Scat.len.value,

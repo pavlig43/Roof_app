@@ -29,13 +29,13 @@ import com.pavlig43.roofapp.model.RoofParam
 import com.pavlig43.roofapp.model.RoofParamName
 import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
 import com.pavlig43.roofapp.model.SheetParam
-import com.pavlig43.roofapp.ui.general.ArrowIconButton
-import com.pavlig43.roofapp.ui.general.CalculateSheetParams
-import com.pavlig43.roofapp.ui.general.OtherParamsColumn
-import com.pavlig43.roofapp.ui.general.ResultImagesFromPDF
-import com.pavlig43.roofapp.ui.general.rowParam.ParamRow
-import com.pavlig43.roofapp.ui.general.rowParam.TextFieldBigDecimal
-import com.pavlig43.roofapp.ui.general.rowParam.TextParam
+import com.pavlig43.roofapp.ui.kit.ArrowIconButton
+import com.pavlig43.roofapp.ui.kit.CalculateSheetParams
+import com.pavlig43.roofapp.ui.kit.OtherParamsColumn
+import com.pavlig43.roofapp.ui.kit.ResultImagesFromPDF
+import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
+import com.pavlig43.roofapp.ui.kit.rowParam.TextFieldBigDecimal
+import com.pavlig43.roofapp.ui.kit.rowParam.TextParam
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 
 @Composable

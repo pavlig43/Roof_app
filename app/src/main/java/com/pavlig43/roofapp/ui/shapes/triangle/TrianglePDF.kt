@@ -3,20 +3,17 @@ package com.pavlig43.roofapp.ui.shapes.triangle
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Path
-import androidx.compose.ui.geometry.Offset
+import android.graphics.PointF
 import com.example.mathbigdecimal.OffsetBD
+import com.example.pdfcanvasdraw.abstractCanvas.сoordinateSystem.coordinateSystem
+import com.example.pdfcanvasdraw.pdf.page.AndroidCanvas
 import com.pavlig43.roofapp.A4X
 import com.pavlig43.roofapp.A4Y
 import com.pavlig43.roofapp.PADDING_PERCENT
 import com.pavlig43.roofapp.model.Sheet
-import com.pavlig43.roofapp.model.convertSheetDotToPx
 import com.pavlig43.roofapp.model.replaceX
-import com.pavlig43.roofapp.utils.canvasDrawUtils.drawSheet
-import com.pavlig43.roofapp.utils.canvasDrawUtils.сoordinateSystem.coordinateSystem
 import com.pavlig43.roofapp.utils.searchDotsSheet
 import com.pavlig43.roofapp.utils.searchInterpolation
-import com.pavlig43.roofapp.utils.toOffset
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -38,21 +35,21 @@ class TrianglePDF(
     /**
      * самая большая величина координаты высоты фигуры
      */
-    private val peakXMax = b.offset.x
+    private val peakXMax = b.PointF.x
 
     /**
      * самая маленькая величина координаты высоты фигуры(низшая точка)
      */
-    private val peakXMin = a.offset.x
+    private val peakXMin = a.PointF.x
 
-    private val leftSide = a.offset.getSide(b.offset)
-    private val bottomSide = a.offset.getSide(c.offset)
-    private val rightSide = b.offset.getSide(c.offset)
+    private val leftSide = a.PointF.getSide(b.PointF)
+    private val bottomSide = a.PointF.getSide(c.PointF)
+    private val rightSide = b.PointF.getSide(c.PointF)
 
     /**
      * ширина фигуры - самая дольняя точка от нового начала координат в см
      */
-    private val maxWidthShape = c.offset.y
+    private val maxWidthShape = c.PointF.y
 
     private val countCeilCMWidth =
         maxWidthShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
@@ -67,7 +64,7 @@ class TrianglePDF(
     /**
      * Высота фигуры - самая дольняя точка от нового начала координат в см
      */
-    private val maxHeightShape = b.offset.x
+    private val maxHeightShape = b.PointF.x
 
     private val countCeilCMHeight =
         maxHeightShape.divide(BigDecimal("100"), RoundingMode.CEILING).times(BigDecimal("100"))
@@ -87,13 +84,13 @@ class TrianglePDF(
         getCountPXinOneCM(widthPage, paddingWidth, countCeilCMHeight)
 
     fun ruler(
-        canvas: Canvas,
+        canvas: AndroidCanvas,
     ) {
         canvas.coordinateSystem(
             countCMInX = maxHeightShape.toInt(),
             countCMInY = maxWidthShape.toInt(),
 
-            startOffsetLine = Offset(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
+            startPointFLine = PointF(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
             countPxInOneCM = TODO(),
             rulerParam = TODO(),
             scaleRuler = TODO(),
@@ -104,7 +101,7 @@ class TrianglePDF(
 //            countCMInY = maxWidthShape.toInt(),
 //            countPxInOneCMY = oneCMInHeightYtPx.toFloat(),
 //            oneCMInWidthXPx = oneCMInWidthXPx.toFloat(),
-//            startOffsetLine = Offset(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
+//            startPointFLine = PointF(PADDING_PERCENT * widthPage, PADDING_PERCENT * heightPage),
 //
 //
 //            )
@@ -121,25 +118,26 @@ class TrianglePDF(
             },
     ) {
         val (aPX, bPX, cPX) =
-            listOf(a, b, c).map {
-                it.offset
-                    .changeOffset(
-                        oneUnitInHeightYtPx = oneCMInHeightYtPx,
-                        oneUnitInWidthXPx = oneCMInWidthXPx,
-                    ).toOffset()
-            }
+            listOf(a, b, c)
+//                .map {
+//                it.PointF
+//                    .changePointF(
+//                        oneUnitInHeightYtPx = oneCMInHeightYtPx,
+//                        oneUnitInWidthXPx = oneCMInWidthXPx,
+//                    ).toPointF()
+//            }
 
-        val path =
-            Path().apply {
-                moveTo(aPX.x + paddingWidth, aPX.y + paddingHeight)
-                lineTo(bPX.x + paddingWidth, bPX.y + paddingHeight)
-                moveTo(bPX.x + paddingWidth, bPX.y + paddingHeight)
-                lineTo(cPX.x + paddingWidth, cPX.y + paddingHeight)
-                moveTo(cPX.x + paddingWidth, cPX.y + paddingHeight)
-                lineTo(aPX.x + paddingWidth, aPX.y + paddingHeight)
-                close()
-            }
-        canvas.drawPath(path, paint)
+//        val path =
+//            Path().apply {
+//                moveTo(aPX.x + paddingWidth, aPX.y + paddingHeight)
+//                lineTo(bPX.x + paddingWidth, bPX.y + paddingHeight)
+//                moveTo(bPX.x + paddingWidth, bPX.y + paddingHeight)
+//                lineTo(cPX.x + paddingWidth, cPX.y + paddingHeight)
+//                moveTo(cPX.x + paddingWidth, cPX.y + paddingHeight)
+//                lineTo(aPX.x + paddingWidth, aPX.y + paddingHeight)
+//                close()
+//            }
+//        canvas.drawPath(path, paint)
     }
 
     /**
@@ -156,9 +154,9 @@ class TrianglePDF(
         lastNotNullBottomX: BigDecimal = BigDecimal.ZERO,
         lastNotNullTopX: BigDecimal = BigDecimal.ZERO,
     ): Result<Pair<OffsetBD, OffsetBD>> {
-        val intersectAB = searchInterpolation(a, b, y, a.offset.x)
-        val intersectBC = searchInterpolation(b, c, y, b.offset.x)
-        val intersectAC = searchInterpolation(a, c, y, a.offset.x)
+        val intersectAB = searchInterpolation(a, b, y, a.PointF.x)
+        val intersectBC = searchInterpolation(b, c, y, b.PointF.x)
+        val intersectAC = searchInterpolation(a, c, y, a.PointF.x)
 
         val lst =
             setOfNotNull(
@@ -182,8 +180,8 @@ class TrianglePDF(
     }
 
     fun sheetOnTriangle(canvas: Canvas) {
-        val intervalYForXMax = b.offset.y..b.offset.y
-        val intervalYForXMin = a.offset.y..a.offset.y
+        val intervalYForXMax = b.PointF.y..b.PointF.y
+        val intervalYForXMin = a.PointF.y..a.PointF.y
         for (s in 1..countOfSheet) {
             val y = (s - 1).toBigDecimal() * sheet.visible
             val resultLeft = searchLineOfSheet(y)
@@ -210,16 +208,16 @@ class TrianglePDF(
                         RoundingMode.CEILING,
                     ) * sheetMultiplicityCM.value
 
-                drawSheet(
-                    canvas = canvas,
-                    sheetDots =
-                    dotsOfSheet
-                        .convertSheetDotToPx(
-                            oneMeterInHeightYtPx = oneCMInHeightYtPx,
-                            oneMeterInWidthXPx = oneCMInWidthXPx,
-                        ),
-                    lenOfSheet = lenOfSheet,
-                )
+//                com.example.pdfcanvasdraw.canvasDrawUtils.drawSheet(
+//                    canvas = canvas,
+//                    sheetDots =
+//                    dotsOfSheet
+//                        .convertSheetDotToPx(
+//                            oneMeterInHeightYtPx = oneCMInHeightYtPx,
+//                            oneMeterInWidthXPx = oneCMInWidthXPx,
+//                        ),
+//                    lenOfSheet = lenOfSheet,
+//                )
                 listOfSheets.add(sheet.copy(len = lenOfSheet))
             }
         }

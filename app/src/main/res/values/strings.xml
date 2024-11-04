@@ -12,10 +12,10 @@
     <string name="delete_this_doc_question">Удалить этот документ???</string>
     <string name="delete">Удалить</string>
     <string name="Cancel">Отмена</string>
-    <string name="offset">Отклонение по %1$s (см)</string>
+    <string name="PointF">Отклонение по %1$s (см)</string>
     <string name="width_roof">Ширина крыши</string>
     <string name="len_roof">Длина крыши</string>
-    <string name="offset_from_left_bottom">Отклонение от левой нижней точки</string>
+    <string name="PointF_from_left_bottom">Отклонение от левой нижней точки</string>
     <string name="tile_layout">Расскладка черепицы</string>
     <string name="save_documents">Сохраненные документы</string>
     <string name="shapes">Фигуры</string>

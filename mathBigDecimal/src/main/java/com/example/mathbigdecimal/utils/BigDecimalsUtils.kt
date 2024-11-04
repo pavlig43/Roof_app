@@ -3,7 +3,6 @@ package com.example.mathbigdecimal.utils
 import java.math.BigDecimal
 import java.math.MathContext
 
-
 fun BigDecimal.sqrt1(mathContext: MathContext): BigDecimal {
     val two = BigDecimal(2)
     var guess = BigDecimal(kotlin.math.sqrt(this.toDouble())) // Первоначальная оценка
@@ -25,4 +24,3 @@ fun BigDecimal.sqrt1(mathContext: MathContext): BigDecimal {
 }
 
 fun abs(value: BigDecimal): BigDecimal = kotlin.math.abs(value.toDouble()).toBigDecimal()
-
