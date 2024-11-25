@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roofapp.ui.kit.SaveDialog
-import com.pavlig43.roofapp.ui.kit.pdfImage.PDFView
 import com.rizzi.bouquet.VerticalPdfReaderState
 
 @Composable

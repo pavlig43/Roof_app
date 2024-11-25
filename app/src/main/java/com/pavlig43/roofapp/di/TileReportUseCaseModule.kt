@@ -1,5 +1,6 @@
 package com.pavlig43.roofapp.di
 
+import com.pavlig43.roofapp.data.docBuilder.AndroidPdfBuilder
 import com.pavlig43.roofapp.domain.TileReportUseCase
 import dagger.Module
 import dagger.Provides

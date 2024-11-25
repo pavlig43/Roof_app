@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.ui.kit.pdfImage
+package com.pavlig43.roofapp.ui.pdfImage
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

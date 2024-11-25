@@ -19,7 +19,7 @@ data class TickParam(
 )
 
 fun CanvasInterface.tickForRuler(
-    numberOfTick: Int,
+    numberOfTick: String,
     x: Float,
     y: Float,
     tickParam: TickParam = TickParam(),
@@ -48,7 +48,7 @@ fun CanvasInterface.tickForRuler(
         drawAndRotateText(
             pivotX = x,
             pivotY = y - tickParam.paddingText,
-            text = "$numberOfTick",
+            text = numberOfTick,
             paintText = paintText,
         )
     } else {
@@ -63,7 +63,7 @@ fun CanvasInterface.tickForRuler(
             degree = RIGHT_DEGREE,
             pivotX = x - tickParam.paddingText,
             pivotY = y,
-            text = "$numberOfTick",
+            text = numberOfTick,
             paintText = paintText,
         )
     }

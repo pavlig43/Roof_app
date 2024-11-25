@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.di
+package com.pavlig43.roofapp.data.docBuilder
 
 import android.graphics.pdf.PdfDocument
 import com.example.pdfcanvasdraw.core.pageKit.abstractPage.PageRenderer

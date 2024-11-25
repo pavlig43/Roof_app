@@ -69,7 +69,6 @@ fun RandomShapep(
             is RandomShapeState.ManualDialog ->
                 ManualDialog(
                     closeManualDialog = viewModel::moveToConstructor,
-                    R.string.manual_quadro,
                 )
 
             is RandomShapeState.SheetDialog ->
