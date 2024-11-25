@@ -28,56 +28,44 @@ import com.pavlig43.roofapp.WIDTH_COLUMN_PERCENT
 import com.pavlig43.roofapp.model.RoofParam
 import com.pavlig43.roofapp.model.RoofParamName
 import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
+import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
 import com.pavlig43.roofapp.ui.kit.ArrowIconButton
 import com.pavlig43.roofapp.ui.kit.CalculateSheetParams
 import com.pavlig43.roofapp.ui.kit.OtherParamsColumn
-import com.pavlig43.roofapp.ui.kit.ResultImagesFromPDF
 import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
 import com.pavlig43.roofapp.ui.kit.rowParam.TextFieldBigDecimal
 import com.pavlig43.roofapp.ui.kit.rowParam.TextParam
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 
 @Composable
-fun CalculationTile4ScatMainScreen() {
-    CalculationTile4ScatMainScreenp(hiltViewModel())
+fun CalculationTile4ScatMainScreen(moveToPdfResult: () -> Unit) {
+    CalculationTile4ScatMainScreenp(moveToPdfResult, hiltViewModel())
 }
 
 @Composable
-private fun CalculationTile4ScatMainScreenp(viewModel: CalculationTile4ScatViewModel) {
-    val stateNavigation by viewModel.stateNavigation.collectAsState()
-
+private fun CalculationTile4ScatMainScreenp(
+    moveToPdfResult: () -> Unit,
+    viewModel: CalculationTile4ScatViewModel,
+) {
     val paramsState by viewModel.roofState.collectAsState()
-
-    val pdfReaderState by viewModel.pdfReaderState.collectAsState()
-    val nameFile by viewModel.saveNameFile.collectAsState()
-
+    val sheet by viewModel.sheet.collectAsState()
     val isValid by viewModel.isValid.collectAsState()
     val selectedOption by viewModel.selectedOptionDropMenu.collectAsState()
 
-    when (stateNavigation) {
-        is StateCalculationTile4Scat.ChangeCalculation ->
-
-            CalculationTile4Scat(
-                paramsState,
-                getResult = viewModel::getResult,
-                updateSheetParam = viewModel::updateSheetParams,
-                isValid = isValid,
-                updateRoofParam = viewModel::updateRoofParams,
-                selectedOption = selectedOption,
-                changeSelectedOption = viewModel::changeSelectedOption,
-            )
-
-        is StateCalculationTile4Scat.GetDraw ->
-            ResultImagesFromPDF(
-                pdfReaderState = pdfReaderState,
-                returnToCalculateScreen = viewModel::returnToCalculateScreen,
-                shareFile = viewModel::shareFile,
-                saveFile = viewModel::saveFile,
-                nameFile = nameFile,
-                checkSaveName = viewModel::checkName,
-            )
-    }
+    CalculationTile4Scat(
+        paramsState,
+        sheet,
+        getResult = {
+            viewModel.getResult()
+            moveToPdfResult()
+        },
+        updateSheetParam = viewModel::updateSheetParams,
+        isValid = isValid,
+        updateRoofParam = viewModel::updateRoofParams,
+        selectedOption = selectedOption,
+        changeSelectedOption = viewModel::changeSelectedOption,
+    )
 }
 
 /**
@@ -87,6 +75,7 @@ private fun CalculationTile4ScatMainScreenp(viewModel: CalculationTile4ScatViewM
 @Composable
 private fun CalculationTile4Scat(
     paramsState: RoofParamsClassic4Scat,
+    sheet: Sheet,
     updateRoofParam: (RoofParam) -> Unit,
     updateSheetParam: (SheetParam) -> Unit,
     getResult: () -> Unit,
@@ -96,8 +85,7 @@ private fun CalculationTile4Scat(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier =
-        modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -108,7 +96,7 @@ private fun CalculationTile4Scat(
                 paramTitle = roofParam.name.title,
                 unit = roofParam.unit.title,
                 value = roofParam.value,
-                updateParam = { newValue -> updateRoofParam(roofParam.copy(value = newValue)) }
+                updateParam = { newValue -> updateRoofParam(roofParam.copy(value = newValue)) },
             )
         }
         RoofParamDropMenu(
@@ -127,7 +115,7 @@ private fun CalculationTile4Scat(
         OtherParamsColumn(paramsState = paramsState, modifier = Modifier.padding(top = 12.dp))
 
         CalculateSheetParams(
-            sheet = paramsState.sheet,
+            sheet = sheet,
             updateSheetParam = updateSheetParam,
         )
 
@@ -159,7 +147,7 @@ private fun RoofParamDropMenu(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextRoofParam(
-                selectedOption
+                selectedOption,
             )
             ArrowIconButton(
                 changeExpanded = { expanded = !expanded },
@@ -169,13 +157,13 @@ private fun RoofParamDropMenu(
         val onDismissRequest = { expanded = false }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = onDismissRequest
+            onDismissRequest = onDismissRequest,
         ) {
             arrayOf(paramsState.pokat, paramsState.angle, paramsState.height).forEach { roofParam ->
                 RoofParamDropMenuRow(
                     roofParam = roofParam,
                     toSelectParam = changeSelectedOption,
-                    onDismissRequest = onDismissRequest
+                    onDismissRequest = onDismissRequest,
                 )
             }
         }
@@ -210,8 +198,7 @@ fun RoofParamDropMenuRow(
     modifier: Modifier = Modifier,
 ) {
     DropdownMenuItem(
-        text =
-        {
+        text = {
             Row(modifier = modifier.fillMaxWidth()) {
                 TextRoofParam(roofParam)
             }
@@ -233,6 +220,7 @@ private fun CalculationTile4ScatScreenPreview() {
     Roof_appTheme {
         CalculationTile4Scat(
             paramsState = RoofParamsClassic4Scat(),
+            sheet = Sheet(),
             updateRoofParam = { _ -> },
             getResult = {},
             updateSheetParam = { _ -> },

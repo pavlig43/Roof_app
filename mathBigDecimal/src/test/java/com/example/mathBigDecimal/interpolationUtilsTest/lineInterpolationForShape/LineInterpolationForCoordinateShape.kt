@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
 class LineInterpolationForCoordinateShape {
-
     @Test
     fun testLineInterpolationForShapeTriangle() {
         val lb = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO)
@@ -18,10 +17,11 @@ class LineInterpolationForCoordinateShape {
 
         val result = shapeTriangle.lineInterpolationForShape(BigDecimal("3"))
 
-        val expected = setOf(
-            OffsetBD(BigDecimal.ZERO, BigDecimal("3")),
-            OffsetBD(BigDecimal("3.6"), BigDecimal("3"))
-        )
+        val expected =
+            setOf(
+                OffsetBD(BigDecimal.ZERO, BigDecimal("3")),
+                OffsetBD(BigDecimal("3.6"), BigDecimal("3")),
+            )
         result.zip(expected) { a, b -> assertEquals(0, a.compareTo(b)) }
     }
 
@@ -36,10 +36,11 @@ class LineInterpolationForCoordinateShape {
 
         val result = shape.lineInterpolationForShape(BigDecimal("5"))
 
-        val expected = setOf(
-            OffsetBD(BigDecimal.ZERO, BigDecimal("5")),
-            OffsetBD(BigDecimal("10"), BigDecimal("5"))
-        )
+        val expected =
+            setOf(
+                OffsetBD(BigDecimal.ZERO, BigDecimal("5")),
+                OffsetBD(BigDecimal("10"), BigDecimal("5")),
+            )
 
         result.zip(expected) { a, b -> assertEquals(0, a.compareTo(b)) }
     }

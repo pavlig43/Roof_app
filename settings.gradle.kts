@@ -7,10 +7,11 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
     }
 }
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -28,4 +29,4 @@ dependencyResolutionManagement {
 rootProject.name = "Roof_app"
 include(":app")
 include(":mathBigDecimal")
-include(":pdfCanvasDraw")
+include(":canvasDraw")

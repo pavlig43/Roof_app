@@ -19,31 +19,35 @@ fun searchInterpolation(
     first: OffsetBD,
     second: OffsetBD,
     y: BigDecimal,
-    constX: BigDecimal = BigDecimal.ZERO
+    constX: BigDecimal = BigDecimal.ZERO,
 ): OffsetBD? {
-    val (dotOne, dotTwo) = if (first.y < second.y) {
-        Pair(first, second)
-    } else {
-        Pair(second, first)
-    }
+    val (dotOne, dotTwo) =
+        if (first.y < second.y) {
+            Pair(first, second)
+        } else {
+            Pair(second, first)
+        }
     return when {
         dotOne.y > y || dotTwo.y < y -> null
 
         dotOne.y == dotTwo.y -> OffsetBD(constX, y)
 
         else -> {
-            val x = first.x + (second.x - first.x) * (y - first.y).divide(
-                second.y - first.y,
-                MATH_PRECISION, RoundingMode.HALF_UP
-            )
+            val x =
+                first.x + (second.x - first.x) *
+                    (y - first.y).divide(
+                        second.y - first.y,
+                        MATH_PRECISION, RoundingMode.HALF_UP,
+                    )
             OffsetBD(x, y)
         }
     }
 }
 
-fun Pair<Pair<OffsetBD, OffsetBD>, Pair<OffsetBD, OffsetBD>>.searchInterpolation(
-    y: BigDecimal
-): Pair<OffsetBD, OffsetBD>? {
+fun Pair<
+    Pair<OffsetBD, OffsetBD>,
+    Pair<OffsetBD, OffsetBD>
+    >.searchInterpolation(y: BigDecimal): Pair<OffsetBD, OffsetBD>? {
     val (firstStart, firstEnd) = first
     val (secondStart, secondEnd) = second
 
@@ -53,19 +57,20 @@ fun Pair<Pair<OffsetBD, OffsetBD>, Pair<OffsetBD, OffsetBD>>.searchInterpolation
         return Pair(offsetBD1, offsetBD2)
     }
 
-    val result = when {
-        firstStart.y == y && firstEnd.y == y -> first.getParallelIntersection(y)
-        secondStart.y == y && secondEnd.y == y -> second.getParallelIntersection(y)
-        else -> {
-            val firstIntersection = searchInterpolation(firstStart, firstEnd, y)
-            val secondIntersection = searchInterpolation(secondStart, secondEnd, y)
-            if (firstIntersection != null && secondIntersection != null) {
-                Pair(firstIntersection, secondIntersection)
-            } else {
-                null
+    val result =
+        when {
+            firstStart.y == y && firstEnd.y == y -> first.getParallelIntersection(y)
+            secondStart.y == y && secondEnd.y == y -> second.getParallelIntersection(y)
+            else -> {
+                val firstIntersection = searchInterpolation(firstStart, firstEnd, y)
+                val secondIntersection = searchInterpolation(secondStart, secondEnd, y)
+                if (firstIntersection != null && secondIntersection != null) {
+                    Pair(firstIntersection, secondIntersection)
+                } else {
+                    null
+                }
             }
         }
-    }
     return result
 }
 

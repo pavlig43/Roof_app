@@ -1,7 +1,5 @@
 package com.pavlig43.roofapp.ui.saveDocuments
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,46 +36,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
-import com.pavlig43.roofapp.ui.pdfImage.PDFView
+import java.io.File
+
+private const val DRAG_AMOUNT_FOR_DELETE = 15
 
 @Composable
-fun ScreensSaveDocuments() {
-    ScreensSaveDocumentsp()
+fun ScreensSaveDocuments(moveToPdfResult: (String) -> Unit) {
+    ScreensSaveDocumentsp(moveToPdfResult)
 }
 
 @Composable
-private fun ScreensSaveDocumentsp(viewModel: ListSaveDocumentsViewModel = hiltViewModel()) {
-    BackHandler {
-        viewModel.returnScreenListDocument()
-    }
-
-    val screensSaveDocumentsState by viewModel.screensSaveDocumentsState.collectAsState()
-    val pdfReaderState by viewModel.pdfReaderState.collectAsState()
+private fun ScreensSaveDocumentsp(
+    moveToPdfResult: (String) -> Unit,
+    viewModel: ListSaveDocumentsViewModel = hiltViewModel()
+) {
     val listSaveDocuments by viewModel.listSaveDocuments.collectAsState()
-    when (screensSaveDocumentsState) {
-        is ScreensSaveDocumentsState.ListSaveDocumentsState ->
 
-            ListSaveDocuments(
-                listOfDocument = listSaveDocuments,
-                openDocument = { document -> viewModel.openDocument(document) },
-                shareFile = viewModel::shareFile,
-                deleteFile = viewModel::deleteFile,
-            )
-
-        is ScreensSaveDocumentsState.DrawDocumentState -> {
-            Log.d("doc", listSaveDocuments.toString())
-            pdfReaderState?.let { PDFView(it) }
-        }
-    }
+    ListSaveDocuments(
+        listOfFile = listSaveDocuments,
+        moveToPdfResult = moveToPdfResult,
+        shareFile = viewModel::shareFile,
+        deleteFile = viewModel::deleteFile,
+    )
 }
 
 @Composable
 private fun ListSaveDocuments(
     modifier: Modifier = Modifier,
-    listOfDocument: SnapshotStateList<Document>,
-    openDocument: (Document) -> Unit = {},
-    shareFile: (Document) -> Unit = {},
-    deleteFile: (Document) -> Unit = {},
+    listOfFile: List<File>,
+    moveToPdfResult: (String) -> Unit = {},
+    shareFile: (File) -> Unit = {},
+    deleteFile: (File) -> Unit = {},
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -87,12 +75,12 @@ private fun ListSaveDocuments(
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
     ) {
-        items(listOfDocument, key = { doc ->
-            doc.name
-        }) { document ->
-            DocumentItemCard(
-                document = document,
-                openDocument = openDocument,
+        items(listOfFile, key = { file ->
+            file.name
+        }) { file ->
+            FileItemCard(
+                file = file,
+                openFile = moveToPdfResult,
                 shareFile = shareFile,
                 deleteFile = deleteFile,
             )
@@ -100,14 +88,12 @@ private fun ListSaveDocuments(
     }
 }
 
-private const val dragAmountForDelete = 15
-
 @Composable
-private fun DocumentItemCard(
-    document: Document,
-    openDocument: (Document) -> Unit,
-    shareFile: (Document) -> Unit,
-    deleteFile: (Document) -> Unit,
+private fun FileItemCard(
+    file: File,
+    openFile: (String) -> Unit,
+    shareFile: (File) -> Unit,
+    deleteFile: (File) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDeleteDialog by remember { mutableStateOf(false) }
@@ -115,7 +101,7 @@ private fun DocumentItemCard(
         ConfirmDeleteDocDialog(
             deleteFile,
             onDialogDismissed = { isShowDeleteDialog = false },
-            document,
+            file,
         )
     }
 
@@ -124,13 +110,13 @@ private fun DocumentItemCard(
         modifier.pointerInput(Unit) {
             detectHorizontalDragGestures { change, dragAmount ->
                 change.consume()
-                if (dragAmount > dragAmountForDelete) {
+                if (dragAmount > DRAG_AMOUNT_FOR_DELETE) {
                     isShowDeleteDialog = true
                 }
             }
         },
     ) {
-        Card(modifier = Modifier.clickable { openDocument(document) }) {
+        Card(modifier = Modifier.clickable { openFile(file.name) }) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -145,13 +131,13 @@ private fun DocumentItemCard(
                         tint = Color.Unspecified,
                         modifier = Modifier.size(48.dp),
                     )
-                    Text(text = document.name, fontSize = 30.sp)
+                    Text(text = file.nameWithoutExtension, fontSize = 30.sp)
                 }
                 Text(text = stringResource(R.string.delete_document_manual))
             }
         }
         IconButton(
-            onClick = { shareFile(document) },
+            onClick = { shareFile(file) },
             modifier = Modifier.align(Alignment.CenterEnd),
         ) {
             Icon(imageVector = Icons.Default.Share, contentDescription = null)
@@ -161,16 +147,16 @@ private fun DocumentItemCard(
 
 @Composable
 private fun ConfirmDeleteDocDialog(
-    deleteFile: (Document) -> Unit,
+    deleteFile: (File) -> Unit,
     onDialogDismissed: () -> Unit,
-    document: Document,
+    file: File,
 ) {
     AlertDialog(
         title = { Text(text = stringResource(R.string.delete_this_doc_question)) },
         onDismissRequest = { onDialogDismissed() },
         confirmButton = {
             Button(onClick = {
-                deleteFile(document)
+                deleteFile(file)
                 onDialogDismissed()
             }) {
                 Text(text = stringResource(R.string.delete))

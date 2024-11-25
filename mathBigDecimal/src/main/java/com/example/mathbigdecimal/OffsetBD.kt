@@ -13,6 +13,10 @@ class OffsetBD(
 
     operator fun component2(): BigDecimal = y
 
+    companion object {
+        val Zero = OffsetBD(BigDecimal.ZERO, BigDecimal.ZERO)
+    }
+
     val absoluteValue: OffsetBD
         get() = OffsetBD(x.abs(), y.abs())
 

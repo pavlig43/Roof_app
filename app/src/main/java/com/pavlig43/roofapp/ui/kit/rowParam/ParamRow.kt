@@ -11,17 +11,17 @@ import java.math.BigDecimal
 @Suppress("LongParameterList")
 @Composable
 fun ParamRow(
-    modifier: Modifier = Modifier,
     paramTitle: Int,
     unit: Int? = null,
     value: BigDecimal,
     updateParam: (BigDecimal) -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         TextParam(
             paramTitle = paramTitle,
             unit = unit,
-            modifier = Modifier.fillMaxWidth(WIDTH_COLUMN_PERCENT)
+            modifier = Modifier.fillMaxWidth(WIDTH_COLUMN_PERCENT),
         )
         TextFieldBigDecimal(
             value = value,

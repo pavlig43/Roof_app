@@ -27,13 +27,13 @@ fun DrawerNavigation(
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val selectedScreen =
-        currentBackStackEntry?.destination?.route ?: AllDestination.TileLayout.route
+        currentBackStackEntry?.destination?.route ?: AllMenuDestination.TileLayout.route
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
-                    AllDestination.getAllDestination().forEach {
+                    AllMenuDestination.getAllDestination().forEach {
                         DrawerItem(
                             screenDestination = it,
                             selectedScreen = selectedScreen,

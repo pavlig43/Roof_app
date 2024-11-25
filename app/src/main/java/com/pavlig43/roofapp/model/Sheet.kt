@@ -11,7 +11,7 @@ data class Sheet(
     /**
      * Вид покрытия -череица или профиль
      */
-    val profile: RoofMetal = RoofMetal.TILE,
+
     val widthGeneral: SheetParam = SheetParam(SheetParamName.WIDTH_GENERAL, BigDecimal("118")),
     /**
      * Перехлест при раскладке
@@ -41,12 +41,7 @@ data class Sheet(
         }
     }
 
-    /**
-     * Видимая часть листа
-     */
-    val visible: BigDecimal by lazy {
-        widthGeneral.value - overlap.value
-    }
+    val isValid = widthGeneral.value > overlap.value
 }
 
 enum class SheetParamName(
@@ -63,12 +58,15 @@ data class SheetParam(
     val unit: UnitOfMeasurement = UnitOfMeasurement.CM,
 )
 
-fun Sheet.updateSheetParams(sheetParam: SheetParam): Sheet =
-    when (sheetParam.name) {
-        SheetParamName.WIDTH_GENERAL -> this.updateWidthGeneral(sheetParam)
-        SheetParamName.OVERLAP -> this.updateOverlap(sheetParam)
-        SheetParamName.MULTIPLICITY -> this.updateMultiplicity(sheetParam)
-    }
+fun Sheet.updateSheetParams(sheetParam: SheetParam): Sheet {
+    val newSheet =
+        when (sheetParam.name) {
+            SheetParamName.WIDTH_GENERAL -> this.updateWidthGeneral(sheetParam)
+            SheetParamName.OVERLAP -> this.updateOverlap(sheetParam)
+            SheetParamName.MULTIPLICITY -> this.updateMultiplicity(sheetParam)
+        }
+    return if (newSheet.isValid) newSheet else this
+}
 
 private fun Sheet.updateWidthGeneral(newWidthGeneral: SheetParam): Sheet =
     this.copy(
@@ -81,7 +79,3 @@ private fun Sheet.updateMultiplicity(newMultiplicity: SheetParam): Sheet =
     this.copy(
         multiplicity = newMultiplicity,
     )
-
-enum class RoofMetal {
-    TILE,
-}

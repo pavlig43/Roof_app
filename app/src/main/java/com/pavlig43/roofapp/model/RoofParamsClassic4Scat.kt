@@ -10,14 +10,14 @@ import java.math.BigDecimal
  * класс для орределения 4хскатной крыши
  */
 data class RoofParamsClassic4Scat(
-    val width: RoofParam = RoofParam(RoofParamName.WIDTH),
-    val len: RoofParam = RoofParam(RoofParamName.LEN),
+    val width: RoofParam = RoofParam(RoofParamName.WIDTH, value = BigDecimal("1000")),
+    val len: RoofParam = RoofParam(RoofParamName.LEN, value = BigDecimal("1100")),
     // угол наклона листа
     val angle: RoofParam = RoofParam(RoofParamName.ANGLE, unit = UnitOfMeasurement.ANGLE),
     val height: RoofParam = RoofParam(RoofParamName.HEIGHT),
     // Покат
     val pokat: RoofParam = RoofParam(RoofParamName.POKAT),
-    val sheet: Sheet = Sheet(),
+
 ) {
     val yandova: BigDecimal by lazy {
         hypot(width.value.divide(BigDecimal(2)), pokat.value)

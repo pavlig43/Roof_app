@@ -13,32 +13,32 @@ class RightRectangle(listOfBasicsDots: List<OffsetBD>) : CoordinateShape(listOfB
      * максимальный в верхних точках ) для того, чтобы растянуть этот [RightRectangle]
      * по всей высоте фигуры, которую нужно закрасить [RightRectangle]
      */
-    fun replaceX(
-        parentShape: CoordinateShape,
-    ): RightRectangle {
+    fun replaceX(parentShape: CoordinateShape): RightRectangle {
         val intervalY = peakYMin..peakYMax
         val result: MutableList<OffsetBD> = mutableListOf()
 
-        val topIntersect = intervalY.start <= parentShape.peakYRangeMax.endInclusive &&
+        val topIntersect =
+            intervalY.start <= parentShape.peakYRangeMax.endInclusive &&
                 parentShape.peakYRangeMax.start <= intervalY.endInclusive
 
-        val bottomIntersect = intervalY.start <= parentShape.peakYRangeMin.endInclusive &&
+        val bottomIntersect =
+            intervalY.start <= parentShape.peakYRangeMin.endInclusive &&
                 parentShape.peakYRangeMin.start <= intervalY.endInclusive
 
         result.add(
-            if (bottomIntersect) leftBottom.copy(x = peakXMin) else leftBottom
+            if (bottomIntersect) leftBottom.copy(x = parentShape.peakXMin) else leftBottom,
         )
 
         result.add(
-            if (topIntersect) leftTop.copy(x = peakXMax) else leftTop
+            if (topIntersect) leftTop.copy(x = parentShape.peakXMax) else leftTop,
         )
 
         result.add(
-            if (topIntersect) rightTop.copy(x = peakXMax) else rightTop
+            if (topIntersect) rightTop.copy(x = parentShape.peakXMax) else rightTop,
         )
 
         result.add(
-            if (bottomIntersect) rightBottom.copy(x = peakXMin) else rightBottom
+            if (bottomIntersect) rightBottom.copy(x = parentShape.peakXMin) else rightBottom,
         )
 
         return RightRectangle(result)

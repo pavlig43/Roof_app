@@ -30,4 +30,14 @@
     <string name="multiplicity">Кратность</string>
     <string name="send">Отправить</string>
     <string name="description_multiplicity">*Кратность - округление расчетной длины листа в большую сторону. Например при длине листа 243 см и кратности 5 см результат будет 245 см</string>
+    <string name="random_shape">Рандомная фигура</string>
+    <string name="info">Info</string>
+    <string name="open_sheet_params">Open sheet params</string>
+    <string name="add_dot">Add dot</string>
+    <string name="show_result">Show result</string>
+    <string name="overlap_beyond_the_width">Перехлест больше ширины</string>
+    <string name="offsetInX">Оклонение по X</string>
+    <string name="offsetInY">Оклонение по Y</string>
+    <string name="points_are_too_close">"Точки слишком близко на экране "</string>
+    <string name="sheets">ЛИСТЫ:</string>
 </resources>

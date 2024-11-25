@@ -55,8 +55,7 @@ class InterpolationTwoDots {
         assertNotNull(result)
         assertEquals(
             0,
-            BigDecimal("5").compareTo(result?.x)
-
+            BigDecimal("5").compareTo(result?.x),
         )
     }
 
@@ -71,7 +70,7 @@ class InterpolationTwoDots {
         assertNotNull(result)
         assertEquals(
             BigDecimal("1.720"),
-            result?.x
+            result?.x,
         )
         assertEquals(BigDecimal("1.18"), result?.y)
     }

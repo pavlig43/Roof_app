@@ -24,6 +24,10 @@ fun atan(value: BigDecimal): BigDecimal {
     return kotlin.math.atan(value.toDouble()).toBigDecimal()
 }
 
+fun atan2(x: BigDecimal, y: BigDecimal): BigDecimal {
+    return kotlin.math.atan2(x.toDouble(), y.toDouble()).toBigDecimal()
+}
+
 fun toDegrees(valueInRadian: BigDecimal): BigDecimal {
     return Math.toDegrees(valueInRadian.toDouble()).toBigDecimal()
 }
