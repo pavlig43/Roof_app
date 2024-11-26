@@ -10,15 +10,18 @@ import java.math.BigDecimal
 @Composable
 fun TextFieldBigDecimal(
     value: BigDecimal,
-    readOnly: Boolean = false,
     updateParam: (BigDecimal) -> Unit,
     modifier: Modifier = Modifier,
+
 ) {
     TextField(
         value = value.takeIf { it != BigDecimal.ZERO }?.toPlainString() ?: "",
-        readOnly = readOnly,
-        onValueChange = { updateParam(it.toBigDecimalOrNull() ?: BigDecimal.ZERO) },
+
+        onValueChange = { input ->
+            updateParam(input.toBigDecimalOrNull() ?: BigDecimal.ZERO)
+        },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-        modifier = modifier,
+        modifier = modifier
+
     )
 }

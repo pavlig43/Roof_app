@@ -1,6 +1,5 @@
 package com.pavlig43.roofapp.ui.calculationTile4scat
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -170,9 +169,7 @@ private fun RoofParamDropMenu(
         TextFieldBigDecimal(
             value = selectedOption.value,
             updateParam = { newValue ->
-                Log.d("newvalue", newValue.toPlainString())
                 updateRoofParam(selectedOption.copy(value = newValue))
-                Log.d("newvalueparam", selectedOption.copy(value = newValue).toString())
             },
         )
     }

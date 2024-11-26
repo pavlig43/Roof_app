@@ -44,6 +44,7 @@ fun CRUDPointDialog(
                     offsetBD1 = offsetBD1.copy(x = newX)
                     isValid = checkOnProximity(offsetBD1)
                 },
+                canChangeOnNegative = true
             )
             ParamRow(
                 paramTitle = R.string.offsetInY,
@@ -52,6 +53,7 @@ fun CRUDPointDialog(
                     offsetBD1 = offsetBD1.copy(y = newY)
                     isValid = checkOnProximity(offsetBD1)
                 },
+                canChangeOnNegative = true
             )
             if (!isValid) {
                 Text(
