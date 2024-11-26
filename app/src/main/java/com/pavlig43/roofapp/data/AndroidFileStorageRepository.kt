@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 class AndroidFileStorageRepository @Inject constructor(
@@ -80,18 +79,15 @@ class AndroidFileStorageRepository @Inject constructor(
         _listOfFiles.remove(file)
     }
 
-    override suspend fun changeFileName(file: File, fileName: String) {
+    override suspend fun reNameFile(file: File, fileName: String) {
         val saveFile = File(
             context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
             "$fileName.${fileExtension.value}"
         )
         withContext(dispatcher) {
-            FileOutputStream(saveFile).use { outputStream ->
-                file.inputStream().use { inputStream ->
-                    inputStream.copyTo(outputStream)
-                }
+            if (file.renameTo(saveFile)) {
+                _listOfFiles.add(saveFile)
             }
-            _listOfFiles.add(saveFile)
         }
     }
 

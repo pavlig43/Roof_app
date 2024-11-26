@@ -15,7 +15,7 @@ interface FileStorageRepository {
     ): String
 
     suspend fun delete(file: File)
-    suspend fun changeFileName(file: File, fileName: String)
+    suspend fun reNameFile(file: File, fileName: String)
     fun loadFile(fileName: String): Flow<File>
     fun checkSaveName(newName: String): Flow<Boolean>
     fun getListOfFile(): List<File>

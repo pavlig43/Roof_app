@@ -63,7 +63,7 @@ class PDFImageViewModel @Inject constructor(
 
     fun saveFile() {
         viewModelScope.launch {
-            repository.changeFileName(
+            repository.reNameFile(
                 file.value,
                 _saveFileName.value
             )
