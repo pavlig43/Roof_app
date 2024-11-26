@@ -1,0 +1,9 @@
+name: Check code detect
+run-name: Check code with lint
+on: [ push ]
+jobs:
+  Detect:
+    runs-on: ubuntu-latest
+    steps:
+      - run: .gradlew detekt
+

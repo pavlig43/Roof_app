@@ -70,8 +70,10 @@ class RandomShapeViewModel
     }
 
     fun moveTOUpdateDialog(index: Int) {
-        val dot = listOffset[index]
-        _randomShapeState.update { RandomShapeState.UpdatePointDialog(index, dot) }
+        if (index != 0) {
+            val dot = listOffset[index]
+            _randomShapeState.update { RandomShapeState.UpdatePointDialog(index, dot) }
+        }
     }
 
     fun moveToConstructor() {
