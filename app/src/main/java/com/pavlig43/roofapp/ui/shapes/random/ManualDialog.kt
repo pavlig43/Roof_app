@@ -52,18 +52,14 @@ private fun ManualText() {
             Text(text = stringResource(id = text), color = MaterialTheme.colorScheme.onBackground)
             Image(painterResource(image), "dot_manual")
         }
-
-
     }
-
 }
 
-
+@Suppress("[UnusedPrivateMember")
 @Preview
 @Composable
 private fun ManualDialogPreview() {
     Roof_appTheme {
         ManualDialog({})
     }
-
 }
