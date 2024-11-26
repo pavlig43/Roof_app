@@ -5,5 +5,5 @@ jobs:
   Detect:
     runs-on: ubuntu-latest
     steps:
-      - run: .gradlew detekt
+      - run: .\gradlew detekt
 
