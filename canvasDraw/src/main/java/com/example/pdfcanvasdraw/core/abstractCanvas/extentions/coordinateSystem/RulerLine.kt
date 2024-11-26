@@ -22,7 +22,6 @@ fun CanvasInterface.rulerLine(
         style = rulerParam.style
     }
 
-
     drawLine(
         startPointFLine.x,
         startPointFLine.y,
@@ -30,7 +29,6 @@ fun CanvasInterface.rulerLine(
         endPointFLine.y,
         paint,
     )
-
 
     val axis = if (forXRuler) "X" else "Y"
 
