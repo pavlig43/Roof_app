@@ -5,6 +5,5 @@ jobs:
   Detect:
     runs-on: ubuntu-latest
     steps:
-      - run: ./gradlew detekt
-        working-directory: ./Roof_app
+      - run: .gradlew detekt
 
