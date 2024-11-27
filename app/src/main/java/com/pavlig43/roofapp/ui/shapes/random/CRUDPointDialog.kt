@@ -34,7 +34,7 @@ fun CRUDPointDialog(
     modifier: Modifier = Modifier,
 ) {
     var offsetBD1 by remember { mutableStateOf(offsetBD) }
-    var isValid by remember { mutableStateOf(true) }
+    var proximity by remember { mutableStateOf(true) }
     Dialog(onDismissRequest) {
         Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
             ParamRow(
@@ -42,7 +42,7 @@ fun CRUDPointDialog(
                 value = offsetBD1.x,
                 updateParam = { newX ->
                     offsetBD1 = offsetBD1.copy(x = newX)
-                    isValid = checkOnProximity(offsetBD1)
+                    proximity = checkOnProximity(offsetBD1)
                 },
                 canChangeOnNegative = true
             )
@@ -51,11 +51,11 @@ fun CRUDPointDialog(
                 value = offsetBD1.y,
                 updateParam = { newY ->
                     offsetBD1 = offsetBD1.copy(y = newY)
-                    isValid = checkOnProximity(offsetBD1)
+                    proximity = checkOnProximity(offsetBD1)
                 },
                 canChangeOnNegative = true
             )
-            if (!isValid) {
+            if (proximity) {
                 Text(
                     stringResource(R.string.points_are_too_close),
                     color = MaterialTheme.colorScheme.error,
@@ -69,7 +69,7 @@ fun CRUDPointDialog(
                     onDismissRequest()
                 },
                 onDismissRequest = onDismissRequest,
-                isValid = isValid,
+                isValid = proximity,
             )
         }
     }

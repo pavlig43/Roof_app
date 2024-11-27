@@ -19,6 +19,8 @@ class ConstructorShape(
     private val shapeOnCanvas: ShapeOnCanvas,
     override val pageConfig: PageConfig,
     val onClickDot: (Pair<Int, PointF>) -> Unit = { _ -> },
+    val provideRadiusDot: (Float) -> Unit = { _ -> }
+
 ) : PageRenderer() {
     private val startPointF = pageConfig.startPointF
     private val countPxInOneCM =
@@ -29,6 +31,11 @@ class ConstructorShape(
             val centerY = dot.y * countPxInOneCM.y + startPointF.y
             PointF(centerX, centerY)
         }
+
+    init {
+
+        provideRadiusDot(RADIUS_DOT)
+    }
 
     override suspend fun CanvasInterface.drawContent() {
         Log.d("startRenderer", shapeOnCanvas.toString())

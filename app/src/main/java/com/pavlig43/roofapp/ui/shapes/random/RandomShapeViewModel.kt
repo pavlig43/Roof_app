@@ -50,8 +50,14 @@ class RandomShapeViewModel
         CoordinateShape(it, true).isConvex
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    private val dotRadius = MutableStateFlow(0f)
+
+    fun getDotRadius(newDotRadius: Float) {
+        dotRadius.update { newDotRadius }
+    }
+
     fun checkOnProximity(offsetBD: OffsetBD): Boolean {
-        return true
+        return coordinateShape.value.checkOnProximity(offsetBD, dotRadius.value)
     }
 
     private val _sheet = MutableStateFlow(Sheet())

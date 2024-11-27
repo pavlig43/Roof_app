@@ -47,9 +47,9 @@ class OffsetBD(
 
      */
 
-    fun getDistance(): BigDecimal = hypot(x, y)
+    fun getSide(): BigDecimal = hypot(x, y)
 
-    fun getSide(otherDot: OffsetBD): BigDecimal {
+    fun getDistance(otherDot: OffsetBD): BigDecimal {
         val dx = otherDot.x - this.x
         val dy = otherDot.y - this.y
         return hypot(dx, dy)
@@ -85,16 +85,6 @@ class OffsetBD(
                 y.divide(operand, scale, RoundingMode.HALF_UP),
             )
         }
-
-    fun changeOffset(
-        oneUnitInHeightYtPx: BigDecimal = BigDecimal.ONE,
-        oneUnitInWidthXPx: BigDecimal = BigDecimal.ONE,
-        paddingXOffset: BigDecimal = BigDecimal.ZERO,
-        paddingYOffset: BigDecimal = BigDecimal.ZERO,
-    ) = OffsetBD(
-        x * oneUnitInWidthXPx + paddingXOffset,
-        y * oneUnitInHeightYtPx + paddingYOffset,
-    )
 
     override fun toString() = "Offset($x, $y)"
 

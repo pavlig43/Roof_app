@@ -180,5 +180,12 @@ open class CoordinateShape(
 
     val isConvex: Boolean = checkOnConvex()
 
+    fun checkOnProximity(
+        offsetBD: OffsetBD,
+        radiusOfDot: Float,
+    ): Boolean {
+        return polygon.any { it.getDistance(offsetBD).toFloat() < radiusOfDot * 2 }
+    }
+
     override fun toString(): String = polygon.toString()
 }

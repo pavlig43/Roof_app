@@ -23,7 +23,6 @@ fun TextFieldBigDecimal(
     value: BigDecimal,
     updateParam: (BigDecimal) -> Unit,
     modifier: Modifier = Modifier,
-
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -34,9 +33,7 @@ fun TextFieldBigDecimal(
         value = value.takeIf { it != BigDecimal.ZERO }?.toPlainString() ?: "",
 
         onValueChange = { input ->
-            if (input.toIntOrNull() != null) {
-                updateParam(input.toBigDecimalOrNull() ?: BigDecimal.ZERO)
-            }
+            updateParam(input.toBigDecimalOrNull() ?: BigDecimal.ZERO)
         },
         placeholder = { Text(placeholder) },
         interactionSource = interactionSource,

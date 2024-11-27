@@ -64,6 +64,7 @@ fun RandomShapep(
                 ConstructorRandomShape(
                     coordinateShape,
                     openUpdateDialog = viewModel::moveTOUpdateDialog,
+                    provideDotRadius = viewModel::getDotRadius
                 )
 
             is RandomShapeState.ManualDialog ->
@@ -110,6 +111,7 @@ fun RandomShapep(
 private fun ConstructorRandomShape(
     coordinateShape: CoordinateShape,
     openUpdateDialog: (Int) -> Unit,
+    provideDotRadius: (Float) -> Unit,
 ) {
     val factory =
         remember(coordinateShape) {
@@ -119,9 +121,11 @@ private fun ConstructorRandomShape(
                     coordinateShape.toShapeCanvas(),
                     pageConfig,
                     onClickDot = { (ind, _) -> openUpdateDialog(ind) },
+                    provideRadiusDot = provideDotRadius
                 )
             }
         }
+
     ComposeBuild(factory)
 }
 

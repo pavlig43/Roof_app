@@ -21,7 +21,10 @@ private const val PADDING_PERCENT_X = 0.1F
 private const val PADDING_PERCENT_Y = 0.1F
 
 @Composable
-fun ComposeBuild(pageRendererFactory: (PageConfig) -> PageRenderer) {
+fun ComposeBuild(
+    pageRendererFactory: (PageConfig) -> PageRenderer,
+
+) {
     var pageConfig by remember {
         mutableStateOf(
             PageConfig(
