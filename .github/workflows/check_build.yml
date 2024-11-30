@@ -11,7 +11,7 @@ env:
   RELEASE_SIGN_KEY_PASSWORD: ${{secrets.RELEASE_SIGN_KEY_PASSWORD}}
 jobs:
   Build_apk:
-  
+
     name: Build release artifacts
     runs-on: ubuntu-20.04
     steps:
@@ -20,7 +20,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
-          
+
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
@@ -28,13 +28,13 @@ jobs:
         with:
           cache-disabled: true
 
-          
+
       - name: Checkout keystore repo
         uses: actions/checkout@v2
         with:
           repository: ${{ secrets.KEYSTORE_REPOSITORY}}
           token: ${{ secrets.KEYSTORE_TOKEN }}
-          path: ${{secrets.KEYSTORE_REPOSITORY}}
+          path: app/keystore
 
       - name: build release artifacts
         run:
