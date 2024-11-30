@@ -36,6 +36,9 @@ jobs:
           token: ${{ secrets.KEYSTORE_TOKEN }}
           path: keystore
 
+      - name: Create keystore file
+        run: echo "${{ secrets.KEYSTORE_FILE }}"
+        
       - name: build release artifacts
         run:
           ./gradlew assembleRelease --stacktrace
