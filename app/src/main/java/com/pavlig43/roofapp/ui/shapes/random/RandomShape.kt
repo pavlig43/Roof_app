@@ -1,5 +1,6 @@
 package com.pavlig43.roofapp.ui.shapes.random
 
+import android.graphics.PointF
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mathbigdecimal.shapes.CoordinateShape
+import com.example.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.example.pdfcanvasdraw.core.pageKit.abstractPage.PageConfig
 import com.example.pdfcanvasdraw.core.pageKit.implementation.shape.ConstructorShape
 import com.example.pdfcanvasdraw.implementationCore.compose.ComposeBuild
@@ -64,7 +66,7 @@ fun RandomShapep(
                 ConstructorRandomShape(
                     coordinateShape,
                     openUpdateDialog = viewModel::moveTOUpdateDialog,
-                    provideDotRadius = viewModel::getDotRadius
+                    provideShapeOnRealCanvas = viewModel::getShapeOnRealCanvas
                 )
 
             is RandomShapeState.ManualDialog ->
@@ -111,7 +113,7 @@ fun RandomShapep(
 private fun ConstructorRandomShape(
     coordinateShape: CoordinateShape,
     openUpdateDialog: (Int) -> Unit,
-    provideDotRadius: (Float) -> Unit,
+    provideShapeOnRealCanvas: (CountPxInOneCM, PointF, Float) -> Unit
 ) {
     val factory =
         remember(coordinateShape) {
@@ -121,7 +123,7 @@ private fun ConstructorRandomShape(
                     coordinateShape.toShapeCanvas(),
                     pageConfig,
                     onClickDot = { (ind, _) -> openUpdateDialog(ind) },
-                    provideRadiusDot = provideDotRadius
+                    provideShapeOnRealCanvas = provideShapeOnRealCanvas
                 )
             }
         }

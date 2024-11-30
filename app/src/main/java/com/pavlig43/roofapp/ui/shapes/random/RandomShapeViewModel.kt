@@ -1,11 +1,13 @@
 package com.pavlig43.roofapp.ui.shapes.random
 
+import android.graphics.PointF
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mathbigdecimal.OffsetBD
 import com.example.mathbigdecimal.shapes.CoordinateShape
+import com.example.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
 import com.pavlig43.roofapp.domain.TileReportUseCase
@@ -50,14 +52,36 @@ class RandomShapeViewModel
         CoordinateShape(it, true).isConvex
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private val dotRadius = MutableStateFlow(0f)
+    private val paramsOnRealCanvas = MutableStateFlow(ParamsOnRealCanvas())
 
-    fun getDotRadius(newDotRadius: Float) {
-        dotRadius.update { newDotRadius }
+    fun getShapeOnRealCanvas(
+        countPxInOneCM: CountPxInOneCM,
+        startPoint: PointF,
+        radiusDot: Float
+    ) {
+        paramsOnRealCanvas.update {
+            it.copy(
+                countPxInOneCM = countPxInOneCM,
+                startPoint = startPoint,
+                radiusDot = radiusDot
+            )
+        }
     }
 
-    fun checkOnProximity(offsetBD: OffsetBD): Boolean {
-        return coordinateShape.value.checkOnProximity(offsetBD, dotRadius.value)
+    fun checkOnProximity(newOffsetBD: OffsetBD): Boolean {
+        return coordinateShape.value.checkOnProximity(
+            newOffsetBD = newOffsetBD,
+            countPxInOneCMX = paramsOnRealCanvas.value.countPxInOneCM.x.toBigDecimal(),
+            countPxInOneCMY = paramsOnRealCanvas.value.countPxInOneCM.y.toBigDecimal(),
+            startPoint = paramsOnRealCanvas.value.startPoint.let {
+                OffsetBD(
+                    it.x.toBigDecimal(),
+                    it.y.toBigDecimal()
+                )
+            },
+            radiusOfDot = paramsOnRealCanvas.value.radiusDot
+
+        )
     }
 
     private val _sheet = MutableStateFlow(Sheet())
@@ -122,3 +146,9 @@ sealed interface RandomShapeState {
 
     data object SheetDialog : RandomShapeState
 }
+
+data class ParamsOnRealCanvas(
+    val countPxInOneCM: CountPxInOneCM = CountPxInOneCM(0F, 0F),
+    val startPoint: PointF = PointF(0F, 0F),
+    val radiusDot: Float = 0F
+)

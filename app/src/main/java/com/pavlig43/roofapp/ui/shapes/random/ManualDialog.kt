@@ -55,7 +55,7 @@ private fun ManualText() {
     }
 }
 
-@Suppress("[UnusedPrivateMember")
+@Suppress("UnusedPrivateMember")
 @Preview
 @Composable
 private fun ManualDialogPreview() {

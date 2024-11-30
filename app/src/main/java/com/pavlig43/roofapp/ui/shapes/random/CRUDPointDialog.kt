@@ -69,7 +69,7 @@ fun CRUDPointDialog(
                     onDismissRequest()
                 },
                 onDismissRequest = onDismissRequest,
-                isValid = proximity,
+                isValid = offsetBD == offsetBD1 || !proximity,
             )
         }
     }
@@ -117,11 +117,10 @@ private fun AddDialogPrev() {
                 offsetBD = OffsetBD.Zero,
                 updateOrAddPoint = { _ -> },
                 checkOnProximity = { _ -> true },
-                modifier =
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .rotate(com.example.pdfcanvasdraw.RIGHT_DEGREE),
-                deletePoint = TODO(),
+                deletePoint = {},
             )
         }
     }

@@ -11,6 +11,7 @@ import com.example.pdfcanvasdraw.core.abstractCanvas.extentions.coordinateSystem
 import com.example.pdfcanvasdraw.core.abstractCanvas.extentions.coordinateSystem.TickParam
 import com.example.pdfcanvasdraw.core.abstractCanvas.extentions.drawShape.ShapeOnCanvas
 import com.example.pdfcanvasdraw.core.abstractCanvas.extentions.drawShape.drawShapeWithRuler
+import com.example.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.example.pdfcanvasdraw.core.pageKit.abstractPage.PageConfig
 import com.example.pdfcanvasdraw.core.pageKit.abstractPage.PageRenderer
 import kotlin.math.hypot
@@ -19,7 +20,7 @@ class ConstructorShape(
     private val shapeOnCanvas: ShapeOnCanvas,
     override val pageConfig: PageConfig,
     val onClickDot: (Pair<Int, PointF>) -> Unit = { _ -> },
-    val provideRadiusDot: (Float) -> Unit = { _ -> }
+    provideShapeOnRealCanvas: (CountPxInOneCM, PointF, Float) -> Unit = { _, _, _ -> }
 
 ) : PageRenderer() {
     private val startPointF = pageConfig.startPointF
@@ -33,8 +34,11 @@ class ConstructorShape(
         }
 
     init {
-
-        provideRadiusDot(RADIUS_DOT)
+        provideShapeOnRealCanvas(
+            countPxInOneCM,
+            startPointF,
+            RADIUS_DOT
+        )
     }
 
     override suspend fun CanvasInterface.drawContent() {

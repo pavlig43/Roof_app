@@ -181,10 +181,25 @@ open class CoordinateShape(
     val isConvex: Boolean = checkOnConvex()
 
     fun checkOnProximity(
-        offsetBD: OffsetBD,
+        newOffsetBD: OffsetBD,
+        countPxInOneCMX: BigDecimal,
+        countPxInOneCMY: BigDecimal,
+        startPoint: OffsetBD,
         radiusOfDot: Float,
     ): Boolean {
-        return polygon.any { it.getDistance(offsetBD).toFloat() < radiusOfDot * 2 }
+        val listOfDotsOnRealCanvas =
+            this.polygon.map { dot ->
+                val centerX = dot.x * countPxInOneCMX + startPoint.x
+                val centerY = dot.y * countPxInOneCMY + startPoint.y
+                OffsetBD(centerX, centerY)
+            }
+        val dotOnRealCanvas = OffsetBD(
+            newOffsetBD.x * countPxInOneCMX + startPoint.x,
+            newOffsetBD.y * countPxInOneCMY + startPoint.y
+        )
+        return listOfDotsOnRealCanvas.any {
+            it.getDistance(dotOnRealCanvas).toFloat() < radiusOfDot * 2
+        }
     }
 
     override fun toString(): String = polygon.toString()
