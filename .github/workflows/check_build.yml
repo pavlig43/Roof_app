@@ -11,7 +11,7 @@ env:
   RELEASE_SIGN_KEY_PASSWORD: ${{secrets.RELEASE_SIGN_KEY_PASSWORD}}
 jobs:
   Build_apk:
-    if: startsWith(github.head_ref, 'release/') == true
+  
     name: Build release artifacts
     runs-on: ubuntu-20.04
     steps:
