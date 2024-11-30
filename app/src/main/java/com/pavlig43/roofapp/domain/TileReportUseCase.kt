@@ -1,9 +1,9 @@
 package com.pavlig43.roofapp.domain
 
-import com.example.mathbigdecimal.shapes.CoordinateShape
-import com.example.pdfcanvasdraw.core.pageKit.implementation.drawText.DrawText
-import com.example.pdfcanvasdraw.core.pageKit.implementation.shape.ShapeWithRulerAndRectangleRenderer
-import com.example.pdfcanvasdraw.implementationCore.pdf.DocBuilder
+import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.drawText.DrawText
+import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.shape.ShapeWithRulerAndRectangleRenderer
+import com.pavlig43.pdfcanvasdraw.implementationCore.pdf.DocBuilder
 import com.pavlig43.roofapp.SHEETS
 import com.pavlig43.roofapp.mappers.coordinateShape.toShapeCanvas
 import com.pavlig43.roofapp.model.Sheet

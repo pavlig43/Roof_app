@@ -1,8 +1,8 @@
 package com.pavlig43.roofapp.model
 
-import com.example.mathbigdecimal.shapes.RightTriangle
-import com.example.mathbigdecimal.shapes.Trapezoid
-import com.example.mathbigdecimal.utils.hypot
+import com.pavlig43.mathbigdecimal.shapes.RightTriangle
+import com.pavlig43.mathbigdecimal.shapes.Trapezoid
+import com.pavlig43.mathbigdecimal.utils.hypot
 import com.pavlig43.roof_app.R
 import java.math.BigDecimal
 

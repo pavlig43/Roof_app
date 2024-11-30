@@ -23,11 +23,11 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.mathbigdecimal.shapes.CoordinateShape
-import com.example.pdfcanvasdraw.core.metrics.CountPxInOneCM
-import com.example.pdfcanvasdraw.core.pageKit.abstractPage.PageConfig
-import com.example.pdfcanvasdraw.core.pageKit.implementation.shape.ConstructorShape
-import com.example.pdfcanvasdraw.implementationCore.compose.ComposeBuild
+import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.pdfcanvasdraw.core.metrics.CountPxInOneCM
+import com.pavlig43.pdfcanvasdraw.core.pageKit.abstractPage.PageConfig
+import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.shape.ConstructorShape
+import com.pavlig43.pdfcanvasdraw.implementationCore.compose.ComposeBuild
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.mappers.coordinateShape.toShapeCanvas
 import com.pavlig43.roofapp.ui.kit.CalculateSheetParamsDialog

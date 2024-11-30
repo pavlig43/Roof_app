@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
-import com.example.mathbigdecimal.OffsetBD
+import com.pavlig43.mathbigdecimal.OffsetBD
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
@@ -119,7 +119,7 @@ private fun AddDialogPrev() {
                 checkOnProximity = { _ -> true },
                 modifier = Modifier
                     .fillMaxSize()
-                    .rotate(com.example.pdfcanvasdraw.RIGHT_DEGREE),
+                    .rotate(com.pavlig43.pdfcanvasdraw.RIGHT_DEGREE),
                 deletePoint = {},
             )
         }

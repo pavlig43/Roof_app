@@ -1,9 +1,9 @@
 package com.pavlig43.roofapp.data.docBuilder
 
 import android.graphics.pdf.PdfDocument
-import com.example.pdfcanvasdraw.core.pageKit.abstractPage.PageRenderer
-import com.example.pdfcanvasdraw.implementationCore.pdf.DocBuilder
-import com.example.pdfcanvasdraw.implementationCore.pdf.pdfAndroid.PdfAndroidCanvas
+import com.pavlig43.pdfcanvasdraw.core.pageKit.abstractPage.PageRenderer
+import com.pavlig43.pdfcanvasdraw.implementationCore.pdf.DocBuilder
+import com.pavlig43.pdfcanvasdraw.implementationCore.pdf.pdfAndroid.PdfAndroidCanvas
 import com.pavlig43.roofapp.data.AndroidFileStorageRepository
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

@@ -5,9 +5,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mathbigdecimal.OffsetBD
-import com.example.mathbigdecimal.shapes.CoordinateShape
-import com.example.pdfcanvasdraw.core.metrics.CountPxInOneCM
+import com.pavlig43.mathbigdecimal.OffsetBD
+import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
 import com.pavlig43.roofapp.domain.TileReportUseCase

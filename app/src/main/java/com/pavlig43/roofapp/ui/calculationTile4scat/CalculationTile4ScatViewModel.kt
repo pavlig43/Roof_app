@@ -3,9 +3,9 @@ package com.pavlig43.roofapp.ui.calculationTile4scat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mathbigdecimal.OffsetBD
-import com.example.mathbigdecimal.shapes.CoordinateShape
-import com.example.mathbigdecimal.shapes.Triangle
+import com.pavlig43.mathbigdecimal.OffsetBD
+import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.Triangle
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
 import com.pavlig43.roofapp.domain.TileReportUseCase
