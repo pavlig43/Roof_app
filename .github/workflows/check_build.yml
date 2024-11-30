@@ -34,7 +34,7 @@ jobs:
         with:
           repository: ${{ secrets.KEYSTORE_REPOSITORY}}
           token: ${{ secrets.KEYSTORE_TOKEN }}
-          path: app/keystore
+          path: keystore
 
       - name: build release artifacts
         run:
