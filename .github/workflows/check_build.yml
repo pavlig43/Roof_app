@@ -10,7 +10,6 @@ env:
   RELEASE_SIGN_KEY_ALIAS: ${{secrets.RELEASE_SIGN_KEY_ALIAS}}
   RELEASE_SIGN_KEY_PASSWORD: ${{secrets.RELEASE_SIGN_KEY_PASSWORD}}
 jobs:
-
   Build_apk:
     if: startsWith(github.head_ref, 'release/') == true
     name: Build release artifacts
