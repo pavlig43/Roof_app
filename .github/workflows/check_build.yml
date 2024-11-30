@@ -37,8 +37,8 @@ jobs:
           path: keystore
 
       - name: Create keystore file
-        run: echo "${{ secrets.KEYSTORE_FILE }}"
-        
+        run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode "${{ secrets.KEYSTORE_FILE }}"
+
       - name: build release artifacts
         run:
           ./gradlew assembleRelease --stacktrace
