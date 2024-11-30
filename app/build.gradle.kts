@@ -1,8 +1,10 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.android.application)
     id("com.google.devtools.ksp")
-    kotlin("plugin.serialization")
     id("com.google.dagger.hilt.android")
     id("de.mannodermaus.android-junit5")
 }
@@ -22,11 +24,37 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        resourceConfigurations += setOf("ru")
+        ndk {
+            //noinspection ChromeOsAbiSupport
+            abiFilters += setOf("armeabi-v7a", "arm64-v8a")
+        }
+    }
+    signingConfigs {
+        create("release") {
+            val keyStoreProperties = Properties()
+            val keyStorePropertiesFile = File("keystore/keystore_config")
+
+            if (keyStorePropertiesFile.exists()) {
+                keyStoreProperties.load(FileInputStream(keyStorePropertiesFile))
+                keyStorePropertiesFile.inputStream().use { keyStoreProperties.load(it) }
+                storeFile = File(rootDir, keyStoreProperties["storeFile"] as String)
+                storePassword = keyStoreProperties["storePassword"] as String
+                keyAlias = keyStoreProperties["keyAlias"] as String
+                keyPassword = keyStoreProperties["keyPassword"] as String
+            } else {
+                storeFile = File(System.getenv("KEYSTORE_FILE") as String)
+                storePassword = System.getenv("KEYSTORE_PASSWORD") as String
+                keyAlias = System.getenv("RELEASE_SIGN_KEY_ALIAS") as String
+                keyPassword = System.getenv("RELEASE_SIGN_KEY_PASSWORD") as String
+            }
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            signingConfig = signingConfigs["release"]
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -50,6 +78,13 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/kotlin/**"
+            excludes += "META-INF/androidx.*.version"
+            excludes += "META-INF/com.google.*.version"
+            excludes += "META-INF/kotlinx_*.version"
+            excludes += "kotlin-tooling-metadata.json"
+            excludes += "DebugProbesKt.bin"
+            excludes += "META-INF/com/android/build/gradle/*"
         }
     }
 }
@@ -77,9 +112,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.work.runtime)
-
-    implementation(libs.coil.compose)
-
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
     androidTestImplementation(libs.androidx.espresso.core)

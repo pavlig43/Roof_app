@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.pdfcanvasdraw"
+    namespace = "com.pavlig43.pdfcanvasdraw"
     compileSdk = 34
 
     defaultConfig {

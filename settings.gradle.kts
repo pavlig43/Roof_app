@@ -26,7 +26,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Roof_app"
+rootProject.name = "roofapp"
 include(":app")
 include(":mathBigDecimal")
 include(":canvasDraw")
