@@ -37,10 +37,7 @@ jobs:
           token: ${{ secrets.KEYSTORE_TOKEN }}
           path: keystore
 
-      - name: List contents of the 'keystore' directory
-        run: |
-          echo "Listing contents of the 'keystore' directory:"
-          ls -l keystore   
+
 
 
       - name: build release artifacts
