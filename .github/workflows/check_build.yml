@@ -1,6 +1,11 @@
 name: Check code detect
 run-name: Check code with lint
 on: [ push ]
+env:
+  ROOF_APP_KEYSTORE: ${{secrets.ROOF_APP_KEYSTORE}}
+  KEYSTORE_PASSWORD: ${{secrets.KEYSTORE_PASSWORD}}
+  RELEASE_SIGN_KEY_ALIAS: ${{secrets.RELEASE_SIGN_KEY_ALIAS}}
+  RELEASE_SIGN_KEY_PASSWORD: ${{secrets.RELEASE_SIGN_KEY_PASSWORD}}
 
 jobs:
   Linters:
