@@ -46,6 +46,9 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Create keystore directory
+        run: mkdir -p ${{ github.workspace }}/app/keystore
+
       - name: Decode keystore
         run: echo "$ROOF_APP_KEYSTORE" | base64 --decode > ${{ github.workspace }}/app/keystore/roofapp.keystore
 
