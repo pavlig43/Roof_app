@@ -39,11 +39,11 @@ jobs:
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
-        
+
       - name: Print full build.gradle.kts file
         run: |
           echo "Printing full build.gradle.kts content:"
-          cat ./app/build.gradle.kts
+          cat /home/runner/work/Roof_app/Roof_app/app/build.gradle.kts
 
       # Run Build Project
       - name: Build gradle project
