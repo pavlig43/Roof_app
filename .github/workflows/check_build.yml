@@ -39,8 +39,8 @@ jobs:
 
       - name: build release artifacts
         run: |
-          cd..
-          cd..
+          cd ..
+          cd ..
           ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
           ./gradlew test
           ./gradlew assembleRelease
