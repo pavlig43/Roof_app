@@ -55,8 +55,6 @@ jobs:
 
       - name: Print full build.gradle.kts file
         run: |
-          echo "Checking environment variables..."
-          
           if [ -z "$KEYSTORE_FILE" ]; then
             echo "KEYSTORE_FILE is not set or is empty"
           fi
