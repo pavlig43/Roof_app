@@ -38,6 +38,7 @@ jobs:
 
 
       - name: build release artifacts
+        shell: bash
         run: |
           cd ..
           cd ..
