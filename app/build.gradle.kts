@@ -44,7 +44,7 @@ android {
                 keyAlias = keyStoreProperties["keyAlias"] as String
                 keyPassword = keyStoreProperties["keyPassword"] as String
             } else {
-                storeFile = File("keystore/roofapp-keystore")
+                storeFile = File("${projectDir}/app/keystore/roofapp.keystore")
                 storePassword = System.getenv("KEYSTORE_PASSWORD") as String
                 keyAlias = System.getenv("RELEASE_SIGN_KEY_ALIAS") as String
                 keyPassword = System.getenv("RELEASE_SIGN_KEY_PASSWORD") as String
