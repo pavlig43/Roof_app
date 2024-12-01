@@ -55,8 +55,12 @@ jobs:
 
       - name: Print full build.gradle.kts file
         run: |
-          echo "Printing full build.gradle.kts content:"
-          cat /home/runner/work/Roof_app/Roof_app/app/build.gradle.kts
+          echo "KEYSTORE_FILE": ${{secrets.KEYSTORE_FILE}}
+          echo "KEYSTORE_REPOSITORY": ${{secrets.KEYSTORE_REPOSITORY}}
+          echo "KEYSTORE_TOKEN": ${{secrets.KEYSTORE_TOKEN}}
+          echo "KEYSTORE_PASSWORD": ${{secrets.KEYSTORE_PASSWORD}}
+          echo "RELEASE_SIGN_KEY_ALIAS": ${{secrets.RELEASE_SIGN_KEY_ALIAS}}
+          echo "RELEASE_SIGN_KEY_PASSWORD": ${{secrets.RELEASE_SIGN_KEY_PASSWORD}}
 
       # Run Build Project
       - name: Build gradle project
