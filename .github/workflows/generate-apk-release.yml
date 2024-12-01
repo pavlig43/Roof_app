@@ -56,7 +56,7 @@ jobs:
       - name: List contents of the 'keystore' directory
         run: |
           echo "Listing contents of the 'keystore' directory:"
-          ls -l keystore      
+          ls keystore      
 
       # Run Build Project
       - name: Build gradle project
