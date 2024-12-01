@@ -35,6 +35,7 @@ android {
             val keyStoreProperties = Properties()
             val keyStorePropertiesFile = File("keystore/keystore_config")
 
+
             if (keyStorePropertiesFile.exists()) {
                 keyStoreProperties.load(FileInputStream(keyStorePropertiesFile))
                 keyStorePropertiesFile.inputStream().use { keyStoreProperties.load(it) }
