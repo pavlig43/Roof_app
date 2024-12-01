@@ -22,13 +22,10 @@ jobs:
         with:
           cache-disabled: true
 
-          
-      - name: Print 48th line of build.gradle.kts
-        run: sed -n '48p' /home/runner/work/Roof_app/Roof_app/app/build.gradle.kts
 
       - name: Detekt
         shell: bash
-        run: ./gradlew detekt
+        run: ./gradlew detekt --stacktrace
 
       - name: Publish Checkstyle Report
         # You may pin to the exact commit or the version.
