@@ -4,6 +4,12 @@ on: [ push ]
 env:
   # The name of the main module repository
   main_project_module: app
+  KEYSTORE_FILE: ${{secrets.KEYSTORE_FILE}}
+  KEYSTORE_REPOSITORY: ${{secrets.KEYSTORE_REPOSITORY}}
+  KEYSTORE_TOKEN: ${{secrets.KEYSTORE_TOKEN}}
+  KEYSTORE_PASSWORD: ${{secrets.KEYSTORE_PASSWORD}}
+  RELEASE_SIGN_KEY_ALIAS: ${{secrets.RELEASE_SIGN_KEY_ALIAS}}
+  RELEASE_SIGN_KEY_PASSWORD: ${{secrets.RELEASE_SIGN_KEY_PASSWORD}}
 
 #on:
 #
@@ -39,6 +45,13 @@ jobs:
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
+
+      - name: Checkout keystore repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ secrets.KEYSTORE_REPOSITORY}}
+          token: ${{ secrets.KEYSTORE_TOKEN }}
+          path: keystore
 
       - name: Print full build.gradle.kts file
         run: |
