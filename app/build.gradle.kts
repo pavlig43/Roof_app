@@ -35,7 +35,6 @@ android {
             val keyStoreProperties = Properties()
             val keyStorePropertiesFile = File("keystore/keystore_config")
 
-
             if (keyStorePropertiesFile.exists()) {
                 keyStoreProperties.load(FileInputStream(keyStorePropertiesFile))
                 keyStorePropertiesFile.inputStream().use { keyStoreProperties.load(it) }
@@ -44,7 +43,7 @@ android {
                 keyAlias = keyStoreProperties["keyAlias"] as String
                 keyPassword = keyStoreProperties["keyPassword"] as String
             } else {
-                storeFile = File("${rootDir}/keystore/roofapp.keystore")
+                storeFile = File("$rootDir/keystore/roofapp.keystore")
                 storePassword = System.getenv("KEYSTORE_PASSWORD") as String
                 keyAlias = System.getenv("RELEASE_SIGN_KEY_ALIAS") as String
                 keyPassword = System.getenv("RELEASE_SIGN_KEY_PASSWORD") as String
