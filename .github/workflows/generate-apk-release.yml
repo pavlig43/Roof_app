@@ -55,12 +55,31 @@ jobs:
 
       - name: Print full build.gradle.kts file
         run: |
-          echo "KEYSTORE_FILE": ${{secrets.KEYSTORE_FILE}}
-          echo "KEYSTORE_REPOSITORY": ${{secrets.KEYSTORE_REPOSITORY}}
-          echo "KEYSTORE_TOKEN": ${{secrets.KEYSTORE_TOKEN}}
-          echo "KEYSTORE_PASSWORD": ${{secrets.KEYSTORE_PASSWORD}}
-          echo "RELEASE_SIGN_KEY_ALIAS": ${{secrets.RELEASE_SIGN_KEY_ALIAS}}
-          echo "RELEASE_SIGN_KEY_PASSWORD": ${{secrets.RELEASE_SIGN_KEY_PASSWORD}}
+          echo "Checking environment variables..."
+          
+          if [ -z "$KEYSTORE_FILE" ]; then
+          echo "KEYSTORE_FILE is not set or is empty"
+          fi
+          
+          if [ -z "$KEYSTORE_REPOSITORY" ]; then
+          echo "KEYSTORE_REPOSITORY is not set or is empty"
+          fi
+          
+          if [ -z "$KEYSTORE_TOKEN" ]; then
+          echo "KEYSTORE_TOKEN is not set or is empty"
+          fi
+          
+          if [ -z "$KEYSTORE_PASSWORD" ]; then
+          echo "KEYSTORE_PASSWORD is not set or is empty"
+          fi
+          
+          if [ -z "$RELEASE_SIGN_KEY_ALIAS" ]; then
+          echo "RELEASE_SIGN_KEY_ALIAS is not set or is empty"
+          fi
+          
+          if [ -z "$RELEASE_SIGN_KEY_PASSWORD" ]; then
+          echo "RELEASE_SIGN_KEY_PASSWORD is not set or is empty"
+          fi
 
       # Run Build Project
       - name: Build gradle project
