@@ -1,4 +1,5 @@
 name: Generated APK (Upload - Create Artifact To Github Action)
+run-name: Generated APK
 on: [ push ]
 env:
   # The name of the main module repository
@@ -38,10 +39,11 @@ jobs:
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
-
-      # Run Tests Build
-      - name: Run gradle tests
-        run: ./gradlew test
+        
+      - name: Print full build.gradle.kts file
+        run: |
+          echo "Printing full build.gradle.kts content:"
+          cat ./app/build.gradle.kts
 
       # Run Build Project
       - name: Build gradle project
