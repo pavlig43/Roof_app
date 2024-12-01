@@ -4,7 +4,7 @@ on: [ push ]
 env:
   # The name of the main module repository
   main_project_module: app
-  KEYSTORE_FILE: ${{secrets.KEYSTORE_FILE}}
+  ROOF_APP_KEYSTORE: ${{secrets.ROOF_APP_KEYSTORE}}
   KEYSTORE_REPOSITORY: ${{secrets.KEYSTORE_REPOSITORY}}
   KEYSTORE_TOKEN: ${{secrets.KEYSTORE_TOKEN}}
   KEYSTORE_PASSWORD: ${{secrets.KEYSTORE_PASSWORD}}
@@ -46,14 +46,10 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
-      - name: Checkout keystore repo
-        uses: actions/checkout@v2
-        with:
-          repository: pavlig43/keystore
-          token: ${{ secrets.KEYSTORE_TOKEN }}
-          path: keystore
+      - name: Decode keystore
+        run: echo "$ROOF_APP_KEYSTORE" | base64 --decode > ${{ github.workspace }}/app/keystore/roofapp.keystore
 
-      # Create APK Release
+        # Create APK Release
       - name: Build apk release project (APK) - ${{ env.main_project_module }} module
         run: ./gradlew assembleRelease
 
