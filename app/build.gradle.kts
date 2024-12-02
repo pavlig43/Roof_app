@@ -43,11 +43,6 @@ android {
                 keyAlias = keyStoreProperties["keyAlias"] as String
                 keyPassword = keyStoreProperties["keyPassword"] as String
             } else {
-                println("$rootDir/keystore/roofapp.keystore")
-                println(System.getenv("KEYSTORE_PASSWORD"))
-                println(System.getenv("KEYSTORE_PASSWORD"))
-                println(System.getenv("RELEASE_SIGN_KEY_ALIAS"))
-                println(System.getenv("RELEASE_SIGN_KEY_PASSWORD"))
                 storeFile = File("$rootDir/keystore/roofapp.keystore")
                 storePassword = System.getenv("KEYSTORE_PASSWORD") as String
                 keyAlias = System.getenv("RELEASE_SIGN_KEY_ALIAS") as String
@@ -120,6 +115,8 @@ dependencies {
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    debugImplementation(libs.leakcanary.android)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

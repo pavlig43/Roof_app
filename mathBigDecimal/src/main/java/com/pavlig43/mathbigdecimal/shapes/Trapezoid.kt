@@ -1,6 +1,6 @@
 package com.pavlig43.mathbigdecimal.shapes
 
-import com.pavlig43.mathbigdecimal.MATH_PRECISION
+import com.pavlig43.mathbigdecimal.MATH_PRECISION_THREE
 import com.pavlig43.mathbigdecimal.utils.sqrt1
 import java.math.BigDecimal
 import java.math.MathContext
@@ -16,7 +16,8 @@ object Trapezoid {
         edge: BigDecimal,
     ): BigDecimal =
         try {
-            val smallCatheter = (edge * edge - height * height).sqrt1(MathContext(MATH_PRECISION))
+            val smallCatheter =
+                (edge * edge - height * height).sqrt1(MathContext(MATH_PRECISION_THREE))
 
             (bigFoot - smallCatheter.multiply(BigDecimal(2))).setScale(2, RoundingMode.HALF_UP)
         } catch (e: ArithmeticException) {

@@ -1,6 +1,6 @@
 package com.pavlig43.mathbigdecimal.shapes
 
-import com.pavlig43.mathbigdecimal.MATH_PRECISION
+import com.pavlig43.mathbigdecimal.MATH_PRECISION_THREE
 import com.pavlig43.mathbigdecimal.OffsetBD
 import com.pavlig43.mathbigdecimal.utils.acos
 import com.pavlig43.mathbigdecimal.utils.atan
@@ -66,7 +66,7 @@ object RightTriangle {
         hypotenuse: BigDecimal,
     ): BigDecimal? {
         val angleInRadians =
-            acos(adjacent.divide(hypotenuse, MathContext(MATH_PRECISION))) ?: return null
+            acos(adjacent.divide(hypotenuse, MathContext(MATH_PRECISION_THREE))) ?: return null
         val angle = toDegrees(angleInRadians)
         return angle
     }

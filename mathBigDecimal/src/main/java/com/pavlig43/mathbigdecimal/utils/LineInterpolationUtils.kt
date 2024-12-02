@@ -1,6 +1,6 @@
 package com.pavlig43.mathbigdecimal.utils
 
-import com.pavlig43.mathbigdecimal.MATH_PRECISION
+import com.pavlig43.mathbigdecimal.MATH_PRECISION_THREE
 import com.pavlig43.mathbigdecimal.OffsetBD
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -37,7 +37,7 @@ fun searchInterpolation(
                 first.x + (second.x - first.x) *
                     (y - first.y).divide(
                         second.y - first.y,
-                        MATH_PRECISION, RoundingMode.HALF_UP,
+                        MATH_PRECISION_THREE, RoundingMode.HALF_UP,
                     )
             OffsetBD(x, y)
         }

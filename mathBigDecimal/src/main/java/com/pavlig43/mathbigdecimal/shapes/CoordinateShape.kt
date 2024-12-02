@@ -71,7 +71,9 @@ open class CoordinateShape(
                     OffsetBD(lastNotNullTopX, y),
                 )
 
-            else -> throw IllegalArgumentException("Expected Set size to be 0, 1, or 2, but found $size elements.")
+            else -> throw IllegalArgumentException(
+                "$this - Expected Set size to be 0, 1, or 2, but found $size elements."
+            )
         }
     }
 

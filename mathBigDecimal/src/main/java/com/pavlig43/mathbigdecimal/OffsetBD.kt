@@ -3,6 +3,7 @@ package com.pavlig43.mathbigdecimal
 import com.pavlig43.mathbigdecimal.utils.hypot
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Objects
 
 @Suppress("TooManyFunctions")
 class OffsetBD(
@@ -22,14 +23,15 @@ class OffsetBD(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is OffsetBD) return false
-        return x == other.x && y == other.y
+        return other is OffsetBD && x.setScale(MATH_PRECISION_TEN) == other.x.setScale(
+            MATH_PRECISION_TEN
+        ) && y.setScale(MATH_PRECISION_TEN) == other.y.setScale(
+            MATH_PRECISION_TEN
+        )
     }
 
     override fun hashCode(): Int {
-        var result = x.hashCode()
-        result = 31 * result + y.hashCode()
-        return result
+        return Objects.hash(x.setScale(MATH_PRECISION_TEN), y.setScale(MATH_PRECISION_TEN))
     }
 
     /**
@@ -40,14 +42,6 @@ class OffsetBD(
         x: BigDecimal = this.x,
         y: BigDecimal = this.y,
     ) = OffsetBD(x, y)
-
-    /**
-     * The magnitude of the offset.
-     *
-
-     */
-
-    fun getSide(): BigDecimal = hypot(x, y)
 
     fun getDistance(otherDot: OffsetBD): BigDecimal {
         val dx = otherDot.x - this.x
@@ -86,7 +80,7 @@ class OffsetBD(
             )
         }
 
-    override fun toString() = "Offset($x, $y)"
+    override fun toString() = "OffsetBD($x, $y)"
 
     fun compareTo(other: OffsetBD): Int {
         val xComparison = this.x.compareTo(other.x)
