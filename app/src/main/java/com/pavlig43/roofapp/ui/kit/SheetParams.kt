@@ -16,9 +16,9 @@ import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
 
 @Composable
 fun CalculateSheetParamsDialog(
+    onDismissRequest: () -> Unit,
     sheet: Sheet,
     updateSheetParam: (SheetParam) -> Unit,
-    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -66,10 +66,10 @@ fun CalculateSheetParamsRow(
     modifier: Modifier = Modifier,
 ) {
     ParamRow(
-        modifier = modifier,
         paramTitle = sheetParam.name.title,
-        unit = sheetParam.unit.title,
         value = sheetParam.value,
         updateParam = { newValue -> updateSheetParam(sheetParam.copy(value = newValue)) },
+        modifier = modifier,
+        unit = sheetParam.unit.title,
     )
 }

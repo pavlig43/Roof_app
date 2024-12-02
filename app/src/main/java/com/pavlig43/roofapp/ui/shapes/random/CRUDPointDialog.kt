@@ -26,12 +26,12 @@ import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 @Suppress("LongParameterList")
 @Composable
 fun CRUDPointDialog(
-    offsetBD: OffsetBD = OffsetBD.Zero,
     onDismissRequest: () -> Unit,
     updateOrAddPoint: (OffsetBD) -> Unit,
     deletePoint: () -> Unit = {},
     checkOnProximity: (OffsetBD) -> Boolean,
     modifier: Modifier = Modifier,
+    offsetBD: OffsetBD = OffsetBD.Zero,
 ) {
     var offsetBD1 by remember { mutableStateOf(offsetBD) }
     var proximity by remember { mutableStateOf(true) }
@@ -114,13 +114,13 @@ private fun AddDialogPrev() {
         ) {
             CRUDPointDialog(
                 onDismissRequest = {},
-                offsetBD = OffsetBD.Zero,
                 updateOrAddPoint = { _ -> },
+                deletePoint = {},
                 checkOnProximity = { _ -> true },
                 modifier = Modifier
                     .fillMaxSize()
                     .rotate(com.pavlig43.pdfcanvasdraw.RIGHT_DEGREE),
-                deletePoint = {},
+                offsetBD = OffsetBD.Zero,
             )
         }
     }

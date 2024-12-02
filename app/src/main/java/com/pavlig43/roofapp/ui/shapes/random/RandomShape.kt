@@ -52,10 +52,10 @@ fun RandomShapep(
 
     Column(modifier = Modifier.fillMaxSize()) {
         ButtonsRow(
-            isValidResult = isConvex,
             openManualDialog = viewModel::moveToManualDialog,
             openSheetDialog = viewModel::moveToSheetDialog,
             openAddDialog = viewModel::moveToAddPointDialog,
+            isValidResult = isConvex,
             getResult = {
                 viewModel.getResult()
                 moveToPdfResult()
@@ -76,9 +76,9 @@ fun RandomShapep(
 
             is RandomShapeState.SheetDialog ->
                 CalculateSheetParamsDialog(
+                    onDismissRequest = viewModel::moveToConstructor,
                     sheet = sheet,
                     updateSheetParam = viewModel::updateSheetParams,
-                    onDismissRequest = viewModel::moveToConstructor,
                     modifier = Modifier.rotate(RIGHT_DEGREE),
                 )
 
@@ -95,14 +95,14 @@ fun RandomShapep(
                 val index = state.index
                 CRUDPointDialog(
                     onDismissRequest = viewModel::moveToConstructor,
-                    offsetBD = offsetBD,
                     updateOrAddPoint = { offset -> viewModel.updateDot(index, offset) },
-                    checkOnProximity = viewModel::checkOnProximity,
                     deletePoint = {
                         viewModel.moveToConstructor()
                         viewModel.deleteDot(index)
                     },
+                    checkOnProximity = viewModel::checkOnProximity,
                     modifier = Modifier.rotate(RIGHT_DEGREE),
+                    offsetBD = offsetBD,
                 )
             }
         }
@@ -134,11 +134,11 @@ private fun ConstructorRandomShape(
 @Suppress("LongParameterList")
 @Composable
 private fun ButtonsRow(
+    openManualDialog: () -> Unit,
+    openSheetDialog: () -> Unit,
+    openAddDialog: () -> Unit,
     isValidResult: Boolean,
-    openManualDialog: () -> Unit = {},
-    openSheetDialog: () -> Unit = {},
-    openAddDialog: () -> Unit = {},
-    getResult: () -> Unit = {},
+    getResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listOfIconButtons =

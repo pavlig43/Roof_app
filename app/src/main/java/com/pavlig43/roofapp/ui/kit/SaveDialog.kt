@@ -11,17 +11,17 @@ import com.pavlig43.roof_app.R
 
 @Composable
 fun SaveDialog(
-    saveNameFile: String,
+    onDismiss: () -> Unit,
+    saveFileName: String,
     saveFile: () -> Unit,
     onValueChangeName: (String) -> Unit,
-    onDismiss: () -> Unit,
     isValid: Boolean,
 ) {
     AlertDialog(
         title = { Text(text = stringResource(R.string.save_with_name)) },
         text = {
             Column {
-                OutlinedTextField(value = saveNameFile, onValueChange = onValueChangeName)
+                OutlinedTextField(value = saveFileName, onValueChange = onValueChangeName)
                 if (!isValid) Text(text = stringResource(R.string.there_is_already_such_a_thing))
             }
         },

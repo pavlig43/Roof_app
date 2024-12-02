@@ -8,8 +8,8 @@ import androidx.compose.ui.res.stringResource
 @Composable
 fun TextParam(
     paramTitle: Int,
-    unit: Int? = null,
     modifier: Modifier = Modifier,
+    unit: Int? = null,
 ) {
     Text(
         "${stringResource(paramTitle)} ${unit?.let { "(${stringResource(it)})" } ?: ""}",

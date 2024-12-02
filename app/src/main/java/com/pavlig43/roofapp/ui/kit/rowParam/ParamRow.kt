@@ -21,17 +21,17 @@ import java.math.BigDecimal
 @Composable
 fun ParamRow(
     paramTitle: Int,
-    unit: Int? = null,
     value: BigDecimal,
-    updateParam: (BigDecimal) -> Unit = {},
+    updateParam: (BigDecimal) -> Unit,
     modifier: Modifier = Modifier,
+    unit: Int? = null,
     canChangeOnNegative: Boolean = false
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         TextParam(
             paramTitle = paramTitle,
-            unit = unit,
             modifier = Modifier.fillMaxWidth(WIDTH_COLUMN_PERCENT),
+            unit = unit,
         )
         if (canChangeOnNegative) {
             IconButton({ updateParam(-value) }) {
@@ -56,6 +56,7 @@ private fun ParamRowPreview() {
         ParamRow(
             R.string.offsetInX,
             value = BigDecimal.ZERO,
+            updateParam = {},
             canChangeOnNegative = true
         )
     }

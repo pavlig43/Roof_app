@@ -8,9 +8,6 @@ import java.math.RoundingMode
  * Лист железа
  */
 data class Sheet(
-    /**
-     * Вид покрытия -череица или профиль
-     */
 
     val widthGeneral: SheetParam = SheetParam(SheetParamName.WIDTH_GENERAL, BigDecimal("118")),
     /**

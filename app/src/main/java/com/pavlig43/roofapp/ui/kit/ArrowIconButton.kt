@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun ArrowIconButton(
-    changeExpanded: () -> Unit,
     expanded: Boolean,
+    changeExpanded: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     IconButton(

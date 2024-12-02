@@ -3,7 +3,6 @@ package com.pavlig43.roofapp.data
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -19,6 +18,26 @@ import java.io.File
 import java.io.FileNotFoundException
 import javax.inject.Inject
 
+/**
+ * Класс AndroidFileStorageRepository — это реализация интерфейса FileStorageRepository,
+ * предназначенная для управления файлами в Android-приложении. Он использует [context] для
+ * взаимодействия с файловой системой Android, поддерживает асинхронные операции с помощью
+ * [dispatcher] и работает с файлами определённого формата, заданного через параметр [fileExtension].
+ * Свойство [_listOfFiles] представляет собой SnapshotStateList<File>, который инициализируется
+ * результатом метода [getListOfFile].
+ * Метод [createFile] создаёт новый файл в директории документов.
+ * Свойство [listOfFiles] предоставляет Flow, обновляющийся при изменении списка [_listOfFiles]
+ *  Метод [shareFile] позволяет делиться файлами через Android Intent.
+ * Метод [saveAndGetFileName] создаёт файл и получает его имя через переданную
+ * suspend лямбда-функцию.
+ * Метод [delete] удаляет существующий файл,если он не является файлом по умолчанию.
+ * Метод [reNameFile] переименовывает файл с использованием renameTo и обновляет список файлов.
+ * Метод [loadFile] возвращает файл как Flow или выбрасывает FileNotFoundException, если файл не найден.
+ * Метод [checkSaveName] проверяет, доступно ли имя для сохранения, гарантируя, что имя уникально и не пусто.
+ * Метод [getListOfFile] получает все файлы с указанным расширением, исключая файл по умолчанию,
+ * из директории документов.
+
+ */
 class AndroidFileStorageRepository @Inject constructor(
     private val context: Context,
     override val fileExtension: FileExtension,
@@ -33,7 +52,6 @@ class AndroidFileStorageRepository @Inject constructor(
         val file =
             File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), shortFileName)
 
-        Log.d("createFile", file.absolutePath)
         return file
     }
 
@@ -113,7 +131,7 @@ class AndroidFileStorageRepository @Inject constructor(
         emit(check)
     }
 
-    override fun getListOfFile(): List<File> {
+    private fun getListOfFile(): List<File> {
         val listOfAllFiles =
             context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.listFiles()
                 ?: return emptyList()

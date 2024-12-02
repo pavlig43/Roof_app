@@ -53,17 +53,17 @@ private fun CalculationTile4ScatMainScreenp(
     val selectedOption by viewModel.selectedOptionDropMenu.collectAsState()
 
     CalculationTile4Scat(
-        paramsState,
-        sheet,
+        paramsState = paramsState,
+        updateRoofParam = viewModel::updateRoofParams,
+        sheet = sheet,
+        updateSheetParam = viewModel::updateSheetParams,
+        selectedOption = selectedOption,
+        changeSelectedOption = viewModel::changeSelectedOption,
+        isValid = isValid,
         getResult = {
             viewModel.getResult()
             moveToPdfResult()
         },
-        updateSheetParam = viewModel::updateSheetParams,
-        isValid = isValid,
-        updateRoofParam = viewModel::updateRoofParams,
-        selectedOption = selectedOption,
-        changeSelectedOption = viewModel::changeSelectedOption,
     )
 }
 
@@ -74,13 +74,13 @@ private fun CalculationTile4ScatMainScreenp(
 @Composable
 private fun CalculationTile4Scat(
     paramsState: RoofParamsClassic4Scat,
-    sheet: Sheet,
     updateRoofParam: (RoofParam) -> Unit,
+    sheet: Sheet,
     updateSheetParam: (SheetParam) -> Unit,
-    getResult: () -> Unit,
-    isValid: Boolean,
     selectedOption: RoofParam,
     changeSelectedOption: (RoofParam) -> Unit,
+    isValid: Boolean,
+    getResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -91,11 +91,11 @@ private fun CalculationTile4Scat(
     ) {
         arrayOf(paramsState.width, paramsState.len).forEach { roofParam ->
             ParamRow(
-                modifier = modifier,
                 paramTitle = roofParam.name.title,
-                unit = roofParam.unit.title,
                 value = roofParam.value,
                 updateParam = { newValue -> updateRoofParam(roofParam.copy(value = newValue)) },
+                modifier = modifier,
+                unit = roofParam.unit.title,
             )
         }
         RoofParamDropMenu(
@@ -149,8 +149,8 @@ private fun RoofParamDropMenu(
                 selectedOption,
             )
             ArrowIconButton(
-                changeExpanded = { expanded = !expanded },
                 expanded = expanded,
+                changeExpanded = { expanded = !expanded },
             )
         }
         val onDismissRequest = { expanded = false }
@@ -182,8 +182,8 @@ fun TextRoofParam(
 ) {
     TextParam(
         paramTitle = roofParam.name.title,
-        unit = roofParam.unit.title,
         modifier = modifier,
+        unit = roofParam.unit.title,
     )
 }
 
@@ -217,13 +217,13 @@ private fun CalculationTile4ScatScreenPreview() {
     Roof_appTheme {
         CalculationTile4Scat(
             paramsState = RoofParamsClassic4Scat(),
-            sheet = Sheet(),
             updateRoofParam = { _ -> },
-            getResult = {},
+            sheet = Sheet(),
             updateSheetParam = { _ -> },
-            isValid = true,
-            changeSelectedOption = { _ -> },
             selectedOption = RoofParam(RoofParamName.POKAT),
+            changeSelectedOption = { _ -> },
+            isValid = true,
+            getResult = {},
         )
     }
 }

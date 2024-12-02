@@ -62,11 +62,11 @@ private fun ScreensSaveDocumentsp(
 
 @Composable
 private fun ListSaveDocuments(
-    modifier: Modifier = Modifier,
     listOfFile: List<File>,
-    moveToPdfResult: (String) -> Unit = {},
-    shareFile: (File) -> Unit = {},
-    deleteFile: (File) -> Unit = {},
+    moveToPdfResult: (String) -> Unit,
+    shareFile: (File) -> Unit,
+    deleteFile: (File) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -99,9 +99,9 @@ private fun FileItemCard(
     var isShowDeleteDialog by remember { mutableStateOf(false) }
     if (isShowDeleteDialog) {
         ConfirmDeleteDocDialog(
-            deleteFile,
             onDialogDismissed = { isShowDeleteDialog = false },
             file,
+            deleteFile,
         )
     }
 
@@ -147,9 +147,9 @@ private fun FileItemCard(
 
 @Composable
 private fun ConfirmDeleteDocDialog(
-    deleteFile: (File) -> Unit,
     onDialogDismissed: () -> Unit,
     file: File,
+    deleteFile: (File) -> Unit,
 ) {
     AlertDialog(
         title = { Text(text = stringResource(R.string.delete_this_doc_question)) },

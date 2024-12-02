@@ -33,12 +33,12 @@ fun ResultImagesFromPDF(
     val pdfReaderState by viewModel.verticalPdfReaderState.collectAsState()
     Log.d("fileState", pdfReaderState?.file.toString())
     ResultImagesFromPDFp(
-        pdfReaderState = pdfReaderState,
         returnToCalculateScreen = returnToCalculateScreen,
+        pdfReaderState = pdfReaderState,
         shareFile = viewModel::shareFile,
-        onValueChangeName = viewModel::changeName,
         saveFile = viewModel::saveFile,
         fileName = fileName,
+        onValueChangeName = viewModel::changeName,
         isValidName = isValidName,
         modifier = modifier
 
@@ -48,13 +48,13 @@ fun ResultImagesFromPDF(
 @Suppress("LongParameterList")
 @Composable
 private fun ResultImagesFromPDFp(
-    pdfReaderState: VerticalPdfReaderState? = null,
-    returnToCalculateScreen: () -> Unit = {},
+    returnToCalculateScreen: () -> Unit,
+    pdfReaderState: VerticalPdfReaderState?,
     shareFile: () -> Unit,
-    fileName: String,
     saveFile: () -> Unit,
-    isValidName: Boolean,
+    fileName: String,
     onValueChangeName: (String) -> Unit,
+    isValidName: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var openDialog by remember {
@@ -67,10 +67,10 @@ private fun ResultImagesFromPDFp(
     Column(modifier = modifier.fillMaxWidth()) {
         if (openDialog) {
             SaveDialog(
-                saveNameFile = fileName,
+                onDismiss = { openDialog = false },
+                saveFileName = fileName,
                 saveFile = saveFile,
                 onValueChangeName = onValueChangeName,
-                onDismiss = { openDialog = false },
                 isValid = isValidName,
             )
         }
@@ -91,4 +91,3 @@ private fun ResultImagesFromPDFp(
         pdfReaderState?.let { PDFView(it) }
     }
 }
-// file:///storage/emulated/0/Android/data/com.pavlig43.roof_app/files/Documents/roof.pdf
