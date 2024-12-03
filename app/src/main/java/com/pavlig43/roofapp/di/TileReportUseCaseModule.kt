@@ -1,6 +1,7 @@
 package com.pavlig43.roofapp.di
 
 import com.pavlig43.roofapp.data.docBuilder.AndroidPdfBuilder
+import com.pavlig43.roofapp.data.resourceProvider.AndroidResourceProvider
 import com.pavlig43.roofapp.domain.TileReportUseCase
 import dagger.Module
 import dagger.Provides
@@ -14,8 +15,11 @@ class TileReportUseCaseModule {
 
     @Provides
     @DocTypeBuilder(DocType.AndroidPdf)
-    fun provideAndroidPdfUseCase(docBuilder: AndroidPdfBuilder): TileReportUseCase {
-        return TileReportUseCase(docBuilder)
+    fun provideAndroidPdfUseCase(
+        docBuilder: AndroidPdfBuilder,
+        resourceProvider: AndroidResourceProvider
+    ): TileReportUseCase {
+        return TileReportUseCase(docBuilder, resourceProvider)
     }
 }
 

@@ -1,7 +1,7 @@
 package com.pavlig43.roofapp.di
 
 import android.content.Context
-import com.pavlig43.roofapp.data.AndroidFileStorageRepository
+import com.pavlig43.roofapp.data.fileStorage.AndroidFileStorageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

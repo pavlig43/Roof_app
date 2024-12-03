@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.ui.kit
+package com.pavlig43.roofapp.ui.calculationTile4scat
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,9 +31,18 @@ fun OtherParamsColumn(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        OtherParamsRow(title = stringResource(R.string.yandova), value = paramsState.yandova)
-        OtherParamsRow(title = stringResource(R.string.pokat), value = paramsState.pokat.value)
-        OtherParamsRow(title = stringResource(R.string.angle_tilt), value = paramsState.angle.value)
+        OtherParamsRow(
+            title = stringResource(R.string.yandova),
+            value = paramsState.yandova.value
+        )
+        OtherParamsRow(
+            title = stringResource(R.string.pokat),
+            value = paramsState.pokat.value
+        )
+        OtherParamsRow(
+            title = stringResource(R.string.angle_tilt),
+            value = paramsState.angle.value
+        )
         OtherParamsRow(
             title = stringResource(R.string.height_roof),
             value = paramsState.height.value,

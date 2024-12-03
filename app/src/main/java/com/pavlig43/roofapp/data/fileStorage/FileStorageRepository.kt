@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.data
+package com.pavlig43.roofapp.data.fileStorage
 
 import com.pavlig43.roofapp.di.FileExtension
 import kotlinx.coroutines.CoroutineDispatcher

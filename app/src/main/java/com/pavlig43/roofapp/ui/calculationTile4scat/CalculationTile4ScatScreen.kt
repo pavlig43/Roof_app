@@ -31,7 +31,6 @@ import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
 import com.pavlig43.roofapp.ui.kit.ArrowIconButton
 import com.pavlig43.roofapp.ui.kit.CalculateSheetParams
-import com.pavlig43.roofapp.ui.kit.OtherParamsColumn
 import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
 import com.pavlig43.roofapp.ui.kit.rowParam.TextFieldBigDecimal
 import com.pavlig43.roofapp.ui.kit.rowParam.TextParam

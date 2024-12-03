@@ -25,10 +25,7 @@ android {
             useSupportLibrary = true
         }
         resourceConfigurations += setOf("ru")
-        ndk {
-            //noinspection ChromeOsAbiSupport
-            abiFilters += setOf("armeabi-v7a", "arm64-v8a")
-        }
+
     }
     signingConfigs {
         create("release") {

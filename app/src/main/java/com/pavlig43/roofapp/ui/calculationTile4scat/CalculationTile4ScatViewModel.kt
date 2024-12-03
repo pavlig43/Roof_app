@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.pavlig43.mathbigdecimal.OffsetBD
 import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
 import com.pavlig43.mathbigdecimal.shapes.Triangle
+import com.pavlig43.roofapp.data.resourceProvider.AndroidResourceProvider
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
 import com.pavlig43.roofapp.domain.TileReportUseCase
@@ -26,12 +27,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
 class CalculationTile4ScatViewModel
 @Inject constructor(
     @DocTypeBuilder(DocType.AndroidPdf) private val tileReportUseCase: TileReportUseCase,
+    private val resourceProvider: AndroidResourceProvider
 ) : ViewModel() {
 
     private val _roofState = MutableStateFlow(RoofParamsClassic4Scat())
@@ -82,6 +85,32 @@ class CalculationTile4ScatViewModel
         _sheet.update { it.updateSheetParams(sheetParam) }
     }
 
+    private fun otherInfo(): List<String> {
+        val listOfRoofParam = with(_roofState.value) {
+            listOf(
+                width,
+                len,
+                angle,
+                height,
+                pokat,
+                yandova,
+                smallFoot
+            ).map {
+                "${resourceProvider.getString(it.name.title)} - ${
+                    it.value.setScale(
+                        0,
+                        RoundingMode.HALF_UP
+                    )
+                } (${
+                    resourceProvider.getString(
+                        it.unit.title
+                    )
+                })"
+            }
+        }
+        return listOfRoofParam
+    }
+
     fun getResult() {
         val lstCoordinateShape = _roofState.value.run {
             listOf(
@@ -93,6 +122,7 @@ class CalculationTile4ScatViewModel
             tileReportUseCase.invoke(
                 listOfCoordinateShape = lstCoordinateShape,
                 sheet = _sheet.value,
+                otherInfo = otherInfo()
             )
         }
     }
@@ -101,8 +131,8 @@ class CalculationTile4ScatViewModel
 private fun RoofParamsClassic4Scat.toTrapezoidCoordinateShape() = CoordinateShape(
     listOf(
         OffsetBD.Zero,
-        OffsetBD(pokat.value, (len.value - smallFoot).div(BigDecimal(2))),
-        OffsetBD(pokat.value, (len.value + smallFoot).div(BigDecimal(2))),
+        OffsetBD(pokat.value, (len.value - smallFoot.value).div(BigDecimal(2))),
+        OffsetBD(pokat.value, (len.value + smallFoot.value).div(BigDecimal(2))),
         OffsetBD(BigDecimal.ZERO, len.value)
     )
 )

@@ -5,6 +5,7 @@ import com.pavlig43.mathbigdecimal.shapes.Trapezoid
 import com.pavlig43.mathbigdecimal.utils.hypot
 import com.pavlig43.roof_app.R
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * класс для орределения 4хскатной крыши
@@ -19,19 +20,24 @@ data class RoofParamsClassic4Scat(
     val pokat: RoofParam = RoofParam(RoofParamName.POKAT),
 
 ) {
-    val yandova: BigDecimal by lazy {
-        hypot(width.value.divide(BigDecimal(2)), pokat.value)
+    val yandova: RoofParam by lazy {
+        RoofParam(
+            RoofParamName.YANDOVA,
+            hypot(width.value.divide(BigDecimal(2)), pokat.value)
+        )
     }
 
     /**
      * Длина конька - верхнего основания трапеции
      */
-    val smallFoot: BigDecimal by lazy {
-
-        Trapezoid.smallFoot(
-            bigFoot = len.value,
-            height = pokat.value,
-            edge = yandova,
+    val smallFoot: RoofParam by lazy {
+        RoofParam(
+            RoofParamName.SMALL_FOOT,
+            Trapezoid.smallFoot(
+                bigFoot = len.value,
+                height = pokat.value,
+                edge = yandova.value,
+            )
         )
     }
 }
@@ -44,6 +50,8 @@ enum class RoofParamName(
     ANGLE(R.string.angle_tilt),
     HEIGHT(R.string.height_roof),
     POKAT(R.string.pokat),
+    SMALL_FOOT(R.string.small_foot),
+    YANDOVA(R.string.yandova)
 }
 
 data class RoofParam(
@@ -59,6 +67,8 @@ fun RoofParamsClassic4Scat.updateRoofParams(roofParam: RoofParam): RoofParamsCla
         RoofParamName.ANGLE -> this.calculateFromAngle(roofParam)
         RoofParamName.HEIGHT -> this.calculateFromHeight(roofParam)
         RoofParamName.POKAT -> this.calculateFromPokat(roofParam)
+        RoofParamName.SMALL_FOOT -> TODO()
+        RoofParamName.YANDOVA -> TODO()
     }
 
 /**
@@ -70,8 +80,12 @@ private fun RoofParamsClassic4Scat.calculateFromAngle(angle: RoofParam): RoofPar
 
         else -> {
             val adjacent = width.value.divide(BigDecimal(2)) // длина прилежащего катета
-            val height = RightTriangle.oppositeFromAngleAndAdjacent(adjacent, angle.value)
-            val pokat = RightTriangle.hypotenuseFromAngleAndAdjacent(adjacent, angle.value)
+            val height =
+                RightTriangle.oppositeFromAngleAndAdjacent(adjacent, angle.value)
+                    .setScale(2, RoundingMode.HALF_UP)
+            val pokat =
+                RightTriangle.hypotenuseFromAngleAndAdjacent(adjacent, angle.value)
+                    .setScale(2, RoundingMode.HALF_UP)
             this.copy(
                 angle = angle,
                 height = this.height.copy(value = height),
@@ -88,9 +102,11 @@ private fun RoofParamsClassic4Scat.calculateFromHeight(newHeight: RoofParam): Ro
         newHeight.value == BigDecimal.ZERO -> this.zeroParam()
         else -> {
             val adjacent = width.value.divide(BigDecimal(2))
-            val pokat = hypot(adjacent, newHeight.value)
+            val pokat = hypot(adjacent, newHeight.value).setScale(2, RoundingMode.HALF_UP)
 
-            val angle = RightTriangle.angleFromOppositeAndAdjacent(newHeight.value, adjacent)
+            val angle =
+                RightTriangle.angleFromOppositeAndAdjacent(newHeight.value, adjacent)
+                    .setScale(2, RoundingMode.HALF_UP)
             this.copy(
                 height = newHeight,
                 angle = this.angle.copy(value = angle),
@@ -110,9 +126,11 @@ private fun RoofParamsClassic4Scat.calculateFromPokat(pokat: RoofParam): RoofPar
             val adjacent = width.value.divide(BigDecimal(2)) // прилежащий катет
             val angle =
                 RightTriangle.angleFromAdjacentAndHypotenuse(adjacent, pokat.value)
+                    ?.setScale(2, RoundingMode.HALF_UP)
                     ?: BigDecimal.ZERO
 
             val height = RightTriangle.oppositeFromAngleAndAdjacent(adjacent, angle)
+                .setScale(2, RoundingMode.HALF_UP)
 
             this.copy(
                 angle = this.angle.copy(value = angle),

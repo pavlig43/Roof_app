@@ -4,7 +4,8 @@ import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.drawText.DrawText
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.shape.ShapeWithRulerAndRectangleRenderer
 import com.pavlig43.pdfcanvasdraw.implementationCore.pdf.DocBuilder
-import com.pavlig43.roofapp.SHEETS
+import com.pavlig43.roof_app.R
+import com.pavlig43.roofapp.data.resourceProvider.ResourceProvider
 import com.pavlig43.roofapp.mappers.coordinateShape.toShapeCanvas
 import com.pavlig43.roofapp.model.Sheet
 
@@ -27,6 +28,7 @@ import com.pavlig43.roofapp.model.Sheet
  */
 class TileReportUseCase(
     private val docBuilder: DocBuilder,
+    private val resourceProvider: ResourceProvider
 ) {
     suspend operator fun invoke(
         listOfCoordinateShape: List<CoordinateShape>,
@@ -52,8 +54,8 @@ class TileReportUseCase(
             }
         val infoSheetText =
             listOfRealSheet.flatten().groupingBy { it.ceilLen }.eachCount().map { (len, count) ->
-                "$len (${sheet.overlap.unit}) - $count"
-            }.toMutableList().apply { add(0, SHEETS) }
+                "$len (${resourceProvider.getString(sheet.overlap.unit.title)}) - $count"
+            }.toMutableList().apply { add(0, resourceProvider.getString(R.string.sheets)) }
 
         val infoText = infoSheetText + otherInfo
 
