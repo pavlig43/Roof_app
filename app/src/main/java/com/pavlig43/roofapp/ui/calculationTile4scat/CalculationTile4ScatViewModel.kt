@@ -10,12 +10,14 @@ import com.pavlig43.roofapp.data.resourceProvider.AndroidResourceProvider
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
 import com.pavlig43.roofapp.domain.TileReportUseCase
-import com.pavlig43.roofapp.model.RoofParam
-import com.pavlig43.roofapp.model.RoofParamName
-import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
-import com.pavlig43.roofapp.model.updateRoofParams
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParam
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParamName
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParamsClassic4Scat
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofType
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.calculateFromRoofType
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.updateRoofParams
 import com.pavlig43.roofapp.model.updateSheetParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,6 +74,21 @@ class CalculationTile4ScatViewModel
         val c = paramsState.pokat.value
         Log.d("paramcheckValid", "$a-$b-$c")
         return Triangle.isValid(a, b, c) && paramsState.len.value >= paramsState.width.value
+    }
+
+    fun calculateFromRoofType(roofType: RoofType) {
+        _roofState.update {
+            it.calculateFromRoofType(roofType)
+        }
+        changeSelectedOption(_selectedOptionDropMenu.value)
+    }
+
+    init {
+        viewModelScope.launch {
+            _roofState.collect {
+                Log.d("params", it.toString())
+            }
+        }
     }
 
     fun updateRoofParams(roofParam: RoofParam) {

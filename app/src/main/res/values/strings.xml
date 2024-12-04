@@ -45,4 +45,9 @@
     <string name="dot_manual_3">Приложение работает только с выпуклыми многоугольниками.Пока заданная фигура не выполняет это требование, кнопка получения результата не активна. Выпуклый многоугольник — это многоугольник, прямая, проведённая через любую его сторону, не пересекает плоскость самой фигуры. На картинке пример невыпуклого многоугольника.</string>
     <string name="button_to_change_the_sign_of_a_number">Button to change the sign of a number</string>
     <string name="small_foot">Конек</string>
+    <string name="its_values">Свои значения</string>
+    <string name="candle">Свеча</string>
+    <string name="standard">Стандарт</string>
+    <string name="flat">Пологая</string>
+    <string name="roof_type">Тип крыши</string>
 </resources>

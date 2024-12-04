@@ -9,9 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.pavlig43.roof_app.R
-import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParamsClassic4Scat
 import java.math.BigDecimal
-
+/**
+ * Колонка с дополнительными расчетными параметрами для информации
+ */
 @Composable
 fun OtherParamsRow(
     title: String,

@@ -1,9 +1,9 @@
 package com.pavlig43.roofApp
 
-import com.pavlig43.roofapp.model.RoofParam
-import com.pavlig43.roofapp.model.RoofParamName
-import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
-import com.pavlig43.roofapp.model.updateRoofParams
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParam
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParamName
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParamsClassic4Scat
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.updateRoofParams
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 

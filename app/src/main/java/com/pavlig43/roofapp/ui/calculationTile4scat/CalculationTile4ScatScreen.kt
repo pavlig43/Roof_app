@@ -24,17 +24,19 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.WIDTH_COLUMN_PERCENT
-import com.pavlig43.roofapp.model.RoofParam
-import com.pavlig43.roofapp.model.RoofParamName
-import com.pavlig43.roofapp.model.RoofParamsClassic4Scat
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParam
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParamName
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParamsClassic4Scat
+import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofType
 import com.pavlig43.roofapp.ui.kit.ArrowIconButton
 import com.pavlig43.roofapp.ui.kit.CalculateSheetParams
 import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
 import com.pavlig43.roofapp.ui.kit.rowParam.TextFieldBigDecimal
 import com.pavlig43.roofapp.ui.kit.rowParam.TextParam
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
+import java.math.RoundingMode
 
 @Composable
 fun CalculationTile4ScatMainScreen(moveToPdfResult: () -> Unit) {
@@ -58,6 +60,7 @@ private fun CalculationTile4ScatMainScreenp(
         updateSheetParam = viewModel::updateSheetParams,
         selectedOption = selectedOption,
         changeSelectedOption = viewModel::changeSelectedOption,
+        calculateFromRoofType = viewModel::calculateFromRoofType,
         isValid = isValid,
         getResult = {
             viewModel.getResult()
@@ -78,6 +81,7 @@ private fun CalculationTile4Scat(
     updateSheetParam: (SheetParam) -> Unit,
     selectedOption: RoofParam,
     changeSelectedOption: (RoofParam) -> Unit,
+    calculateFromRoofType: (RoofType) -> Unit,
     isValid: Boolean,
     getResult: () -> Unit,
     modifier: Modifier = Modifier,
@@ -97,12 +101,19 @@ private fun CalculationTile4Scat(
                 unit = roofParam.unit.title,
             )
         }
-        RoofParamDropMenu(
-            paramsState = paramsState,
-            updateRoofParam = updateRoofParam,
-            selectedOption = selectedOption,
-            changeSelectedOption = changeSelectedOption,
+        RoofTypeMenu(
+            roofType = paramsState.roofType,
+            calculateFromRoofType = calculateFromRoofType
         )
+        if (paramsState.roofType == RoofType.None) {
+            RoofParamDropMenu(
+                paramsState = paramsState,
+                updateRoofParam = updateRoofParam,
+                selectedOption = selectedOption,
+                changeSelectedOption = changeSelectedOption,
+            )
+        }
+
         if (!isValid) {
             Text(
                 text = "* Проверь данные",
@@ -126,8 +137,55 @@ private fun CalculationTile4Scat(
     }
 }
 
+@Composable
+private fun RoofTypeMenu(
+    roofType: RoofType,
+    calculateFromRoofType: (RoofType) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            stringResource(R.string.roof_type) +
+                " (${stringResource(R.string.angle_tilt)})",
+            modifier = Modifier.fillMaxWidth(
+                WIDTH_COLUMN_PERCENT
+            )
+        )
+        Text(stringResource(roofType.title))
+        ArrowIconButton(
+            expanded = expanded,
+            changeExpanded = { expanded = !expanded }
+        )
+        Column {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                RoofType.entries.forEach {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                stringResource(it.title) +
+                                    " (${it.angle ?: ""})"
+                            )
+                        },
+                        onClick = {
+                            calculateFromRoofType(it)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
 /**
- * Выпадающее меню в котором можно выбрать покат,угол наклона и высоту крыши дял установки значения
+ * Выпадающее меню в котором можно выбрать покат,угол наклона,тип и высоту крыши дял установки значения
  */
 @Composable
 private fun RoofParamDropMenu(
@@ -158,7 +216,7 @@ private fun RoofParamDropMenu(
             onDismissRequest = onDismissRequest,
         ) {
             arrayOf(paramsState.pokat, paramsState.angle, paramsState.height).forEach { roofParam ->
-                RoofParamDropMenuRow(
+                RoofParamDropMenuItem(
                     roofParam = roofParam,
                     toSelectParam = changeSelectedOption,
                     onDismissRequest = onDismissRequest,
@@ -166,7 +224,7 @@ private fun RoofParamDropMenu(
             }
         }
         TextFieldBigDecimal(
-            value = selectedOption.value,
+            value = selectedOption.value.setScale(0, RoundingMode.HALF_UP),
             updateParam = { newValue ->
                 updateRoofParam(selectedOption.copy(value = newValue))
             },
@@ -175,7 +233,7 @@ private fun RoofParamDropMenu(
 }
 
 @Composable
-fun TextRoofParam(
+private fun TextRoofParam(
     roofParam: RoofParam,
     modifier: Modifier = Modifier,
 ) {
@@ -187,7 +245,7 @@ fun TextRoofParam(
 }
 
 @Composable
-fun RoofParamDropMenuRow(
+fun RoofParamDropMenuItem(
     roofParam: RoofParam,
     onDismissRequest: () -> Unit,
     toSelectParam: (RoofParam) -> Unit,
@@ -206,9 +264,6 @@ fun RoofParamDropMenuRow(
     )
 }
 
-/**
- * Колонка с дополнительными расчетными параметрами для информации
- */
 @Suppress("UnusedPrivateMember")
 @Preview(showBackground = true)
 @Composable
@@ -221,6 +276,7 @@ private fun CalculationTile4ScatScreenPreview() {
             updateSheetParam = { _ -> },
             selectedOption = RoofParam(RoofParamName.POKAT),
             changeSelectedOption = { _ -> },
+            calculateFromRoofType = {},
             isValid = true,
             getResult = {},
         )
