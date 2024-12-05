@@ -4,19 +4,20 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.android.application)
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
-    id("de.mannodermaus.android-junit5")
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.android.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.junit5)
 }
 
 android {
     namespace = "com.pavlig43.roof_app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.pavlig43.roof_app"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -25,7 +26,6 @@ android {
             useSupportLibrary = true
         }
         resourceConfigurations += setOf("ru")
-
     }
     signingConfigs {
         create("release") {
@@ -69,9 +69,6 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -84,35 +81,52 @@ android {
             excludes += "META-INF/com/android/build/gradle/*"
         }
     }
+    buildToolsVersion = "35.0.0"
 }
 
 dependencies {
 
+// Core  Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.work.runtime)
+
+// coroutines Kotlin
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+// Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+// local
     implementation(project(":mathBigDecimal"))
     implementation(project(":canvasDraw"))
+
+// Graphics
     implementation(libs.bouquet)
 
+// Hilt
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.hilt.navigation.compose)
+
+// navigation
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.androidx.work.runtime)
+// test
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
-    androidTestImplementation(libs.androidx.espresso.core)
 
+// debug
+    debugImplementation(libs.leakcanary.android)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.leakcanary.android)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
