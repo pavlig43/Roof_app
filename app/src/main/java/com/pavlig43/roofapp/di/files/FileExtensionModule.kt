@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.di
+package com.pavlig43.roofapp.di.files
 
 import dagger.Module
 import dagger.Provides

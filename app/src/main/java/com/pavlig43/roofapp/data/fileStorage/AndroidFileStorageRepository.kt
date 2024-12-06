@@ -9,14 +9,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.content.FileProvider
 import com.pavlig43.roof_app.BuildConfig
 import com.pavlig43.roof_app.R
-import com.pavlig43.roofapp.di.FileExtension
+import com.pavlig43.roofapp.di.files.FileExtension
+import com.pavlig43.roofapp.di.files.SubDir
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
-import javax.inject.Inject
 
 /**
  * Класс AndroidFileStorageRepository — это реализация интерфейса FileStorageRepository,
@@ -38,20 +38,28 @@ import javax.inject.Inject
  * из директории документов.
 
  */
-class AndroidFileStorageRepository @Inject constructor(
+class AndroidFileStorageRepository(
     private val context: Context,
     override val fileExtension: FileExtension,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
+    override val subDir: SubDir
 
 ) :
     FileStorageRepository {
+    private val folderFile by lazy {
+        val folder = File(Environment.DIRECTORY_DOCUMENTS, subDir.title)
+        if (!folder.exists()) {
+            folder.mkdirs()
+        }
+        context.getExternalFilesDir(folder.toString())
+    }
+
     private val _listOfFiles: SnapshotStateList<File> =
         mutableStateListOf<File>().apply { addAll(getListOfFile()) }
 
     override suspend fun createFile(shortFileName: String): File {
         val file =
-            File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), shortFileName)
-
+            File(folderFile, shortFileName)
         return file
     }
 
@@ -99,7 +107,7 @@ class AndroidFileStorageRepository @Inject constructor(
 
     override suspend fun reNameFile(file: File, fileName: String) {
         val saveFile = File(
-            context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+            folderFile,
             "$fileName.${fileExtension.value}"
         )
         withContext(dispatcher) {
@@ -110,7 +118,7 @@ class AndroidFileStorageRepository @Inject constructor(
     }
 
     override fun loadFile(fileName: String): Flow<File> = flow {
-        val directory = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        val directory = folderFile
             ?: throw FileNotFoundException("Directory not found")
         val file = File(directory, fileName)
         if (!file.exists()) {
@@ -120,8 +128,7 @@ class AndroidFileStorageRepository @Inject constructor(
     }
 
     override fun checkSaveName(newName: String): Flow<Boolean> = flow {
-        val directory = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-        val allFiles = directory?.listFiles()
+        val allFiles = folderFile?.listFiles()
             ?: run {
                 emit(false)
                 return@flow
@@ -133,7 +140,7 @@ class AndroidFileStorageRepository @Inject constructor(
 
     private fun getListOfFile(): List<File> {
         val listOfAllFiles =
-            context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.listFiles()
+            folderFile?.listFiles()
                 ?: return emptyList()
         return listOfAllFiles.filter { it.extension == fileExtension.value }
             .filter { it.name != fileExtension.defaultName }

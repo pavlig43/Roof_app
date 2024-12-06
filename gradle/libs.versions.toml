@@ -1,22 +1,22 @@
 [versions]
 #main
-kotlin = "2.0.21"
-agp = "8.7.3"
-ksp = "2.0.21-1.0.25"
+kotlin = "2.0.20"
+agp = "8.7.2"
+ksp = "2.0.20-1.0.25"
 
 #core
 coreKtx = "1.13.1"
-lifecycleRuntimeKtx = "2.8.7"
-workRuntime = "2.10.0"
+lifecycleRuntimeKtx = "2.8.6"
+workRuntime = "2.9.1"
 
 #hilt
 hiltAndroid = "2.53"
 hiltNavigationCompose = "1.2.0"
 
 #compose
-composeBom = "2024.11.00"
-activityCompose = "1.9.3"
-navigationCompose = "2.8.4"
+composeBom = "2024.10.00"
+activityCompose = "1.9.2"
+navigationCompose = "2.8.3"
 
 #test and validation code
 junit5 = "1.11.0.0"

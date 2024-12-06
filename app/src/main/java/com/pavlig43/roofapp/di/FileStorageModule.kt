@@ -2,6 +2,10 @@ package com.pavlig43.roofapp.di
 
 import android.content.Context
 import com.pavlig43.roofapp.data.fileStorage.AndroidFileStorageRepository
+import com.pavlig43.roofapp.di.files.Extension
+import com.pavlig43.roofapp.di.files.FileExtension
+import com.pavlig43.roofapp.di.files.SubDir
+import com.pavlig43.roofapp.di.files.SubDirName
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,14 +16,15 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class RepositoryModule {
+class FileStorageModule {
     @Provides
     @Singleton
-    fun provideAndroidFileStorageRepository(
+    fun provideRoofAndroidFileStorageRepositoryPdf(
         @ApplicationContext context: Context,
         @Extension(FileExtension.PDF) extension: FileExtension,
-        @Dispatcher(DispatcherType.IO) dispatcher: CoroutineDispatcher
+        @Dispatcher(DispatcherType.IO) dispatcher: CoroutineDispatcher,
+        @SubDirName(SubDir.Roof) subDir: SubDir
     ): AndroidFileStorageRepository {
-        return AndroidFileStorageRepository(context, extension, dispatcher)
+        return AndroidFileStorageRepository(context, extension, dispatcher, subDir)
     }
 }

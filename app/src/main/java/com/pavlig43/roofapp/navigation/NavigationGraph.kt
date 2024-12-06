@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.pavlig43.roofapp.di.FileExtension
+import com.pavlig43.roofapp.di.files.FileExtension
 import com.pavlig43.roofapp.ui.calculationTile4scat.CalculationTile4ScatMainScreen
 import com.pavlig43.roofapp.ui.pdfImage.ResultImagesFromPDF
 import com.pavlig43.roofapp.ui.saveDocuments.ScreensSaveDocuments
@@ -30,7 +30,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable(
             route = AllMenuDestination.ConstructorShape.route,
 
-        ) {
+            ) {
             RandomShape { navController.navigateToDefaultPdf() }
         }
         composable(
