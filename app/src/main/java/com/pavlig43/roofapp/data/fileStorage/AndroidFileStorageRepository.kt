@@ -28,7 +28,7 @@ import java.io.FileNotFoundException
  * Метод [createFile] создаёт новый файл в директории документов.
  * Свойство [listOfFiles] предоставляет Flow, обновляющийся при изменении списка [_listOfFiles]
  *  Метод [shareFile] позволяет делиться файлами через Android Intent.
- * Метод [saveAndGetFileName] создаёт файл и получает его имя через переданную
+ * Метод [saveAndGetFilePath] создаёт файл и получает его имя через переданную
  * suspend лямбда-функцию.
  * Метод [delete] удаляет существующий файл,если он не является файлом по умолчанию.
  * Метод [reNameFile] переименовывает файл с использованием renameTo и обновляет список файлов.
@@ -90,12 +90,12 @@ class AndroidFileStorageRepository(
         )
     }
 
-    override suspend fun saveAndGetFileName(
+    override suspend fun saveAndGetFilePath(
 
-        createAndGetFileName: suspend (CoroutineDispatcher, File) -> String
+        createAndGetFilePath: suspend (CoroutineDispatcher, File) -> String
     ): String {
         val file = createFile()
-        return createAndGetFileName(dispatcher, file)
+        return createAndGetFilePath(dispatcher, file)
     }
 
     override suspend fun delete(file: File) {
@@ -117,12 +117,10 @@ class AndroidFileStorageRepository(
         }
     }
 
-    override fun loadFile(fileName: String): Flow<File> = flow {
-        val directory = folderFile
-            ?: throw FileNotFoundException("Directory not found")
-        val file = File(directory, fileName)
+    override fun loadFile(filePath: String): Flow<File> = flow {
+        val file = File(filePath)
         if (!file.exists()) {
-            throw FileNotFoundException("File with name $fileName not found")
+            throw FileNotFoundException("File with name $filePath not found")
         }
         emit(file)
     }

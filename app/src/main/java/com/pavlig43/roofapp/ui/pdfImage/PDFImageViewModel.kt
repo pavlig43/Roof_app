@@ -27,9 +27,9 @@ class PDFImageViewModel @Inject constructor(
     private val repository: AndroidFileStorageRepository
 ) : ViewModel() {
 
-    private val fileName: String = checkNotNull(savedStateHandle[PDFImageDestination.ARG_FILE_NAME])
+    private val filePath: String = checkNotNull(savedStateHandle[PDFImageDestination.ARG_FILE_NAME])
 
-    private val fileFlow = repository.loadFile(fileName)
+    private val fileFlow = repository.loadFile(filePath)
 
     private val file = fileFlow
         .stateIn(

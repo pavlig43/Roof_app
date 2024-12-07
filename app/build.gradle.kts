@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "com.pavlig43.roof_app"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.pavlig43.roof_app"

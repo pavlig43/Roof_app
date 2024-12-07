@@ -14,7 +14,6 @@ class SubDirModule {
     fun provideRoofSubDir(): SubDir = SubDir.Roof
 }
 
-
 @Qualifier
 annotation class SubDirName(val subDirName: SubDir)
 enum class SubDir(val title: String) {

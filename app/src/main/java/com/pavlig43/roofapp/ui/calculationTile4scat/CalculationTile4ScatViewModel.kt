@@ -83,14 +83,6 @@ class CalculationTile4ScatViewModel
         changeSelectedOption(_selectedOptionDropMenu.value)
     }
 
-    init {
-        viewModelScope.launch {
-            _roofState.collect {
-                Log.d("params", it.toString())
-            }
-        }
-    }
-
     fun updateRoofParams(roofParam: RoofParam) {
         _roofState.update {
             it.updateRoofParams(roofParam)
@@ -128,7 +120,7 @@ class CalculationTile4ScatViewModel
         return listOfRoofParam
     }
 
-    fun getResult() {
+    fun getResult(moveToPdfResult: (String) -> Unit) {
         val lstCoordinateShape = _roofState.value.run {
             listOf(
                 this.toTrapezoidCoordinateShape(),
@@ -136,11 +128,12 @@ class CalculationTile4ScatViewModel
             )
         }
         viewModelScope.launch {
-            tileReportUseCase.invoke(
+            val fileName = tileReportUseCase.invoke(
                 listOfCoordinateShape = lstCoordinateShape,
                 sheet = _sheet.value,
                 otherInfo = otherInfo()
             )
+            moveToPdfResult(fileName)
         }
     }
 }

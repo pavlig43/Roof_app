@@ -34,7 +34,7 @@ class TileReportUseCase(
         listOfCoordinateShape: List<CoordinateShape>,
         sheet: Sheet,
         otherInfo: List<String> = listOf()
-    ) {
+    ): String {
         val listOfRightRectangle = listOfCoordinateShape.map {
             it.fillShapeWithRectangles(
                 sheet.widthGeneral.value,
@@ -62,6 +62,6 @@ class TileReportUseCase(
         val drawTextRenderer = DrawText(infoText)
 
         val allPages = renderShapePages + drawTextRenderer
-        docBuilder.createAndGetFileName(allPages)
+        return docBuilder.createAndGetFilePath(allPages)
     }
 }

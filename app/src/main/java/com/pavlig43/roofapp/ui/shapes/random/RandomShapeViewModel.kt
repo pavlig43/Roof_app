@@ -125,12 +125,13 @@ class RandomShapeViewModel
         listOffset.removeAt(index)
     }
 
-    fun getResult() {
+    fun getResult(moveToPdfResult: (String) -> Unit) {
         viewModelScope.launch {
-            tileReportUseCase.invoke(
+            val filePath = tileReportUseCase.invoke(
                 listOfCoordinateShape = listOf(coordinateShape.value),
                 sheet = _sheet.value,
             )
+            moveToPdfResult(filePath)
         }
     }
 }

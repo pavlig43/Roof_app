@@ -12,7 +12,7 @@ import javax.inject.Inject
  * Класс AndroidPdfBuilder реализует интерфейс DocBuilder и предоставляет возможность создавать
  * PDF-документ на основе списка  страниц. В его конструктор передаётся объект
  * AndroidFileStorageRepository, который используется для сохранения сгенерированного файла.
- * Основной метод [createAndGetFileName] принимает список объектов [PageRenderer], каждый из которых
+ * Основной метод [createAndGetFilePath] принимает список объектов [PageRenderer], каждый из которых
  * отвечает за рендеринг одной страницы. Метод создаёт экземпляр PdfDocument и для каждой страницы
  * генерирует объект PdfDocument.PageInfo, определяющий размеры страницы и её индекс. Затем открывается
  * страница с помощью PdfDocument.startPage, и её содержимое рендерится через вызов метода [renderPage]
@@ -27,7 +27,7 @@ class AndroidPdfBuilder @Inject constructor(
 ) :
     DocBuilder {
 
-    override suspend fun createAndGetFileName(listOfPageRenderer: List<PageRenderer>): String {
+    override suspend fun createAndGetFilePath(listOfPageRenderer: List<PageRenderer>): String {
         val openPdf = PdfDocument()
         listOfPageRenderer.forEachIndexed { index, pageRenderer ->
             val pageInfo =
@@ -44,11 +44,11 @@ class AndroidPdfBuilder @Inject constructor(
             openPdf.finishPage(page)
         }
 
-        val fileName = repository.saveAndGetFileName { dispatcher, file ->
+        val fileName = repository.saveAndGetFilePath { dispatcher, file ->
             withContext(dispatcher) {
                 file.outputStream().use { openPdf.writeTo(it) }
                 openPdf.close()
-                file.name
+                file.absolutePath
             }
         }
         return fileName

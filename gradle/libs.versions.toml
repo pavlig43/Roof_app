@@ -1,7 +1,7 @@
 [versions]
 #main
 kotlin = "2.0.20"
-agp = "8.7.2"
+agp = "8.5.2"
 ksp = "2.0.20-1.0.25"
 
 #core

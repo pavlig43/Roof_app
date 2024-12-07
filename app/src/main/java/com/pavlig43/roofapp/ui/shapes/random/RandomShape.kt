@@ -34,14 +34,14 @@ import com.pavlig43.roofapp.ui.kit.CalculateSheetParamsDialog
 
 @Composable
 fun RandomShape(
-    moveToPdfResult: () -> Unit,
+    moveToPdfResult: (String) -> Unit,
 ) {
     RandomShapep(moveToPdfResult, hiltViewModel())
 }
 
 @Composable
 fun RandomShapep(
-    moveToPdfResult: () -> Unit,
+    moveToPdfResult: (String) -> Unit,
     viewModel: RandomShapeViewModel,
 ) {
     val randomShapeState by viewModel.randomShapeState.collectAsState()
@@ -57,8 +57,7 @@ fun RandomShapep(
             openAddDialog = viewModel::moveToAddPointDialog,
             isValidResult = isConvex,
             getResult = {
-                viewModel.getResult()
-                moveToPdfResult()
+                viewModel.getResult { filePath -> moveToPdfResult(filePath) }
             }
         )
         when (val state = randomShapeState) {

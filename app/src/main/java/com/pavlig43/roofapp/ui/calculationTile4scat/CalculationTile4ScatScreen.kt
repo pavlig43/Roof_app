@@ -39,13 +39,13 @@ import com.pavlig43.roofapp.ui.theme.Roof_appTheme
 import java.math.RoundingMode
 
 @Composable
-fun CalculationTile4ScatMainScreen(moveToPdfResult: () -> Unit) {
+fun CalculationTile4ScatMainScreen(moveToPdfResult: (String) -> Unit) {
     CalculationTile4ScatMainScreenp(moveToPdfResult, hiltViewModel())
 }
 
 @Composable
 private fun CalculationTile4ScatMainScreenp(
-    moveToPdfResult: () -> Unit,
+    moveToPdfResult: (String) -> Unit,
     viewModel: CalculationTile4ScatViewModel,
 ) {
     val paramsState by viewModel.roofState.collectAsState()
@@ -63,8 +63,9 @@ private fun CalculationTile4ScatMainScreenp(
         calculateFromRoofType = viewModel::calculateFromRoofType,
         isValid = isValid,
         getResult = {
-            viewModel.getResult()
-            moveToPdfResult()
+            viewModel.getResult { filePath ->
+                moveToPdfResult(filePath)
+            }
         },
     )
 }

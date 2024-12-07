@@ -1,12 +1,12 @@
 package com.pavlig43.roofapp.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.pavlig43.roofapp.di.files.FileExtension
 import com.pavlig43.roofapp.ui.calculationTile4scat.CalculationTile4ScatMainScreen
 import com.pavlig43.roofapp.ui.pdfImage.ResultImagesFromPDF
 import com.pavlig43.roofapp.ui.saveDocuments.ScreensSaveDocuments
@@ -19,19 +19,19 @@ fun NavigationGraph(navController: NavHostController) {
         startDestination = AllMenuDestination.TileLayout.route,
     ) {
         composable(route = AllMenuDestination.TileLayout.route) {
-            CalculationTile4ScatMainScreen {
-                navController.navigateToDefaultPdf()
+            CalculationTile4ScatMainScreen { path ->
+                navController.navigateToResultPdf(path)
             }
         }
         composable(route = AllMenuDestination.SaveDocuments.route) {
-            ScreensSaveDocuments { fileName -> navController.navigate("${PDFImageDestination.route}/$fileName") }
+            ScreensSaveDocuments { path -> navController.navigateToResultPdf(path) }
         }
 
         composable(
             route = AllMenuDestination.ConstructorShape.route,
 
-            ) {
-            RandomShape { navController.navigateToDefaultPdf() }
+        ) {
+            RandomShape { path -> navController.navigateToResultPdf(path) }
         }
         composable(
             route = PDFImageDestination.routeWithArgs,
@@ -42,5 +42,5 @@ fun NavigationGraph(navController: NavHostController) {
     }
 }
 
-fun NavHostController.navigateToDefaultPdf() =
-    navigate("${PDFImageDestination.route}/${FileExtension.PDF.defaultName}")
+private fun NavHostController.navigateToResultPdf(filePAth: String) =
+    navigate("${PDFImageDestination.route}/${Uri.encode(filePAth)}")

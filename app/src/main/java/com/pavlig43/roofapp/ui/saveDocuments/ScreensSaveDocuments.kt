@@ -116,7 +116,7 @@ private fun FileItemCard(
             }
         },
     ) {
-        Card(modifier = Modifier.clickable { openFile(file.name) }) {
+        Card(modifier = Modifier.clickable { openFile(file.absolutePath) }) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
