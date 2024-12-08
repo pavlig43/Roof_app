@@ -51,4 +51,5 @@
     <string name="flat">Пологая</string>
     <string name="roof_type">Тип крыши</string>
     <string name="for_roofer">Для кровельщика</string>
+    <string name="share">share</string>
 </resources>
