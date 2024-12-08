@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.roofapp.data.fileStorage.AndroidFileStorageRepository
-import com.pavlig43.roofapp.navigation.PDFImageDestination
+import com.pavlig43.roofapp.navigation.destination.PDFImageDestination
 import com.rizzi.bouquet.ResourceType
 import com.rizzi.bouquet.VerticalPdfReaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
