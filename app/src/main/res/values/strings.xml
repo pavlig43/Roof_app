@@ -52,4 +52,7 @@
     <string name="roof_type">Тип крыши</string>
     <string name="for_roofer">Для кровельщика</string>
     <string name="share">share</string>
+    <string name="back">back</string>
+    <string name="add">add</string>
+    <string name="create_from_random">Собрать из рандома</string>
 </resources>

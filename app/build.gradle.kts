@@ -104,8 +104,8 @@ dependencies {
     implementation(libs.androidx.material3)
 
 // local
-    implementation(project(":mathBigDecimal"))
-    implementation(project(":canvasDraw"))
+    implementation(projects.mathBigDecimal)
+    implementation(projects.canvasDraw)
 
 // Graphics
     implementation(libs.bouquet)

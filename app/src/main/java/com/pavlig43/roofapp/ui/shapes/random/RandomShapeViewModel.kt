@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.pavlig43.mathbigdecimal.OffsetBD
 import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
 import com.pavlig43.pdfcanvasdraw.core.metrics.CountPxInOneCM
+import com.pavlig43.roofapp.data.shapeMulti.ShapeMultiProvider
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
 import com.pavlig43.roofapp.domain.TileReportUseCase
@@ -28,7 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RandomShapeViewModel
 @Inject constructor(
-    @DocTypeBuilder(DocType.AndroidPdf) private val tileReportUseCase: TileReportUseCase
+    private val shapeMultiProvider: ShapeMultiProvider,
+    @DocTypeBuilder(DocType.AndroidPdf) private val tileReportUseCase: TileReportUseCase,
 ) : ViewModel() {
     private val _randomShapeState =
         MutableStateFlow<RandomShapeState>(RandomShapeState.ConstructorShape)
@@ -41,6 +43,12 @@ class RandomShapeViewModel
     val coordinateShape = snapshotFlow { listOffset.toList() }.map {
         CoordinateShape(it, true)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CoordinateShape(listOffset))
+
+    private val listOfCoordinateShape = shapeMultiProvider.listCoordinateShape.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        listOf()
+    )
 
     fun addDot(offsetBD: OffsetBD) {
         if (!listOffset.contains(offsetBD)) {
@@ -125,13 +133,17 @@ class RandomShapeViewModel
         listOffset.removeAt(index)
     }
 
-    fun getResult(moveToPdfResult: (String) -> Unit) {
+    fun getFilePath(moveToPdfResult: (String) -> Unit) {
+        shapeMultiProvider.addShape(coordinateShape.value)
+
         viewModelScope.launch {
-            val filePath = tileReportUseCase.invoke(
-                listOfCoordinateShape = listOf(coordinateShape.value),
-                sheet = _sheet.value,
-            )
-            moveToPdfResult(filePath)
+            listOfCoordinateShape.collect { list ->
+                val filePath = tileReportUseCase.invoke(
+                    listOfCoordinateShape = list,
+                    sheet = _sheet.value,
+                )
+                moveToPdfResult(filePath)
+            }
         }
     }
 }

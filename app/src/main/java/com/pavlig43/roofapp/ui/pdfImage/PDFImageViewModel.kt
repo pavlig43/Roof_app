@@ -4,8 +4,10 @@ import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pavlig43.roofapp.FILE_NAME
+import com.pavlig43.roofapp.IS_CONSTRUCTOR
 import com.pavlig43.roofapp.data.fileStorage.AndroidFileStorageRepository
-import com.pavlig43.roofapp.navigation.destination.PDFImageDestination
+import com.pavlig43.roofapp.data.shapeMulti.ShapeMultiProvider
 import com.rizzi.bouquet.ResourceType
 import com.rizzi.bouquet.VerticalPdfReaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,10 +26,13 @@ import javax.inject.Inject
 @HiltViewModel
 class PDFImageViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: AndroidFileStorageRepository
+    private val repository: AndroidFileStorageRepository,
+    private val shapeMultiProvider: ShapeMultiProvider,
 ) : ViewModel() {
 
-    private val filePath: String = checkNotNull(savedStateHandle[PDFImageDestination.ARG_FILE_NAME])
+    private val filePath: String = checkNotNull(savedStateHandle[FILE_NAME])
+    val isConstructor: Boolean =
+        checkNotNull(savedStateHandle[IS_CONSTRUCTOR]).toString().toBoolean()
 
     private val fileFlow = repository.loadFile(filePath)
 
@@ -62,6 +67,7 @@ class PDFImageViewModel @Inject constructor(
     }
 
     fun saveFile() {
+        shapeMultiProvider.clear()
         viewModelScope.launch {
             repository.reNameFile(
                 file.value,

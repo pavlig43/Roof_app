@@ -10,7 +10,7 @@ import com.pavlig43.roofapp.navigation.roofNavigation.roofNavigation
 fun MainNavigationGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = RoofDestination.TileLayout.route,
+        startDestination = RoofDestination.ConstructorShape.route,
     ) {
         roofNavigation(navController)
     }

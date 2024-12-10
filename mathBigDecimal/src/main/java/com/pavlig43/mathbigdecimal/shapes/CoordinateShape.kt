@@ -7,6 +7,7 @@ import com.pavlig43.mathbigdecimal.utils.atan2
 import com.pavlig43.mathbigdecimal.utils.lineInterpolationForShape
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Objects
 import kotlin.math.PI
 
 open class CoordinateShape(
@@ -202,6 +203,16 @@ open class CoordinateShape(
         return listOfDotsOnRealCanvas.any {
             it.getDistance(dotOnRealCanvas).toFloat() < radiusOfDot * 2
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other === this) return true
+        if (other !is CoordinateShape) return false
+        return other.polygon == this.polygon
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(polygon)
     }
 
     override fun toString(): String = polygon.toString()

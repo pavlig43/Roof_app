@@ -15,7 +15,7 @@ object RoofDestination {
     }
 
     object ConstructorShape : ScreenDestination {
-        override val title: Int = R.string.random_shape
+        override val title: Int = R.string.create_from_random
 
         override val route: String = "random_shape"
     }
