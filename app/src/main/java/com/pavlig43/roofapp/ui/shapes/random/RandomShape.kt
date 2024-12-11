@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,7 +75,7 @@ fun RandomShapep(
                     onDismissRequest = viewModel::moveToConstructor,
                     sheet = sheet,
                     updateSheetParam = viewModel::updateSheetParams,
-                    modifier = Modifier.rotate(RIGHT_DEGREE),
+                    modifier = Modifier,
                 )
 
             is RandomShapeState.AddPointDialog ->
@@ -84,7 +83,7 @@ fun RandomShapep(
                     onDismissRequest = viewModel::moveToConstructor,
                     updateOrAddPoint = viewModel::addDot,
                     checkOnProximity = viewModel::checkOnProximity,
-                    modifier = Modifier.rotate(RIGHT_DEGREE),
+                    modifier = Modifier,
                 )
 
             is RandomShapeState.UpdatePointDialog -> {
@@ -98,7 +97,7 @@ fun RandomShapep(
                         viewModel.deleteDot(index)
                     },
                     checkOnProximity = viewModel::checkOnProximity,
-                    modifier = Modifier.rotate(RIGHT_DEGREE),
+                    modifier = Modifier,
                     offsetBD = offsetBD,
                 )
             }
@@ -114,8 +113,7 @@ private fun ConstructorRandomShape(
 ) {
     val factory =
         remember(coordinateShape) {
-            {
-                    pageConfig: PageConfig ->
+            { pageConfig: PageConfig ->
                 ConstructorShape(
                     coordinateShape.toShapeCanvas(),
                     pageConfig,
@@ -161,11 +159,10 @@ private fun ButtonsRow(
                     modifier =
                     Modifier
                         .size(128.dp)
-                        .rotate(RIGHT_DEGREE),
                 )
             }
         }
     }
 }
 
-private const val RIGHT_DEGREE = 90F
+

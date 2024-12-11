@@ -24,7 +24,7 @@ private const val PADDING_PERCENT_Y = 0.1F
 fun ComposeBuild(
     pageRendererFactory: (PageConfig) -> PageRenderer,
 
-) {
+    ) {
     var pageConfig by remember {
         mutableStateOf(
             PageConfig(
@@ -32,6 +32,9 @@ fun ComposeBuild(
                 y = 0,
                 PADDING_PERCENT_X,
                 PADDING_PERCENT_Y,
+                getStartPointF = { x, paddingPercentX, y, paddingPercentY ->
+                    PointF(x * paddingPercentX, y - (y * paddingPercentY))
+                }
             ),
         )
     }

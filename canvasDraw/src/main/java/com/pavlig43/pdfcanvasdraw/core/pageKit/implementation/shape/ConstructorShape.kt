@@ -14,6 +14,8 @@ import com.pavlig43.pdfcanvasdraw.core.abstractCanvas.extentions.drawShape.drawS
 import com.pavlig43.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.pavlig43.pdfcanvasdraw.core.pageKit.abstractPage.PageConfig
 import com.pavlig43.pdfcanvasdraw.core.pageKit.abstractPage.PageRenderer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlin.math.hypot
 
 class ConstructorShape(
@@ -26,12 +28,7 @@ class ConstructorShape(
     private val startPointF = pageConfig.startPointF
     private val countPxInOneCM =
         countPxInOneCM(shapeOnCanvas.height.toInt(), shapeOnCanvas.width.toInt())
-    private val listOfDotsOnRealCanvas =
-        shapeOnCanvas.listOfDots.map { dot ->
-            val centerX = dot.x * countPxInOneCM.x + startPointF.x
-            val centerY = dot.y * countPxInOneCM.y + startPointF.y
-            PointF(centerX, centerY)
-        }
+    private val listOfDotsOnRealCanvas = MutableStateFlow<List<PointF>>(listOf())
 
     init {
         provideShapeOnRealCanvas(
@@ -44,10 +41,11 @@ class ConstructorShape(
     override suspend fun CanvasInterface.drawContent() {
         Log.d("startRenderer", shapeOnCanvas.toString())
 
-        drawShapeWithRuler(
+        val updatedListOfDotsOnRealCanvas = drawShapeWithRuler(
             shapeOnCanvas = shapeOnCanvas,
             countPxInOneCM = countPxInOneCM,
             startPointF = startPointF,
+            isPortrait = true,
             tickParam =
             TickParam().copy(
                 textSize = TICK_TEXT_SIZE,
@@ -55,9 +53,7 @@ class ConstructorShape(
             ),
             rulerParam = RulerParam().copy(strokeWidth = RULER_STROKE_WIDTH),
         )
-
-        listOfDotsOnRealCanvas.forEachIndexed { ind, dot ->
-
+        updatedListOfDotsOnRealCanvas.forEachIndexed { ind, dot ->
             drawCircle(
                 dot.x,
                 dot.y,
@@ -68,10 +64,11 @@ class ConstructorShape(
                 },
             )
         }
+        listOfDotsOnRealCanvas.update { updatedListOfDotsOnRealCanvas }
     }
 
     override fun handleGetTap(tapPointF: PointF) {
-        listOfDotsOnRealCanvas.forEachIndexed { index, pointF ->
+        listOfDotsOnRealCanvas.value.forEachIndexed { index, pointF ->
             val distance =
                 PointF(tapPointF.x - pointF.x, tapPointF.y - pointF.y).run { hypot(this.x, this.y) }
             if (distance < RADIUS_DOT) {

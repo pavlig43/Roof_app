@@ -10,6 +10,11 @@ data class PageConfig(
     val y: Int = A4Y,
     val paddingPercentX: Float = PADDING_PERCENT,
     val paddingPercentY: Float = PADDING_PERCENT,
+    val getStartPointF: (Int, Float, Int, Float) -> PointF = { x, paddingPercentX, y, paddingPercentY ->
+        PointF(x * paddingPercentX, y * paddingPercentY)
+    }
 ) {
-    val startPointF = PointF(x * paddingPercentX, y * paddingPercentY)
+    val startPointF: PointF = getStartPointF(x, paddingPercentX, y, paddingPercentY)
 }
+
+

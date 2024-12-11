@@ -21,8 +21,9 @@ fun CanvasInterface.drawShape(
     shapeOnCanvas: ShapeOnCanvas,
     countPxInOneCM: CountPxInOneCM,
     startPointF: PointF = PointF(0F, 0F),
+    isPortrait: Boolean = false,
     shapePaint: ShapePaint = defaultShapePaint,
-) {
+): List<PointF> {
     val paint =
         createPaint().apply {
             color = shapePaint.color
@@ -33,9 +34,11 @@ fun CanvasInterface.drawShape(
 
     val pointFListOfDots =
         shapeOnCanvas.listOfDots.map { pointF ->
+            val generalY =
+                if (isPortrait) (-pointF.y * countPxInOneCM.y) else (pointF.y * countPxInOneCM.y)
             PointF(
                 pointF.x * countPxInOneCM.x + startPointF.x,
-                pointF.y * countPxInOneCM.y + startPointF.y,
+                generalY + startPointF.y,
             )
         }
     val pointFShapeCanvas = shapeOnCanvas.copy(pointFListOfDots)
@@ -54,6 +57,7 @@ fun CanvasInterface.drawShape(
             pointFShapeCanvas,
         )
     }
+    return pointFListOfDots
 }
 
 data class ShapePaint(

@@ -14,6 +14,7 @@ fun CanvasInterface.rulerLine(
     tickParam: TickParam,
     scaleRuler: Int,
     forXRuler: Boolean,
+    isPortrait: Boolean = false,
 ) {
     val countCeilOtherUnit = countCM.roundUpToNearestToFullScale(scaleRuler).takeIf { it != 0 } ?: 1
     val paint = createPaint().apply {
@@ -36,7 +37,9 @@ fun CanvasInterface.rulerLine(
         val pointFTick = if (forXRuler) {
             PointF(i * countPxInOneCM * scaleRuler + startPointFLine.x, startPointFLine.y)
         } else {
-            PointF(startPointFLine.x, i * countPxInOneCM * scaleRuler + startPointFLine.y)
+            val generalY =
+                if (isPortrait) (-i * countPxInOneCM * scaleRuler) else (i * countPxInOneCM * scaleRuler)
+            PointF(startPointFLine.x, generalY + startPointFLine.y)
         }
 
         this.tickForRuler(

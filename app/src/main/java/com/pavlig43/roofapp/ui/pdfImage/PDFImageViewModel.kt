@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.roofapp.FILE_NAME
 import com.pavlig43.roofapp.IS_CONSTRUCTOR
+import com.pavlig43.roofapp.WHILE_SUBSCRIBED
 import com.pavlig43.roofapp.data.fileStorage.AndroidFileStorageRepository
 import com.pavlig43.roofapp.data.shapeMulti.ShapeMultiProvider
 import com.rizzi.bouquet.ResourceType
@@ -32,14 +33,15 @@ class PDFImageViewModel @Inject constructor(
 
     private val filePath: String = checkNotNull(savedStateHandle[FILE_NAME])
     val isConstructor: Boolean =
-        checkNotNull(savedStateHandle[IS_CONSTRUCTOR]).toString().toBoolean()
+        savedStateHandle.get<String?>(IS_CONSTRUCTOR)
+            ?.toBooleanStrictOrNull() ?: true
 
     private val fileFlow = repository.loadFile(filePath)
 
     private val file = fileFlow
         .stateIn(
             viewModelScope,
-            SharingStarted.Eagerly,
+            SharingStarted.WhileSubscribed(WHILE_SUBSCRIBED),
             File("")
         )
 

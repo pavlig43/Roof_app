@@ -13,22 +13,25 @@ fun CanvasInterface.drawShapeWithRuler(
     shapePaint: ShapePaint = defaultShapePaint,
     countPxInOneCM: CountPxInOneCM,
     startPointF: PointF = PointF(0F, 0F),
+    isPortrait: Boolean = false,
     rulerParam: RulerParam = RulerParam(),
     tickParam: TickParam = TickParam(),
-) {
+): List<PointF> {
     coordinateSystem(
         countCMInX = shapeOnCanvas.height.toInt(),
         countCMInY = shapeOnCanvas.width.toInt(),
         countPxInOneCM = countPxInOneCM,
+        isPortrait = isPortrait,
         startPointFLine = startPointF,
         rulerParam = rulerParam,
         tickParam = tickParam,
     )
 
-    drawShape(
+    return drawShape(
         shapeOnCanvas = shapeOnCanvas,
         countPxInOneCM = countPxInOneCM,
         startPointF = startPointF,
+        isPortrait = isPortrait,
         shapePaint = shapePaint,
     )
 }

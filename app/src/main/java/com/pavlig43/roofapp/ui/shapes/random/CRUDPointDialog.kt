@@ -14,12 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import com.pavlig43.mathbigdecimal.OffsetBD
-import com.pavlig43.pdfcanvasdraw.RIGHT_DEGREE
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
@@ -119,8 +117,7 @@ private fun AddDialogPrev() {
                 deletePoint = {},
                 checkOnProximity = { _ -> true },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .rotate(RIGHT_DEGREE),
+                    .fillMaxSize(),
                 offsetBD = OffsetBD.Zero,
             )
         }

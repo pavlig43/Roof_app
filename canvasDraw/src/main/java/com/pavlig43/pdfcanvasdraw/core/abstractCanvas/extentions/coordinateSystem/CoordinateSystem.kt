@@ -15,6 +15,7 @@ fun CanvasInterface.coordinateSystem(
     countCMInX: Int,
     countCMInY: Int,
     startPointFLine: PointF = PointF(0f, 0f),
+    isPortrait: Boolean = false,
     rulerParam: RulerParam = RulerParam(),
     tickParam: TickParam = TickParam(),
     scaleRuler: Int = CM_IN_ONE_METER,
@@ -22,19 +23,19 @@ fun CanvasInterface.coordinateSystem(
     val endPointFLineX =
         PointF(
             (
-                countCMInX.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
-                    ?: scaleRuler
-                ) * countPxInOneCM.x + startPointFLine.x,
+                    countCMInX.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
+                        ?: scaleRuler
+                    ) * countPxInOneCM.x + startPointFLine.x,
             startPointFLine.y,
         )
 
+    val absoluteEndPointFY = (countCMInY.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
+        ?: scaleRuler) * countPxInOneCM.y
+    val endPointFLineYAboutStartPoint = if (!isPortrait) absoluteEndPointFY else -absoluteEndPointFY
     val endPointFLineY =
         PointF(
             startPointFLine.x,
-            (
-                countCMInY.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
-                    ?: scaleRuler
-                ) * countPxInOneCM.y + startPointFLine.y,
+            startPointFLine.y + endPointFLineYAboutStartPoint
         )
 
     rulerLine(
@@ -45,6 +46,7 @@ fun CanvasInterface.coordinateSystem(
         rulerParam = rulerParam,
         scaleRuler = scaleRuler,
         forXRuler = true,
+        isPortrait = isPortrait,
         tickParam = tickParam,
     )
     rulerLine(
@@ -55,6 +57,7 @@ fun CanvasInterface.coordinateSystem(
         rulerParam = rulerParam,
         scaleRuler = scaleRuler,
         forXRuler = false,
+        isPortrait = isPortrait,
         tickParam = tickParam,
     )
 }
