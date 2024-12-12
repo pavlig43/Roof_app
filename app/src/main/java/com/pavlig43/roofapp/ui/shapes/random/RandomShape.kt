@@ -55,7 +55,9 @@ fun RandomShapep(
             openSheetDialog = viewModel::moveToSheetDialog,
             openAddDialog = viewModel::moveToAddPointDialog,
             isValidResult = isConvex,
-            getResult = { viewModel.getFilePath { filePath -> moveToPdfResult(filePath) } }
+            getResult = {
+                viewModel.getFilePath { filePath -> moveToPdfResult(filePath) }
+            }
         )
         when (val state = randomShapeState) {
             is RandomShapeState.ConstructorShape ->
@@ -113,7 +115,8 @@ private fun ConstructorRandomShape(
 ) {
     val factory =
         remember(coordinateShape) {
-            { pageConfig: PageConfig ->
+            {
+                    pageConfig: PageConfig ->
                 ConstructorShape(
                     coordinateShape.toShapeCanvas(),
                     pageConfig,
@@ -164,5 +167,3 @@ private fun ButtonsRow(
         }
     }
 }
-
-

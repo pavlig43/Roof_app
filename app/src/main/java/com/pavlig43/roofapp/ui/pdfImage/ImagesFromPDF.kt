@@ -37,7 +37,10 @@ fun ImagesFromPDF(
 
     ImagesFromPDFp(
         pdfReaderState = pdfReaderState,
-        onBack = onBackNavigation,
+        onBack = {
+            viewModel.removeLastShape()
+            onBackNavigation()
+        },
         onAdd = onAdd,
         shareFile = viewModel::shareFile,
         saveFile = viewModel::saveFile,

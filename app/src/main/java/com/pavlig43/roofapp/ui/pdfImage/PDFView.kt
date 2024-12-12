@@ -40,10 +40,7 @@ private fun LockOrientation(orientation: Int) {
         onDispose {
             activity.requestedOrientation = originOrientation
         }
-
     }
-
-
 }
 
 private fun Context.findActivity(): Activity? = when (this) {

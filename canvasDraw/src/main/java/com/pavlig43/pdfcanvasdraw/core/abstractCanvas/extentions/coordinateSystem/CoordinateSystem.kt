@@ -23,14 +23,16 @@ fun CanvasInterface.coordinateSystem(
     val endPointFLineX =
         PointF(
             (
-                    countCMInX.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
-                        ?: scaleRuler
-                    ) * countPxInOneCM.x + startPointFLine.x,
+                countCMInX.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
+                    ?: scaleRuler
+                ) * countPxInOneCM.x + startPointFLine.x,
             startPointFLine.y,
         )
 
-    val absoluteEndPointFY = (countCMInY.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
-        ?: scaleRuler) * countPxInOneCM.y
+    val absoluteEndPointFY = (
+        countCMInY.roundUpToNearestWithScale(scaleRuler).takeIf { it != 0 }
+            ?: scaleRuler
+        ) * countPxInOneCM.y
     val endPointFLineYAboutStartPoint = if (!isPortrait) absoluteEndPointFY else -absoluteEndPointFY
     val endPointFLineY =
         PointF(

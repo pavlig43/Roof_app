@@ -16,5 +16,3 @@ data class PageConfig(
 ) {
     val startPointF: PointF = getStartPointF(x, paddingPercentX, y, paddingPercentY)
 }
-
-

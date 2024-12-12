@@ -15,7 +15,6 @@ fun NestedDrawerItem(
     NavigationDrawerItem(
         label = { Text(text = stringResource(screenDestination.title)) },
         selected = screenDestination.route == selectedScreen,
-        icon = { },
         onClick = { toNavigate(screenDestination.route) },
     )
 }

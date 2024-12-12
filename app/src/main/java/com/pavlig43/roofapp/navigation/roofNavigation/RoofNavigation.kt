@@ -29,7 +29,9 @@ fun NavGraphBuilder.roofNavigation(navController: NavHostController) {
         route = PDFImageDestination.routeWithArgs,
     ) {
         ImagesFromPDF(
-            onBackNavigation = { navController.popBackStack() },
+            onBackNavigation = {
+                navController.popBackStack()
+            },
             onAdd = { navController.navigate(RoofDestination.ConstructorShape.route) },
 
         )

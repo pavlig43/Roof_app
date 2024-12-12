@@ -16,4 +16,6 @@ object PDFImageDestination : ScreenDestination {
 }
 
 fun NavHostController.navigateToResultPdf(filePAth: String, isConstructor: Boolean = false) =
-    navigate("${PDFImageDestination.route}/${Uri.encode(filePAth)}/$isConstructor")
+    navigate(
+        "${PDFImageDestination.route}/${Uri.encode(filePAth)}/$isConstructor",
+    )

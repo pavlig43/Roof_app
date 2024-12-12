@@ -1,6 +1,7 @@
 package com.pavlig43.roofapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
@@ -41,6 +43,16 @@ private fun AppContent() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val navHostController = rememberNavController()
+
+    LaunchedEffect(Unit) {
+        navHostController.currentBackStackEntryFlow.collect {
+            val backStackRoutes = navHostController.currentBackStack.value.map { entry ->
+                entry.destination.route
+            }
+            Log.d("NavBackStackAfter", "Route: $backStackRoutes")
+        }
+    }
+
     DrawerNavigation(
         drawerState = drawerState,
         navController = navHostController,

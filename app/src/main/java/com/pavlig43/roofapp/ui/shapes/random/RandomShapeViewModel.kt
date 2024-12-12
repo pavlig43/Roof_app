@@ -44,12 +44,7 @@ class RandomShapeViewModel
         CoordinateShape(it, true)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CoordinateShape(listOffset))
 
-    private val listOfCoordinateShape = shapeMultiProvider.listCoordinateShape.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        listOf()
-    )
-
+    private val listOfCoordinateShape = shapeMultiProvider.listCoordinateShape
     fun addDot(offsetBD: OffsetBD) {
         if (!listOffset.contains(offsetBD)) {
             listOffset.add(offsetBD)
@@ -135,15 +130,12 @@ class RandomShapeViewModel
 
     fun getFilePath(moveToPdfResult: (String) -> Unit) {
         shapeMultiProvider.addShape(coordinateShape.value)
-
         viewModelScope.launch {
-            listOfCoordinateShape.collect { list ->
-                val filePath = tileReportUseCase.invoke(
-                    listOfCoordinateShape = list,
-                    sheet = _sheet.value,
-                )
-                moveToPdfResult(filePath)
-            }
+            val filePath = tileReportUseCase.invoke(
+                listOfCoordinateShape = listOfCoordinateShape.value,
+                sheet = _sheet.value,
+            )
+            moveToPdfResult(filePath)
         }
     }
 }

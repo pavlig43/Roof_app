@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -87,10 +89,12 @@ private fun CalculationTile4Scat(
     getResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val verticalScrollState = rememberScrollState()
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .padding(12.dp)
+            .verticalScroll(verticalScrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         arrayOf(paramsState.width, paramsState.len).forEach { roofParam ->

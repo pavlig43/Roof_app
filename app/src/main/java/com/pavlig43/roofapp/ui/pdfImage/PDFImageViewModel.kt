@@ -32,18 +32,17 @@ class PDFImageViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val filePath: String = checkNotNull(savedStateHandle[FILE_NAME])
+
     val isConstructor: Boolean =
-        savedStateHandle.get<String?>(IS_CONSTRUCTOR)
-            ?.toBooleanStrictOrNull() ?: true
+        savedStateHandle.get<String?>(IS_CONSTRUCTOR)?.toBooleanStrictOrNull() != false
 
     private val fileFlow = repository.loadFile(filePath)
 
-    private val file = fileFlow
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(WHILE_SUBSCRIBED),
-            File("")
-        )
+    private val file = fileFlow.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(WHILE_SUBSCRIBED),
+        File("")
+    )
 
     /**
      * Список страниц ПДФ файла для отображения на экране
@@ -51,7 +50,11 @@ class PDFImageViewModel @Inject constructor(
     val verticalPdfReaderState = fileFlow.map { file ->
         val uri = file.toUri()
         VerticalPdfReaderState(ResourceType.Local(uri))
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(WHILE_SUBSCRIBED), null)
+
+    fun clear() {
+        this.clear()
+    }
 
     private val _saveFileName = MutableStateFlow("")
     val saveFileName = _saveFileName.asStateFlow()
@@ -66,6 +69,10 @@ class PDFImageViewModel @Inject constructor(
 
     fun shareFile() {
         repository.shareFile(file.value)
+    }
+
+    fun removeLastShape() {
+        shapeMultiProvider.removeLast()
     }
 
     fun saveFile() {
