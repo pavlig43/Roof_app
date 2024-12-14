@@ -16,7 +16,7 @@ import java.io.File
  * доступных в хранилище. Функция [shareFile] позволяет поделиться указанным файлом с заданным
  * MIME-типом, по умолчанию — "application/pdf". Метод [saveAndGetFilePath] сохраняет файл и
  * возвращает его имя, используя при этом suspend лямбда-функцию, которая принимает
- * CoroutineDispatcher и File. Метод [delete] удаляет указанный файл из хранилища, а [reNameFile]
+ * CoroutineDispatcher и File. Метод [delete] удаляет указанный файл из хранилища, а [saveFileWithNewName]
  * переименовывает файл в новое имя. Функция [loadFile] загружает файл в виде Flow.
  * Метод [checkSaveName] проверяет, можно ли использовать заданное имя для сохранения
  * файла, возвращая Flow<Boolean>.
@@ -37,7 +37,7 @@ interface FileStorageRepository {
 
     suspend fun delete(file: File)
 
-    suspend fun reNameFile(file: File, fileName: String)
+    suspend fun saveFileWithNewName(file: File, fileName: String)
 
     fun loadFile(fileName: String): Flow<File>
 

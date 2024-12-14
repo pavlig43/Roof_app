@@ -53,9 +53,11 @@ class TileReportUseCase(
                 )
             }
         val infoSheetText =
-            listOfRealSheet.flatten().groupingBy { it.ceilLen }.eachCount().map { (len, count) ->
-                "$len (${resourceProvider.getString(sheet.overlap.unit.title)}) - $count"
-            }.toMutableList().apply { add(0, resourceProvider.getString(R.string.sheets)) }
+            listOfRealSheet.flatten().sortedByDescending { it.ceilLen }
+                .groupingBy { it.ceilLen }.eachCount()
+                .map { (len, count) ->
+                    "$len (${resourceProvider.getString(sheet.overlap.unit.title)}) - $count"
+                }.toMutableList().apply { add(0, resourceProvider.getString(R.string.sheets)) }
 
         val infoText = infoSheetText + otherInfo
 

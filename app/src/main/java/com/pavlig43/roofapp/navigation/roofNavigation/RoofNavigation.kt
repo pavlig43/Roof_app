@@ -4,8 +4,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.pavlig43.roofapp.navigation.destination.PDFImageDestination
+import com.pavlig43.roofapp.navigation.destination.PdfChangeDestination
+import com.pavlig43.roofapp.navigation.destination.navigateToChangePdf
 import com.pavlig43.roofapp.navigation.destination.navigateToResultPdf
 import com.pavlig43.roofapp.ui.calculationTile4scat.CalculationTile4ScatMainScreen
+import com.pavlig43.roofapp.ui.changeRoofInfoText.TextInPdf
 import com.pavlig43.roofapp.ui.pdfImage.ImagesFromPDF
 import com.pavlig43.roofapp.ui.saveDocuments.ScreensSaveDocuments
 import com.pavlig43.roofapp.ui.shapes.random.RandomShape
@@ -30,10 +33,18 @@ fun NavGraphBuilder.roofNavigation(navController: NavHostController) {
     ) {
         ImagesFromPDF(
             onBackNavigation = {
-                navController.popBackStack()
+                navController.navigateUp()
             },
             onAdd = { navController.navigate(RoofDestination.ConstructorShape.route) },
+            openChangeRoofInfo = { filePath ->
+                navController.navigateToChangePdf(filePath)
+            }
 
         )
+    }
+    composable(
+        route = PdfChangeDestination.routeWithArgs,
+    ) {
+        TextInPdf()
     }
 }

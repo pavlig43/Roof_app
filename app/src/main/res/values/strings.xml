@@ -55,4 +55,5 @@
     <string name="back">back</string>
     <string name="add">add</string>
     <string name="create_from_random">Собрать из рандома</string>
+    <string name="remove_sheets">remove_sheets</string>
 </resources>

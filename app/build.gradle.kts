@@ -107,7 +107,8 @@ dependencies {
     implementation(projects.mathBigDecimal)
     implementation(projects.canvasDraw)
 
-// Graphics
+// PDF
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
     implementation(libs.bouquet)
 
 // Hilt

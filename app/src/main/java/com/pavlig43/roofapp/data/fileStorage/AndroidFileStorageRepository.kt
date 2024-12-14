@@ -31,7 +31,8 @@ import java.io.FileNotFoundException
  * Метод [saveAndGetFilePath] создаёт файл и получает его имя через переданную
  * suspend лямбда-функцию.
  * Метод [delete] удаляет существующий файл,если он не является файлом по умолчанию.
- * Метод [reNameFile] переименовывает файл с использованием renameTo и обновляет список файлов.
+ * Метод [saveFileWithNewName] сохраняет содежимое исходного файла в новый файл с заданным именем.
+ * и обновляет список файлов.
  * Метод [loadFile] возвращает файл как Flow или выбрасывает FileNotFoundException, если файл не найден.
  * Метод [checkSaveName] проверяет, доступно ли имя для сохранения, гарантируя, что имя уникально и не пусто.
  * Метод [getListOfFile] получает все файлы с указанным расширением, исключая файл по умолчанию,
@@ -105,15 +106,11 @@ class AndroidFileStorageRepository(
         _listOfFiles.remove(file)
     }
 
-    override suspend fun reNameFile(file: File, fileName: String) {
-        val saveFile = File(
-            folderFile,
-            "$fileName.${fileExtension.value}"
-        )
+    override suspend fun saveFileWithNewName(file: File, fileName: String) {
+        val saveFile = createFile("$fileName.${fileExtension.value}")
         withContext(dispatcher) {
-            if (file.renameTo(saveFile)) {
-                _listOfFiles.add(saveFile)
-            }
+            file.copyTo(saveFile, overwrite = true)
+            _listOfFiles.add(saveFile)
         }
     }
 
