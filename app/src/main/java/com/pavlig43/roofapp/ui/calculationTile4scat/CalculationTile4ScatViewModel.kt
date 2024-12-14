@@ -107,7 +107,7 @@ class CalculationTile4ScatViewModel
             ).map {
                 "${resourceProvider.getString(it.name.title)} - ${
                     it.value.setScale(
-                        0,
+                        2,
                         RoundingMode.HALF_UP
                     )
                 } (${

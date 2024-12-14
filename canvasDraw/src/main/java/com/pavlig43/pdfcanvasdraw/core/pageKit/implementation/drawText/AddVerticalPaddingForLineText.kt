@@ -5,12 +5,16 @@ package com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.drawText
  * - получение  координат для новой строки
  * TODO() нужно заменить этот класс на что-то другое
  */
-class AddVerticalPaddingForLineText(startPaddingY: Float) {
+class AddVerticalPaddingForLineText(
+    startPaddingY: Float,
+    private val spaceLine: Float,
+) {
     var y = startPaddingY
         private set
 
-    fun addTransferText(spaceLine: Float = 25f): Float {
+    fun addTransferText() {
         y += spaceLine
-        return y
     }
+
 }
+

@@ -1,7 +1,7 @@
 package com.pavlig43.roofapp.domain
 
 import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
-import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.drawText.DrawText
+import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.drawText.drawTextOnSeveralPages
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.shape.ShapeWithRulerAndRectangleRenderer
 import com.pavlig43.pdfcanvasdraw.implementationCore.pdf.DocBuilder
 import com.pavlig43.roof_app.R
@@ -61,9 +61,10 @@ class TileReportUseCase(
 
         val infoText = infoSheetText + otherInfo
 
-        val drawTextRenderer = DrawText(infoText)
+        val drawTextRenderer = infoText.drawTextOnSeveralPages()
 
         val allPages = renderShapePages + drawTextRenderer
+
         return docBuilder.createAndGetFilePath(allPages)
     }
 }
