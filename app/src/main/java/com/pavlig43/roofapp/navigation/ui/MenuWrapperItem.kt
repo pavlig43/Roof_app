@@ -1,5 +1,6 @@
 package com.pavlig43.roofapp.navigation.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +20,9 @@ fun MenuWrapperItem(
     toNavigate: (String) -> Unit,
     modifier: Modifier = Modifier.Companion
 ) {
-    Card(modifier = modifier) {
+    Card(modifier = modifier.clickable {
+        changeExpanded(menuWrapper)
+    }) {
         Column(modifier = Modifier.Companion.fillMaxWidth()) {
             Row(
                 modifier = Modifier.Companion.fillMaxWidth(),
