@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.pavlig43.pdfcanvasdraw"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
@@ -49,8 +49,5 @@ dependencies {
     implementation(libs.androidx.material3)
 
     implementation(libs.kotlinx.coroutines.core)
-
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 }

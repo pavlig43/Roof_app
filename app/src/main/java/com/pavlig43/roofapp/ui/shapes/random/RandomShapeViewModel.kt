@@ -11,7 +11,7 @@ import com.pavlig43.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.pavlig43.roofapp.data.shapeMulti.ShapeMultiProvider
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
-import com.pavlig43.roofapp.domain.TileReportUseCase
+import com.pavlig43.roofapp.domain.useCase.TileReportUseCase
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
 import com.pavlig43.roofapp.model.updateSheetParams

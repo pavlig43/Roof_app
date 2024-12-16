@@ -9,7 +9,7 @@ import com.pavlig43.mathbigdecimal.shapes.Triangle
 import com.pavlig43.roofapp.data.resourceProvider.AndroidResourceProvider
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder
-import com.pavlig43.roofapp.domain.TileReportUseCase
+import com.pavlig43.roofapp.domain.useCase.TileReportUseCase
 import com.pavlig43.roofapp.model.Sheet
 import com.pavlig43.roofapp.model.SheetParam
 import com.pavlig43.roofapp.model.roofParamsClassic4Scat.RoofParam

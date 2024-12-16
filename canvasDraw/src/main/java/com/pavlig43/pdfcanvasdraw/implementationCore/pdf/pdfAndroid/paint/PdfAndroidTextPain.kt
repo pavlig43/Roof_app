@@ -12,6 +12,11 @@ open class PdfAndroidTextPain : TextPainAbstract() {
         set(value) {
             textPaint.color = value
         }
+    override var alpha: Int
+        get() = textPaint.alpha
+        set(value) {
+            textPaint.alpha = value
+        }
 
     override var isUnderlineText: Boolean
         get() = textPaint.isUnderlineText

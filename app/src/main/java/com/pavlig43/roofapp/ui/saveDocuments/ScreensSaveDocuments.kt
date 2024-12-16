@@ -164,7 +164,7 @@ private fun ConfirmDeleteDocDialog(
         },
         dismissButton = {
             Button(onClick = { onDialogDismissed() }) {
-                Text(text = stringResource(R.string.Cancel))
+                Text(text = stringResource(R.string.cancel))
             }
         },
     )

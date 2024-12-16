@@ -1,10 +1,11 @@
-package com.pavlig43.roofapp.domain
+package com.pavlig43.roofapp.domain.useCase
 
 import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.drawText.drawTextOnSeveralPages
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.shape.ShapeWithRulerAndRectangleRenderer
 import com.pavlig43.pdfcanvasdraw.implementationCore.pdf.DocBuilder
 import com.pavlig43.roof_app.R
+import com.pavlig43.roofapp.MARK_INFO
 import com.pavlig43.roofapp.data.resourceProvider.ResourceProvider
 import com.pavlig43.roofapp.mappers.coordinateShape.toShapeCanvas
 import com.pavlig43.roofapp.model.Sheet
@@ -61,7 +62,7 @@ class TileReportUseCase(
 
         val infoText = infoSheetText + otherInfo
 
-        val drawTextRenderer = infoText.drawTextOnSeveralPages()
+        val drawTextRenderer = infoText.drawTextOnSeveralPages(markInfo = MARK_INFO)
 
         val allPages = renderShapePages + drawTextRenderer
 

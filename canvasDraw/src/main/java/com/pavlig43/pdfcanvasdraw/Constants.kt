@@ -14,7 +14,7 @@ const val PADDING_PERCENT = 0.05F
 const val STROKE_WIDTH_THIN = 1f
 const val STROKE_WIDTH_MEDIUM = 3F
 const val STROKE_WIDTH_MEDIUM_PLUS = 4f
-
+const val BLACK = 0xFF000000.toInt()
 const val FULL_ALPHA = 255
 const val SEMI_ALPHA = 123
 

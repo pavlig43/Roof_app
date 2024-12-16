@@ -11,7 +11,7 @@
     <string name="delete_document_manual">Для удаления смахни направо документ</string>
     <string name="delete_this_doc_question">Удалить этот документ???</string>
     <string name="delete">Удалить</string>
-    <string name="Cancel">Отмена</string>
+    <string name="cancel">Отмена</string>
     <string name="PointF">Отклонение по %1$s (см)</string>
     <string name="width_roof">Ширина крыши</string>
     <string name="len_roof">Длина крыши</string>
@@ -56,4 +56,5 @@
     <string name="add">add</string>
     <string name="create_from_random">Собрать из рандома</string>
     <string name="remove_sheets">remove_sheets</string>
+    <string name="page">Страница %1$s</string>
 </resources>

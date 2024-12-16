@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.roofapp.FILE_NAME
 import com.pavlig43.roofapp.IS_CONSTRUCTOR
-import com.pavlig43.roofapp.WHILE_SUBSCRIBED
 import com.pavlig43.roofapp.data.fileStorage.AndroidFileStorageRepository
 import com.pavlig43.roofapp.data.shapeMulti.ShapeMultiProvider
 import com.rizzi.bouquet.ResourceType
@@ -33,6 +32,7 @@ class PDFImageViewModel @Inject constructor(
 
     private val filePath: String = checkNotNull(savedStateHandle[FILE_NAME])
 
+
     val isConstructor =
         savedStateHandle.get<String?>(IS_CONSTRUCTOR)?.toBooleanStrictOrNull() != false
 
@@ -48,7 +48,7 @@ class PDFImageViewModel @Inject constructor(
     val verticalPdfReaderState = fileFlow.map { file ->
         val uri = file.toUri()
         VerticalPdfReaderState(ResourceType.Local(uri))
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(WHILE_SUBSCRIBED), null)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     private val _saveFileName = MutableStateFlow("")
     val saveFileName = _saveFileName.asStateFlow()

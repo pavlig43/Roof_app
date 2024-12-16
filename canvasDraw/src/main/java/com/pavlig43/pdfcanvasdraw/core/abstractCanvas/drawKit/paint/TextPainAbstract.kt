@@ -7,6 +7,7 @@ abstract class TextPainAbstract {
     abstract var letterSpacing: Float
     abstract var textSize: Float
     abstract var textAlign: Align
+    abstract var alpha: Int
 
     enum class Align {
         LEFT,

@@ -38,7 +38,7 @@ class AndroidPdfBuilder @Inject constructor(
                 ).create()
             val page = openPdf.startPage(pageInfo)
             val canvas = PdfAndroidCanvas(page.canvas)
-
+            page.info
             pageRenderer.renderPage(canvas)
 
             openPdf.finishPage(page)

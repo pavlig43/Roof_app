@@ -39,7 +39,7 @@ fun SaveDialog(
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text(text = stringResource(R.string.Cancel))
+                Text(text = stringResource(R.string.cancel))
             }
         },
     )
