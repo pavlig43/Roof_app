@@ -103,7 +103,7 @@ class CalculationTile4ScatViewModel
                 height,
                 pokat,
                 yandova,
-                smallFoot
+                ridge
             ).map {
                 "${resourceProvider.getString(it.name.title)} - ${
                     it.value.setScale(
@@ -141,8 +141,8 @@ class CalculationTile4ScatViewModel
 private fun RoofParamsClassic4Scat.toTrapezoidCoordinateShape() = CoordinateShape(
     listOf(
         OffsetBD.Zero,
-        OffsetBD(pokat.value, (len.value - smallFoot.value).div(BigDecimal(2))),
-        OffsetBD(pokat.value, (len.value + smallFoot.value).div(BigDecimal(2))),
+        OffsetBD(pokat.value, (len.value - ridge.value).div(BigDecimal(2))),
+        OffsetBD(pokat.value, (len.value + ridge.value).div(BigDecimal(2))),
         OffsetBD(BigDecimal.ZERO, len.value)
     )
 )

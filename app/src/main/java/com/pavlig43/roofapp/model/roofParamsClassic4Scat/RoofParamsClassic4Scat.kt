@@ -29,9 +29,9 @@ data class RoofParamsClassic4Scat(
     /**
      * Длина конька - верхнего основания трапеции
      */
-    val smallFoot: RoofParam by lazy {
+    val ridge: RoofParam by lazy {
         RoofParam(
-            RoofParamName.SMALL_FOOT,
+            RoofParamName.RIDGE,
             Trapezoid.smallFoot(
                 bigFoot = len.value,
                 height = pokat.value,

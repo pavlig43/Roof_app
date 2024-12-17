@@ -18,7 +18,7 @@ class RoofParamsClassic4ScatStateTest {
         assertBigDecimalEquals(BigDecimal("33.56"), result.angle.value)
         assertBigDecimalEquals(BigDecimal("331.69"), result.height.value)
         assertBigDecimalEquals(BigDecimal("781.02"), result.yandova.value)
-        assertBigDecimalEquals(BigDecimal("100.00"), result.smallFoot.value)
+        assertBigDecimalEquals(BigDecimal("100.00"), result.ridge.value)
     }
 
     @Test
@@ -29,7 +29,7 @@ class RoofParamsClassic4ScatStateTest {
         assertBigDecimalEquals(BigDecimal("33.56"), result.angle.value, delta = BigDecimal(0.15))
         assertBigDecimalEquals(BigDecimal("331.69"), result.height.value)
         assertBigDecimalEquals(BigDecimal("781.02"), result.yandova.value)
-        assertBigDecimalEquals(BigDecimal("100.00"), result.smallFoot.value)
+        assertBigDecimalEquals(BigDecimal("100.00"), result.ridge.value)
     }
 
     @Test
@@ -39,6 +39,6 @@ class RoofParamsClassic4ScatStateTest {
         assertBigDecimalEquals(BigDecimal("33.56"), result.angle.value)
         assertBigDecimalEquals(BigDecimal("331.69"), result.height.value)
         assertBigDecimalEquals(BigDecimal("781.02"), result.yandova.value)
-        assertBigDecimalEquals(BigDecimal("100.00"), result.smallFoot.value)
+        assertBigDecimalEquals(BigDecimal("100.00"), result.ridge.value)
     }
 }

@@ -18,6 +18,6 @@ enum class RoofParamName(
     ANGLE(R.string.angle_tilt),
     HEIGHT(R.string.height_roof),
     POKAT(R.string.pokat),
-    SMALL_FOOT(R.string.small_foot),
+    RIDGE(R.string.ridge),
     YANDOVA(R.string.yandova)
 }

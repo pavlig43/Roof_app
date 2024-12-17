@@ -12,7 +12,7 @@ fun RoofParamsClassic4Scat.updateRoofParams(roofParam: RoofParam): RoofParamsCla
         RoofParamName.ANGLE -> this.calculateFromAngle(roofParam)
         RoofParamName.HEIGHT -> this.calculateFromHeight(roofParam)
         RoofParamName.POKAT -> this.calculateFromPokat(roofParam)
-        RoofParamName.SMALL_FOOT -> TODO()
+        RoofParamName.RIDGE -> TODO()
         RoofParamName.YANDOVA -> TODO()
     }.copy(roofType = RoofType.None)
 }
