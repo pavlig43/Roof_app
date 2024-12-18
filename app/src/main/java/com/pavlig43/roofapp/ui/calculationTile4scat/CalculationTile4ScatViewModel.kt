@@ -45,7 +45,7 @@ class CalculationTile4ScatViewModel
     private val _sheet = MutableStateFlow(Sheet())
     val sheet = _sheet.asStateFlow()
 
-    private val _selectedOptionDropMenu = MutableStateFlow(_roofState.value.pokat)
+    private val _selectedOptionDropMenu = MutableStateFlow(_roofState.value.pokatTrapezoid)
 
     val selectedOptionDropMenu = _selectedOptionDropMenu.asStateFlow()
 
@@ -54,7 +54,7 @@ class CalculationTile4ScatViewModel
             when (roofParam.name) {
                 RoofParamName.ANGLE -> _roofState.value.angle
                 RoofParamName.HEIGHT -> _roofState.value.height
-                RoofParamName.POKAT -> _roofState.value.pokat
+                RoofParamName.POKAT_TRAPEZOID -> _roofState.value.pokatTrapezoid
                 else -> _selectedOptionDropMenu.value
             }
         }
@@ -71,7 +71,7 @@ class CalculationTile4ScatViewModel
     private fun checkValid(paramsState: RoofParamsClassic4Scat): Boolean {
         val a = paramsState.width.value.divide(BigDecimal(2))
         val b = paramsState.height.value
-        val c = paramsState.pokat.value
+        val c = paramsState.pokatTrapezoid.value
         Log.d("paramcheckValid", "$a-$b-$c")
         return Triangle.isValid(a, b, c) && paramsState.len.value >= paramsState.width.value
     }
@@ -101,9 +101,10 @@ class CalculationTile4ScatViewModel
                 len,
                 angle,
                 height,
-                pokat,
+                pokatTrapezoid,
+                pokatTriangle,
                 yandova,
-                ridge
+                calculateStandardRidge
             ).map {
                 "${resourceProvider.getString(it.name.title)} - ${
                     it.value.setScale(
@@ -141,8 +142,14 @@ class CalculationTile4ScatViewModel
 private fun RoofParamsClassic4Scat.toTrapezoidCoordinateShape() = CoordinateShape(
     listOf(
         OffsetBD.Zero,
-        OffsetBD(pokat.value, (len.value - ridge.value).div(BigDecimal(2))),
-        OffsetBD(pokat.value, (len.value + ridge.value).div(BigDecimal(2))),
+        OffsetBD(
+            pokatTrapezoid.value,
+            (len.value - calculateStandardRidge.value).div(BigDecimal(2))
+        ),
+        OffsetBD(
+            pokatTrapezoid.value,
+            (len.value + calculateStandardRidge.value).div(BigDecimal(2))
+        ),
         OffsetBD(BigDecimal.ZERO, len.value)
     )
 )
@@ -150,7 +157,7 @@ private fun RoofParamsClassic4Scat.toTrapezoidCoordinateShape() = CoordinateShap
 private fun RoofParamsClassic4Scat.toTriangleCoordinateShape() = CoordinateShape(
     listOf(
         OffsetBD.Zero,
-        OffsetBD(pokat.value, width.value.div(BigDecimal("2"))),
+        OffsetBD(pokatTriangle.value, width.value.div(BigDecimal("2"))),
         OffsetBD(BigDecimal.ZERO, width.value)
     )
 )

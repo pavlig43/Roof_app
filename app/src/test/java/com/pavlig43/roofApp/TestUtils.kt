@@ -6,7 +6,7 @@ import java.math.BigDecimal
 fun assertBigDecimalEquals(
     expected: BigDecimal,
     actual: BigDecimal,
-    delta: BigDecimal = BigDecimal(0.03),
+    delta: BigDecimal = BigDecimal("0.03"),
 ) {
     // Вычисляем разницу
     val difference = expected.subtract(actual).abs()

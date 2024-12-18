@@ -15,26 +15,35 @@ data class RoofParamsClassic4Scat(
     val angle: RoofParam = RoofParam(RoofParamName.ANGLE, unit = UnitOfMeasurement.ANGLE),
     val height: RoofParam = RoofParam(RoofParamName.HEIGHT),
     // Покат
-    val pokat: RoofParam = RoofParam(RoofParamName.POKAT),
-    val roofType: RoofType = RoofType.None
+    val pokatTrapezoid: RoofParam = RoofParam(RoofParamName.POKAT_TRAPEZOID),
+    val roofType: RoofType = RoofType.None,
+    val userRidge: RoofParam? = null
 
 ) {
-    val yandova: RoofParam by lazy {
-        RoofParam(
-            RoofParamName.YANDOVA,
-            hypot(width.value.divide(BigDecimal(2)), pokat.value)
-        )
+    private fun calculatePokatTriangle(): RoofParam {
+        if (userRidge == null) return RoofParam(RoofParamName.POKAT_TRIANGLE, pokatTrapezoid.value)
+        // Расстояние от конца конька до конца крыши по длине
+        val catheter = (len.value - userRidge.value).divide(BigDecimal(2))
+        val pokat = hypot(catheter, height.value)
+        return RoofParam(RoofParamName.POKAT_TRIANGLE, pokat)
     }
+
+    val pokatTriangle = calculatePokatTriangle()
+    val yandova: RoofParam = RoofParam(
+        RoofParamName.YANDOVA,
+        hypot(width.value.divide(BigDecimal(2)), pokatTriangle.value)
+    )
+
 
     /**
      * Длина конька - верхнего основания трапеции
      */
-    val ridge: RoofParam by lazy {
+    val calculateStandardRidge: RoofParam by lazy {
         RoofParam(
             RoofParamName.RIDGE,
             Trapezoid.smallFoot(
                 bigFoot = len.value,
-                height = pokat.value,
+                height = pokatTrapezoid.value,
                 edge = yandova.value,
             )
         )

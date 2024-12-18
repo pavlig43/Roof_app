@@ -25,7 +25,7 @@ object Triangle {
     ): Boolean {
         val determinant =
             (top.x - leftBottom.x) * (rightBottom.y - leftBottom.y) -
-                (top.y - leftBottom.y) * (rightBottom.x - leftBottom.x)
+                    (top.y - leftBottom.y) * (rightBottom.x - leftBottom.x)
         return determinant != BigDecimal.ZERO
     }
 }
@@ -45,7 +45,7 @@ object RightTriangle {
         angle: BigDecimal,
     ): BigDecimal {
         val angleInRadians = toRadians(angle)
-        val hypot = adjacent * cos(angleInRadians)
+        val hypot = adjacent / cos(angleInRadians)
         return hypot
     }
 

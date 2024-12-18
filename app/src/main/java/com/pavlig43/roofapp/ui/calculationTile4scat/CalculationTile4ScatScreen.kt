@@ -38,6 +38,7 @@ import com.pavlig43.roofapp.ui.kit.rowParam.ParamRow
 import com.pavlig43.roofapp.ui.kit.rowParam.TextFieldBigDecimal
 import com.pavlig43.roofapp.ui.kit.rowParam.TextParam
 import com.pavlig43.roofapp.ui.theme.Roof_appTheme
+import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Composable
@@ -118,6 +119,10 @@ private fun CalculationTile4Scat(
                 changeSelectedOption = changeSelectedOption,
             )
         }
+        UserRidgeParamRow(
+            userRidge = paramsState.userRidge,
+            updateUserRidge = { newValue -> updateRoofParam(newValue) },
+        )
 
         if (!isValid) {
             Text(
@@ -143,6 +148,28 @@ private fun CalculationTile4Scat(
 }
 
 @Composable
+private fun UserRidgeParamRow(
+    userRidge: RoofParam?,
+    updateUserRidge: (RoofParam) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ParamRow(
+        paramTitle = RoofParamName.USER_RIDGE.title,
+        value = userRidge?.value ?: BigDecimal.ZERO,
+        updateParam = { newValue: BigDecimal ->
+            val userRidge = RoofParam(
+                RoofParamName.USER_RIDGE,
+                newValue
+            )
+            updateUserRidge(userRidge)
+
+        },
+        modifier = modifier,
+        unit = userRidge?.unit?.title,
+    )
+}
+
+@Composable
 private fun RoofTypeMenu(
     roofType: RoofType,
     calculateFromRoofType: (RoofType) -> Unit,
@@ -155,7 +182,7 @@ private fun RoofTypeMenu(
     ) {
         Text(
             stringResource(R.string.roof_type) +
-                " (${stringResource(R.string.angle_tilt)})",
+                    " (${stringResource(R.string.angle_tilt)})",
             modifier = Modifier.fillMaxWidth(
                 WIDTH_COLUMN_PERCENT
             )
@@ -175,7 +202,7 @@ private fun RoofTypeMenu(
                         text = {
                             Text(
                                 stringResource(it.title) +
-                                    " (${it.angle ?: ""})"
+                                        " (${it.angle ?: ""})"
                             )
                         },
                         onClick = {
@@ -220,7 +247,11 @@ private fun RoofParamDropMenu(
             expanded = expanded,
             onDismissRequest = onDismissRequest,
         ) {
-            arrayOf(paramsState.pokat, paramsState.angle, paramsState.height).forEach { roofParam ->
+            arrayOf(
+                paramsState.pokatTrapezoid,
+                paramsState.angle,
+                paramsState.height
+            ).forEach { roofParam ->
                 RoofParamDropMenuItem(
                     roofParam = roofParam,
                     toSelectParam = changeSelectedOption,
@@ -279,7 +310,7 @@ private fun CalculationTile4ScatScreenPreview() {
             updateRoofParam = { _ -> },
             sheet = Sheet(),
             updateSheetParam = { _ -> },
-            selectedOption = RoofParam(RoofParamName.POKAT),
+            selectedOption = RoofParam(RoofParamName.POKAT_TRAPEZOID),
             changeSelectedOption = { _ -> },
             calculateFromRoofType = {},
             isValid = true,

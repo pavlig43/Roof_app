@@ -11,9 +11,11 @@ fun RoofParamsClassic4Scat.updateRoofParams(roofParam: RoofParam): RoofParamsCla
         RoofParamName.LEN -> this.copy(len = roofParam)
         RoofParamName.ANGLE -> this.calculateFromAngle(roofParam)
         RoofParamName.HEIGHT -> this.calculateFromHeight(roofParam)
-        RoofParamName.POKAT -> this.calculateFromPokat(roofParam)
+        RoofParamName.POKAT_TRAPEZOID -> this.calculateFromPokat(roofParam)
         RoofParamName.RIDGE -> TODO()
         RoofParamName.YANDOVA -> TODO()
+        RoofParamName.POKAT_TRIANGLE -> TODO()
+        RoofParamName.USER_RIDGE -> this.calculateFromUserRidge(roofParam)
     }.copy(roofType = RoofType.None)
 }
 
@@ -22,6 +24,9 @@ fun RoofParamsClassic4Scat.calculateFromRoofType(roofType: RoofType): RoofParams
         RoofParam(RoofParamName.ANGLE, roofType.angle ?: return this.copy(roofType = RoofType.None))
 
     return this.calculateFromAngle(angle).copy(roofType = roofType)
+}
+private fun RoofParamsClassic4Scat.calculateFromUserRidge(userRidge: RoofParam): RoofParamsClassic4Scat {
+    return this.copy(userRidge = userRidge)
 }
 
 /**
@@ -42,7 +47,7 @@ private fun RoofParamsClassic4Scat.calculateFromAngle(angle: RoofParam): RoofPar
             this.copy(
                 angle = angle,
                 height = this.height.copy(value = height),
-                pokat = this.pokat.copy(value = pokat),
+                pokatTrapezoid = this.pokatTrapezoid.copy(value = pokat),
             )
         }
     }
@@ -63,7 +68,7 @@ private fun RoofParamsClassic4Scat.calculateFromHeight(newHeight: RoofParam): Ro
             this.copy(
                 height = newHeight,
                 angle = this.angle.copy(value = angle),
-                pokat = this.pokat.copy(value = pokat),
+                pokatTrapezoid = this.pokatTrapezoid.copy(value = pokat),
             )
         }
     }
@@ -88,7 +93,7 @@ private fun RoofParamsClassic4Scat.calculateFromPokat(pokat: RoofParam): RoofPar
             this.copy(
                 angle = this.angle.copy(value = angle),
                 height = this.height.copy(value = height),
-                pokat = pokat,
+                pokatTrapezoid = pokat,
             )
         }
     }
@@ -96,7 +101,7 @@ private fun RoofParamsClassic4Scat.calculateFromPokat(pokat: RoofParam): RoofPar
 
 private fun RoofParamsClassic4Scat.zeroParam(): RoofParamsClassic4Scat =
     this.copy(
-        pokat = pokat.copy(value = BigDecimal.ZERO),
+        pokatTrapezoid = pokatTrapezoid.copy(value = BigDecimal.ZERO),
         angle = angle.copy(value = BigDecimal.ZERO),
         height = height.copy(value = BigDecimal.ZERO),
     )

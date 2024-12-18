@@ -17,7 +17,9 @@ enum class RoofParamName(
     LEN(R.string.len_roof),
     ANGLE(R.string.angle_tilt),
     HEIGHT(R.string.height_roof),
-    POKAT(R.string.pokat),
+    POKAT_TRAPEZOID(R.string.pokat_trapezoid),
+    POKAT_TRIANGLE(R.string.pokat_triangle),
     RIDGE(R.string.ridge),
+    USER_RIDGE(R.string.user_ridge),
     YANDOVA(R.string.yandova)
 }
