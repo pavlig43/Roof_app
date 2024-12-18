@@ -7,6 +7,7 @@ ksp = "2.0.20-1.0.25"
 #core
 coreKtx = "1.13.1"
 lifecycleRuntimeKtx = "2.8.6"
+pdfboxAndroid = "2.0.27.0"
 workRuntime = "2.9.1"
 
 #hilt
@@ -67,6 +68,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 
 # graphics
 bouquet = { module = "io.github.grizzi91:bouquet", version.ref = "bouquet" }
+pdfbox-android = { module = "com.tom-roush:pdfbox-android", version.ref = "pdfboxAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

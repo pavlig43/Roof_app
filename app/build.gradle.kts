@@ -108,7 +108,7 @@ dependencies {
     implementation(projects.canvasDraw)
 
 // PDF
-    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+    implementation(libs.pdfbox.android)
     implementation(libs.bouquet)
 
 // Hilt

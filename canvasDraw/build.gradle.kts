@@ -28,7 +28,6 @@ android {
         compose = true
     }
     composeOptions {
-
     }
 
     compileOptions {
@@ -49,5 +48,5 @@ dependencies {
     implementation(libs.androidx.material3)
 
     implementation(libs.kotlinx.coroutines.core)
-    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+    implementation(libs.pdfbox.android)
 }
