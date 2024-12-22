@@ -32,7 +32,6 @@ class PdfBoxDrawText(
 
     private val pdfDoc = PDDocument.load(File(filePath))
 
-
     private var firstIndexPageMark: Int = -1
 
     private val font = PDType0Font.load(pdfDoc, fontInputStream)
@@ -47,7 +46,6 @@ class PdfBoxDrawText(
             }
         }
     }
-
 
     suspend fun reWrite(newText: String) {
         withContext(dispatcher) {
@@ -81,8 +79,6 @@ class PdfBoxDrawText(
                 }
             }.reversed().joinToString()
         }
-
-
     }
 
     private fun drawTextOnPdfBoxPage(

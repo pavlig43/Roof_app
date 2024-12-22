@@ -7,11 +7,11 @@ import com.pavlig43.roofapp.navigation.destination.PDFImageDestination
 import com.pavlig43.roofapp.navigation.destination.PdfChangeDestination
 import com.pavlig43.roofapp.navigation.destination.navigateToChangePdf
 import com.pavlig43.roofapp.navigation.destination.navigateToResultPdf
-import com.pavlig43.roofapp.ui.calculationTile4scat.CalculationTile4ScatMainScreen
 import com.pavlig43.roofapp.ui.changeInfoText.TextInPdf
 import com.pavlig43.roofapp.ui.pdfImage.ImagesFromPDF
+import com.pavlig43.roofapp.ui.roof.calculationTile4scat.CalculationTile4ScatMainScreen
+import com.pavlig43.roofapp.ui.roof.shapes.random.RandomShape
 import com.pavlig43.roofapp.ui.saveDocuments.ScreensSaveDocuments
-import com.pavlig43.roofapp.ui.shapes.random.RandomShape
 
 fun NavGraphBuilder.roofNavigation(navController: NavHostController) {
     composable(route = RoofDestination.TileLayout.route) {

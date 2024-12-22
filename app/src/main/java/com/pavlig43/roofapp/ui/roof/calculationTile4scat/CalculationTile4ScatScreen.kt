@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.ui.calculationTile4scat
+package com.pavlig43.roofapp.ui.roof.calculationTile4scat
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -162,7 +162,6 @@ private fun UserRidgeParamRow(
                 newValue
             )
             updateUserRidge(userRidge)
-
         },
         modifier = modifier,
         unit = userRidge?.unit?.title,
@@ -182,7 +181,7 @@ private fun RoofTypeMenu(
     ) {
         Text(
             stringResource(R.string.roof_type) +
-                    " (${stringResource(R.string.angle_tilt)})",
+                " (${stringResource(R.string.angle_tilt)})",
             modifier = Modifier.fillMaxWidth(
                 WIDTH_COLUMN_PERCENT
             )
@@ -202,7 +201,7 @@ private fun RoofTypeMenu(
                         text = {
                             Text(
                                 stringResource(it.title) +
-                                        " (${it.angle ?: ""})"
+                                    " (${it.angle ?: ""})"
                             )
                         },
                         onClick = {

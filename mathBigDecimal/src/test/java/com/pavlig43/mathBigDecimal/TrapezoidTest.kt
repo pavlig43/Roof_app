@@ -1,6 +1,6 @@
 package com.pavlig43.mathBigDecimal
 
-import com.pavlig43.mathbigdecimal.shapes.Trapezoid
+import com.pavlig43.mathbigdecimal.shapes.staticShapes.Trapezoid
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal

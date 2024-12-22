@@ -1,8 +1,8 @@
 package com.pavlig43.mathBigDecimal.coordinateShape
 
 import com.pavlig43.mathbigdecimal.OffsetBD
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
-import com.pavlig43.mathbigdecimal.shapes.getPentagramPoints
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.staticShapes.getPentagramPoints
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

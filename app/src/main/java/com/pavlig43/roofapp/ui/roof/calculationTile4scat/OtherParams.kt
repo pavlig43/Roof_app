@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.ui.calculationTile4scat
+package com.pavlig43.roofapp.ui.roof.calculationTile4scat
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +32,6 @@ fun OtherParamsRow(
             Text(text = title)
             Spacer(modifier = Modifier.weight(1f))
             Text(value.toString())
-
         }
         HorizontalDivider(thickness = 1.dp)
     }

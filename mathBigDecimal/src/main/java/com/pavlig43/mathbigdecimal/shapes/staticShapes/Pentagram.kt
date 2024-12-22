@@ -1,4 +1,4 @@
-package com.pavlig43.mathbigdecimal.shapes
+package com.pavlig43.mathbigdecimal.shapes.staticShapes
 
 import com.pavlig43.mathbigdecimal.OffsetBD
 import java.math.BigDecimal

@@ -59,4 +59,12 @@
     <string name="create_from_random">Собрать из рандома</string>
     <string name="remove_sheets">remove_sheets</string>
     <string name="page">Страница %1$s</string>
+    <string name="geometry">Геометрия</string>
+    <string name="flat_shape">2D</string>
+    <string name="right_triangle">Прямоугольный треугольник</string>
+    <string name="triangle">треугольник</string>
+    <string name="square">Квадрат</string>
+    <string name="shape_image">shape image</string>
+    <string name="select_2_params">Укажи 2 параметра</string>
+    <string name="not_numeric_data">Не числовые данные</string>
 </resources>

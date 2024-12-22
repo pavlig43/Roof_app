@@ -1,7 +1,7 @@
 package com.pavlig43.mathBigDecimal.coordinateShape
 
 import com.pavlig43.mathbigdecimal.OffsetBD
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal

@@ -15,6 +15,4 @@ class AddVerticalPaddingForLineText(
     fun addTransferText() {
         y += spaceLine
     }
-
 }
-

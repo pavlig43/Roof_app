@@ -1,6 +1,7 @@
 package com.pavlig43.pdfcanvasdraw.implementationCore.compose
 
 import android.graphics.PointF
+import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,8 @@ private const val PADDING_PERCENT_Y = 0.1F
 @Composable
 fun ComposeBuild(
     pageRendererFactory: (PageConfig) -> PageRenderer,
+    paddingPercentX: Float = PADDING_PERCENT_X,
+    paddingPercentY: Float = PADDING_PERCENT_Y,
 
 ) {
     var pageConfig by remember {
@@ -30,8 +33,8 @@ fun ComposeBuild(
             PageConfig(
                 x = 0,
                 y = 0,
-                PADDING_PERCENT_X,
-                PADDING_PERCENT_Y,
+                paddingPercentX,
+                paddingPercentY,
                 getStartPointF = { x, paddingPercentX, y, paddingPercentY ->
                     PointF(x * paddingPercentX, y - (y * paddingPercentY))
                 }
@@ -43,6 +46,7 @@ fun ComposeBuild(
     var modifier: Modifier by remember { mutableStateOf(Modifier) }
 
     LaunchedEffect(pageRenderer) {
+        Log.d("ComposeBuild", pageConfig.toString())
         val canvas = ComposeCanvas()
         pageRenderer.renderPage(canvas)
         modifier = canvas.modifier

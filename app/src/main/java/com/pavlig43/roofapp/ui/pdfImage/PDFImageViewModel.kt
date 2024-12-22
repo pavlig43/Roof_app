@@ -32,7 +32,6 @@ class PDFImageViewModel @Inject constructor(
 
     private val filePath: String = checkNotNull(savedStateHandle[FILE_NAME])
 
-
     val isConstructor =
         savedStateHandle.get<String?>(IS_CONSTRUCTOR)?.toBooleanStrictOrNull() != false
 

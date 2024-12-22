@@ -8,18 +8,20 @@ private fun getCountPxInOneCMSide(
     pageSideSize: Int,
     pagePaddingPercent: Float,
     maxDistance: Int = 1,
+    scale: Int = CM_IN_ONE_METER
 ): Float =
     (pageSideSize * (1 - 2 * pagePaddingPercent)) / (
-        maxDistance.roundUpToNearestWithScale()
-            .takeIf { it != 0 } ?: CM_IN_ONE_METER
+        maxDistance.roundUpToNearestWithScale(scale)
+            .takeIf { it != 0 } ?: scale
         )
 
 fun PageConfig.getCountPxInOneCM(
     maxDistanceX: Int,
     maxDistanceY: Int,
+    scale: Int = CM_IN_ONE_METER
 ): CountPxInOneCM {
     return CountPxInOneCM(
-        x = getCountPxInOneCMSide(this.x, this.paddingPercentX, maxDistanceX),
-        y = getCountPxInOneCMSide(this.y, this.paddingPercentY, maxDistanceY),
+        x = getCountPxInOneCMSide(this.x, this.paddingPercentX, maxDistanceX, scale),
+        y = getCountPxInOneCMSide(this.y, this.paddingPercentY, maxDistanceY, scale),
     )
 }

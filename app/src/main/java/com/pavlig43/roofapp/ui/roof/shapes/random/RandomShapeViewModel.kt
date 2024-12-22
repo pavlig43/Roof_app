@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.ui.shapes.random
+package com.pavlig43.roofapp.ui.roof.shapes.random
 
 import android.graphics.PointF
 import androidx.compose.runtime.snapshotFlow
@@ -6,7 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.mathbigdecimal.OffsetBD
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
 import com.pavlig43.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.pavlig43.roofapp.data.shapeMulti.ShapeMultiProvider
 import com.pavlig43.roofapp.di.DocType

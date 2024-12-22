@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.ui.shapes.random
+package com.pavlig43.roofapp.ui.roof.shapes.random
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

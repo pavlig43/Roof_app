@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.pavlig43.roof_app.R
 import com.pavlig43.roofapp.navigation.destination.ScreenDestination
+import com.pavlig43.roofapp.navigation.geometryNavigation.GeometryDestination
 import com.pavlig43.roofapp.navigation.roofNavigation.RoofDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NavigationViewModel @Inject constructor() : ViewModel() {
 
-    private val _listMenuWrapper = MutableStateFlow(listOf(forRoofMenuWrapper))
+    private val _listMenuWrapper =
+        MutableStateFlow(listOf(forRoofMenuWrapper, forGeometryMenuWrapper))
     val listMenuWrapper = _listMenuWrapper.asStateFlow()
 
     fun changeExpanded(selectedMenuWrapper: MenuWrapper) {
@@ -39,4 +41,8 @@ data class MenuWrapper(
 private val forRoofMenuWrapper = MenuWrapper(
     title = R.string.for_roofer,
     nestedMenuItems = RoofDestination.getAllDestination(),
+)
+private val forGeometryMenuWrapper = MenuWrapper(
+    title = R.string.geometry,
+    nestedMenuItems = GeometryDestination.getAllDestination(),
 )

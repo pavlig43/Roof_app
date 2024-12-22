@@ -1,6 +1,6 @@
 package com.pavlig43.roofapp.domain.useCase
 
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.drawText.drawTextOnSeveralPages
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.shape.ShapeWithRulerAndRectangleRenderer
 import com.pavlig43.pdfcanvasdraw.implementationCore.pdf.DocBuilder

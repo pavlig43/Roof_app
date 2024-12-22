@@ -2,6 +2,7 @@ package com.pavlig43.pdfcanvasdraw.core.abstractCanvas.extentions.drawShape
 
 import android.graphics.Color
 import android.graphics.PointF
+import android.util.Log
 import com.pavlig43.pdfcanvasdraw.DEFAULT_COLOR
 import com.pavlig43.pdfcanvasdraw.FULL_ALPHA
 import com.pavlig43.pdfcanvasdraw.RIGHT_DEGREE
@@ -41,6 +42,7 @@ fun CanvasInterface.drawShape(
                 generalY + startPointF.y,
             )
         }
+    Log.d("pointFListOfDots", pointFListOfDots.toString())
     val pointFShapeCanvas = shapeOnCanvas.copy(pointFListOfDots)
     val path =
         createPath().apply {

@@ -1,11 +1,11 @@
-package com.pavlig43.roofapp.ui.calculationTile4scat
+package com.pavlig43.roofapp.ui.roof.calculationTile4scat
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pavlig43.mathbigdecimal.OffsetBD
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
-import com.pavlig43.mathbigdecimal.shapes.Triangle
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.staticShapes.Triangle
 import com.pavlig43.roofapp.data.resourceProvider.AndroidResourceProvider
 import com.pavlig43.roofapp.di.DocType
 import com.pavlig43.roofapp.di.DocTypeBuilder

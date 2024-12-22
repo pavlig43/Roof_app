@@ -1,6 +1,6 @@
 package com.pavlig43.roofapp.mappers.coordinateShape
 
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
 import com.pavlig43.pdfcanvasdraw.core.abstractCanvas.extentions.drawShape.ShapeOnCanvas
 import com.pavlig43.roofapp.mappers.offsetBD.toPointF
 

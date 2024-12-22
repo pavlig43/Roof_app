@@ -1,8 +1,8 @@
 package com.pavlig43.mathBigDecimal
 
 import com.pavlig43.mathbigdecimal.OffsetBD
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
-import com.pavlig43.mathbigdecimal.shapes.RightRectangle
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.RightRectangle
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal

@@ -1,14 +1,14 @@
 package com.pavlig43.roofapp.model.roofParamsClassic4Scat
 
-import com.pavlig43.mathbigdecimal.shapes.RightTriangle
+import com.pavlig43.mathbigdecimal.shapes.staticShapes.RightTriangle
 import com.pavlig43.mathbigdecimal.utils.hypot
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 fun RoofParamsClassic4Scat.updateRoofParams(roofParam: RoofParam): RoofParamsClassic4Scat {
     return when (roofParam.name) {
-        RoofParamName.WIDTH -> this.copy(width = roofParam)
-        RoofParamName.LEN -> this.copy(len = roofParam)
+        RoofParamName.WIDTH -> this.copy(width = roofParam).calculateFromPokat(this.pokatTrapezoid)
+        RoofParamName.LEN -> this.copy(len = roofParam).calculateFromPokat(this.pokatTrapezoid)
         RoofParamName.ANGLE -> this.calculateFromAngle(roofParam)
         RoofParamName.HEIGHT -> this.calculateFromHeight(roofParam)
         RoofParamName.POKAT_TRAPEZOID -> this.calculateFromPokat(roofParam)
@@ -25,6 +25,7 @@ fun RoofParamsClassic4Scat.calculateFromRoofType(roofType: RoofType): RoofParams
 
     return this.calculateFromAngle(angle).copy(roofType = roofType)
 }
+
 private fun RoofParamsClassic4Scat.calculateFromUserRidge(userRidge: RoofParam): RoofParamsClassic4Scat {
     return this.copy(userRidge = userRidge)
 }

@@ -22,6 +22,7 @@ class ConstructorShape(
     private val shapeOnCanvas: ShapeOnCanvas,
     override val pageConfig: PageConfig,
     val onClickDot: (Pair<Int, PointF>) -> Unit = { _ -> },
+    private val radiusDot: Float = RADIUS_DOT,
     provideShapeOnRealCanvas: (CountPxInOneCM, PointF, Float) -> Unit = { _, _, _ -> }
 
 ) : PageRenderer() {
@@ -34,7 +35,7 @@ class ConstructorShape(
         provideShapeOnRealCanvas(
             countPxInOneCM,
             startPointF,
-            RADIUS_DOT
+            radiusDot
         )
     }
 
@@ -57,7 +58,7 @@ class ConstructorShape(
             drawCircle(
                 dot.x,
                 dot.y,
-                RADIUS_DOT,
+                radiusDot,
                 createPaint().apply {
                     color = if (ind == 0) Color.Green.toArgb() else Color.Red.toArgb()
                     style = PaintAbstract.Style.FILL
@@ -71,7 +72,7 @@ class ConstructorShape(
         listOfDotsOnRealCanvas.value.forEachIndexed { index, pointF ->
             val distance =
                 PointF(tapPointF.x - pointF.x, tapPointF.y - pointF.y).run { hypot(this.x, this.y) }
-            if (distance < RADIUS_DOT) {
+            if (distance < radiusDot) {
                 onClickDot(Pair(index, pointF))
             }
         }

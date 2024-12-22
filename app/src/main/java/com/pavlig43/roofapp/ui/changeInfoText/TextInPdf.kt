@@ -42,10 +42,8 @@ fun TextInPdf(
                 }
             )
         }
-
     }
 }
-
 
 @Composable
 private fun ButtonRow(
@@ -60,6 +58,5 @@ private fun ButtonRow(
         Button(onClick = saveAndShowResult) {
             Text(stringResource(R.string.save))
         }
-
     }
 }

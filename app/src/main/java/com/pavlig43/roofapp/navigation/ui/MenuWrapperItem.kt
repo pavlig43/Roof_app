@@ -20,9 +20,11 @@ fun MenuWrapperItem(
     toNavigate: (String) -> Unit,
     modifier: Modifier = Modifier.Companion
 ) {
-    Card(modifier = modifier.clickable {
-        changeExpanded(menuWrapper)
-    }) {
+    Card(
+        modifier = modifier.clickable {
+            changeExpanded(menuWrapper)
+        }
+    ) {
         Column(modifier = Modifier.Companion.fillMaxWidth()) {
             Row(
                 modifier = Modifier.Companion.fillMaxWidth(),

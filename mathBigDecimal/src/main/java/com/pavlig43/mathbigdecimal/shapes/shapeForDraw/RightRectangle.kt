@@ -1,4 +1,4 @@
-package com.pavlig43.mathbigdecimal.shapes
+package com.pavlig43.mathbigdecimal.shapes.shapeForDraw
 
 import com.pavlig43.mathbigdecimal.OffsetBD
 

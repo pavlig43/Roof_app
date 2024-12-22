@@ -1,7 +1,7 @@
 package com.pavlig43.roofapp.data.shapeMulti
 
 import android.util.Log
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

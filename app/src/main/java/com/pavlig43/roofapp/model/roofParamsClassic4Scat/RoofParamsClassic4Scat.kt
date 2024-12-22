@@ -1,6 +1,6 @@
 package com.pavlig43.roofapp.model.roofParamsClassic4Scat
 
-import com.pavlig43.mathbigdecimal.shapes.Trapezoid
+import com.pavlig43.mathbigdecimal.shapes.staticShapes.Trapezoid
 import com.pavlig43.mathbigdecimal.utils.hypot
 import com.pavlig43.roofapp.model.UnitOfMeasurement
 import java.math.BigDecimal
@@ -33,7 +33,6 @@ data class RoofParamsClassic4Scat(
         RoofParamName.YANDOVA,
         hypot(width.value.divide(BigDecimal(2)), pokatTriangle.value)
     )
-
 
     /**
      * Длина конька - верхнего основания трапеции

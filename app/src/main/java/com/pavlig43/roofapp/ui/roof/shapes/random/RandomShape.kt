@@ -1,4 +1,4 @@
-package com.pavlig43.roofapp.ui.shapes.random
+package com.pavlig43.roofapp.ui.roof.shapes.random
 
 import android.graphics.PointF
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.pavlig43.mathbigdecimal.shapes.CoordinateShape
+import com.pavlig43.mathbigdecimal.shapes.shapeForDraw.CoordinateShape
 import com.pavlig43.pdfcanvasdraw.core.metrics.CountPxInOneCM
 import com.pavlig43.pdfcanvasdraw.core.pageKit.abstractPage.PageConfig
 import com.pavlig43.pdfcanvasdraw.core.pageKit.implementation.shape.ConstructorShape
